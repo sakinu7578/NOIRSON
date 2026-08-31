@@ -4,32 +4,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NOIRSON</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Slab:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <header>
-        <nav aria-label="主要導覽">
-            <!-- 導覽內容將於後續階段加入 -->
+    <header class="site-header">
+        <a class="logo" href="#hero" aria-label="NOIRSON 首頁">NOIRSON</a>
+
+        <nav class="main-nav" aria-label="主要導覽">
+            <a href="#hero">HOME</a>
+            <a href="#explore">EXPLORE</a>
+            <a href="#about">ABOUT</a>
+            <a href="#login">LOGIN</a>
         </nav>
     </header>
 
     <main>
-        <section id="hero">
-            <!-- Hero 內容將於後續階段加入 -->
-        </section>
+        <section class="hero" id="hero" aria-labelledby="hero-title">
+            <div class="hero-carousel" aria-hidden="true">
+                <img class="hero-slide is-active" src="images/00.png" alt="">
+                <img class="hero-slide" src="images/01.png" alt="">
+                <img class="hero-slide" src="images/02.png" alt="">
+                <img class="hero-slide" src="images/03.png" alt="">
+                <img class="hero-slide" src="images/05.png" alt="">
+            </div>
 
-        <section id="music-showcase">
-            <!-- Music Showcase 內容將於後續階段加入 -->
-        </section>
+            <div class="hero-content">
+                <p class="hero-brand">NOIRSON</p>
+                <h1 id="hero-title">MUSIC FOR YOUR<br>LATE NIGHT MOOD</h1>
+                <p class="hero-description">Lofi · Jazz · Chillhop · Late Night</p>
+                <a class="hero-button" href="#explore">EXPLORE MUSIC</a>
+            </div>
 
-        <section id="about">
-            <!-- About 內容將於後續階段加入 -->
+            <div class="carousel-dots" aria-label="Hero 圖片切換">
+                <button class="carousel-dot is-active" type="button" aria-label="顯示第 1 張圖片" aria-pressed="true"></button>
+                <button class="carousel-dot" type="button" aria-label="顯示第 2 張圖片" aria-pressed="false"></button>
+                <button class="carousel-dot" type="button" aria-label="顯示第 3 張圖片" aria-pressed="false"></button>
+                <button class="carousel-dot" type="button" aria-label="顯示第 4 張圖片" aria-pressed="false"></button>
+                <button class="carousel-dot" type="button" aria-label="顯示第 5 張圖片" aria-pressed="false"></button>
+            </div>
         </section>
     </main>
-
-    <footer>
-        <!-- Footer 內容將於後續階段加入 -->
-    </footer>
 
     <script src="js/main.js"></script>
 </body>
