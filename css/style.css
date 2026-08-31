@@ -26,7 +26,7 @@ a {
 
 /* Header: positioned over the Hero image */
 .site-header {
-    position: absolute;
+    position: fixed;
     z-index: 3;
     top: 0;
     left: 0;
@@ -51,7 +51,7 @@ a {
 
 .main-nav a {
     color: var(--color-muted);
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.12em;
     transition: color 180ms ease;
@@ -180,4 +180,137 @@ a {
 .carousel-dot.is-active {
     border-color: var(--color-cream);
     background-color: var(--color-cream);
+}
+
+/* Featured music */
+.featured-music {
+    padding: 3rem 6vw;
+    background-color: var(--color-ink);
+}
+
+.featured-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.section-label {
+    margin: 0 0 0.85rem;
+    color: var(--color-amber);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+}
+
+.featured-header h2 {
+    margin: 0;
+    color: var(--color-heading);
+    font-family: "Roboto Slab", serif;
+    font-size: clamp(2rem, 3.2vw, 3.25rem);
+    font-weight: 400;
+    letter-spacing: 0.025em;
+}
+
+.featured-link {
+    border-bottom: 1px solid rgba(241, 238, 232, 0.5);
+    padding-bottom: 0.35rem;
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    white-space: nowrap;
+    transition: border-color 180ms ease, color 180ms ease;
+}
+
+.featured-link:hover {
+    border-color: var(--color-cream);
+    color: var(--color-cream);
+}
+
+.music-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.5rem;
+}
+
+.music-card {
+    min-width: 0;
+}
+
+.music-cover {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background-color: var(--color-night);
+}
+
+.music-cover img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 220ms ease, transform 400ms ease;
+}
+
+.music-card:hover .music-cover img {
+    opacity: 0.82;
+    transform: scale(1.04);
+}
+
+.music-info {
+    padding-top: 1rem;
+}
+
+.music-info h3,
+.music-info p,
+.music-info span {
+    display: block;
+    margin: 0;
+}
+
+.music-info h3 {
+    color: var(--color-heading);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.music-info p,
+.music-info span {
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+}
+
+.music-info p {
+    margin-top: 0.55rem;
+}
+
+.music-info span {
+    margin-top: 0.35rem;
+    color: var(--color-amber);
+}
+
+@media (max-width: 900px) {
+    .music-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .featured-music {
+        padding: 5rem 6vw;
+    }
+
+    .featured-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2.25rem;
+    }
+
+    .music-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
 }
