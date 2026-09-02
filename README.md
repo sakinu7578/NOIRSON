@@ -1,120 +1,57 @@
-# NOIRSON Web
+# NOIRSON
 
-NOIRSON is a LOFI / Chill / Neo Soul music sharing platform.
+NOIRSON 是一個音樂內容探索平台（music content discovery platform），以既有的 NOIRSON 音樂內容與品牌為基礎，逐步發展內容探索、站內播放、品牌介紹與會員功能的完整 Web Application。
 
-This project is a full-stack engineer course portfolio project, starting from a simple front-end prototype and gradually expanding into a complete web application.
+這是全端工程課程的作品集專案，目前正以 HTML、CSS 與 JavaScript 製作前端雛形。
 
-## Project Concept
+## 音樂方向
 
-NOIRSON focuses on music discovery and atmosphere.
+- Lofi / Jazz / Chillhop
+- Ethereal Trap / Cloud Trap / Midnight Jersey
+- City Pop
 
-The website is designed to provide a place where users can:
+## 目前狀態
 
-* Discover NOIRSON music
-* Browse music works
-* Listen to selected tracks or mixes
-* Learn about the NOIRSON music project
-* Explore music-related content
+目前為 **Phase 1 — Front-End Prototype / Home Implementation**，已具備：
 
-Additional features may be added as the project develops.
+- Git 與 GitHub 基礎設定
+- HTML / CSS / JavaScript 專案結構
+- Home 初版：Header / Navigation、Hero Carousel、Featured Music
+- Hero 圖片素材與初步 Responsive CSS
+- 已完成的 5 個 Desktop Wireframe 與 MVP 頁面架構
 
-## Design Direction
+## MVP 頁面
 
-The visual direction is based around:
+1. Home
+2. Music / Explore
+3. Music Detail
+4. About
+5. Login / Register
 
-* LOFI
-* Chill
-* Neo Soul
-* Dark atmosphere
-* Modern music aesthetics
-* Minimal but expressive layouts
+會員階段再加入 My Library。
 
-The website should feel like a music brand rather than a generic business website.
+## 核心功能
 
-## Technology Roadmap
+站內 Music Player 是核心 MVP 功能。基礎版本需要 Play、Pause、Progress、Current time、Duration 與從 Tracklist 選擇歌曲。YouTube 與 Spotify 僅保留為外部平台連結。
 
-### Phase 1 — Front End
+## Wireframe
 
-* HTML
-* CSS
-* JavaScript
+[NOIRSON Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) 用於確認 layout、資訊層級與 user flow。實際視覺細節將直接在 HTML / CSS 與 browser preview 中迭代，不另行製作完整 High-fidelity Figma Visual Design。
 
-### Phase 2 — Modern Front End
+## 技術路線
 
-* React
+目前：HTML → CSS → JavaScript
 
-### Phase 3 — Back End
+後續依課程進度：React → Java Web / Spring Boot → MySQL → REST API 整合 → Deployment
 
-* Java
-* Spring Boot
-* Spring MVC
-* Spring Data JPA
+目前不提前導入 React、Spring Boot、資料庫、正式金流、AI 或非必要套件。
 
-### Phase 4 — Database
+## 文件
 
-* MySQL
-
-### Phase 5 — Integration
-
-* REST API
-* Front-end / back-end integration
-* Authentication if required
-* Additional functionality if required
-
-### Phase 6 — Deployment
-
-* Production build
-* Cloud deployment
-* Domain / hosting configuration if appropriate
-
-## Current Status
-
-The project is currently in the initial front-end stage.
-
-Current progress:
-
-* GitHub repository created
-* Local Git repository connected to GitHub
-* Git identity configured as `sakinu7578`
-* Initial `index.html` created
-* Codex development environment prepared
-* Front-end structure is about to be developed
-
-## Project Structure
-
-```text
-NOIRSON_web/
-├── AGENTS.md
-├── README.md
-├── docs/
-│   ├── project.md
-│   ├── design.md
-│   └── progress.md
-├── index.html
-├── css/
-│   └── style.css
-├── js/
-│   └── main.js
-└── images/
-```
-
-## Development Philosophy
-
-The project is intentionally developed step by step.
-
-The goal is not to add as many technologies as possible.
-
-The goal is to create a practical portfolio project that is:
-
-* Functional
-* Understandable
-* Visually coherent
-* Expandable
-* Maintainable
-* Suitable for demonstrating full-stack development skills
+- [專案定義](docs/project.md)
+- [開發進度](docs/progress.md)
+- [協作指引](AGENTS.md)
 
 ## Repository
 
-GitHub account: `sakinu7578`
-
-Repository: `NOIRSON_web`
+GitHub：[`sakinu7578/NOIRSON`](https://github.com/sakinu7578/NOIRSON)

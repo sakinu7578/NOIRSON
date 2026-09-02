@@ -1,174 +1,63 @@
-# NOIRSON Project Definition
+# NOIRSON 專案定義
 
-## 1. Project Name
+## 專案定位
 
-NOIRSON
+NOIRSON 是一個音樂內容探索平台（music content discovery platform），以既有的 NOIRSON 音樂內容與品牌為基礎。網站將逐步提供音樂內容探索、站內播放、品牌介紹，以及後續的會員與數位音樂購買功能。
 
-## 2. Project Type
+本專案是全端工程課程的作品集，目標是完成一個功能核心明確、視覺一致、可逐步擴充的 Web Application。
 
-LOFI / Chill / Neo Soul music sharing platform.
+## 音樂內容方向
 
-The project is designed as a full-stack engineer portfolio project.
+1. Lofi / Jazz / Chillhop
+2. Ethereal Trap / Cloud Trap / Midnight Jersey
+3. City Pop
 
----
+## 使用者體驗
 
-## 3. Core Concept
+使用者進入 NOIRSON 時，應能立即理解這是一個以音樂內容與探索為核心的平台。體驗應呈現 Chill、Atmospheric、Stylish、Immersive、Modern 且容易導覽的風格。
 
-NOIRSON is a music-focused website built around atmosphere, discovery, and listening.
+## Wireframe 與 MVP 頁面
 
-The primary goal is to create a digital space where users can discover NOIRSON music and related content through a strong visual and musical identity.
+[Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) 已完成，用於確認 layout、資訊層級與 user flow；它不是 pixel-perfect 的視覺規範。實際圖片、Logo、文案、色彩、字體、spacing、hover 與 RWD 將直接在 HTML / CSS 中迭代。
 
-The website should combine:
+已確認的 MVP Desktop 頁面：
 
-* Music
-* Visual atmosphere
-* Content discovery
-* Simple interaction
-* Future full-stack functionality
+1. Home
+2. Music / Explore
+3. Music Detail
+4. About
+5. Login / Register
 
----
+會員功能階段再新增 My Library。
 
-## 4. Target Experience
+## Home 範圍
 
-When entering the website, the user should immediately understand:
+Home 由 Header / Navigation、Hero Carousel、Featured Music、About NOIRSON 與 Footer 組成。Hero Carousel 的後續方向為左右切換箭頭與底部橫條 indicators，不使用圓點 indicators。
 
-1. This is a music platform.
-2. NOIRSON has a distinct visual identity.
-3. Music is the main content.
-4. The website is designed for exploration rather than simply presenting information.
+## 核心播放功能
 
-The experience should feel:
+Music Player 是 MVP 的核心功能，不是 Optional。基礎播放器需支援：
 
-* Chill
-* Atmospheric
-* Stylish
-* Immersive
-* Modern
-* Easy to navigate
+- Play / Pause
+- Progress
+- Current time / Duration
+- 從 Tracklist 選擇歌曲
 
----
+Previous / Next、Volume、Shuffle 與其他進階控制，可在核心版本穩定後再加入。YouTube 與 Spotify 僅作外部連結，不能取代 NOIRSON 本身的播放功能。
 
-## 5. Initial Website Scope
+## 會員與購買 MVP
 
-The first version should focus on a strong front-end prototype.
+初期會員功能包含 Register、Login、數位音樂購買、My Library 與已購內容下載。商品以包含約 10–20 首歌曲的數位 Mix 為主。購買流程可先使用 Mock Purchase，再視專題進度決定是否串接正式金流。
 
-Possible initial sections:
+目前延後：實體周邊、複雜購物車、複雜會員社群、Favorites、Playlist、真實 Payment Gateway、AI、RAG 與複雜推薦系統。
 
-### Header / Navigation
+## 技術路線與範圍控制
 
-Basic navigation for the main sections of the website.
+目前優先完成 HTML、CSS、JavaScript 前端雛形。React、Java Web、Spring、Spring Boot、JPA、MVC、MySQL、REST API 整合與部署，依課程進度逐步導入；不提前導入後續技術。
 
-### Hero Section
+功能優先順序為：**MVP → 核心功能 → 全端串接 → 部署 → 額外功能**。若時間不足，優先刪除額外功能，保留核心播放、內容瀏覽與全端能力。
 
-Introduce NOIRSON and establish the visual identity.
+## Repository
 
-### Music Showcase
-
-Display selected NOIRSON music works.
-
-Possible information:
-
-* Cover image
-* Track / mix title
-* Genre
-* Duration
-* Description
-* Listen button
-
-### About NOIRSON
-
-A short introduction to the music project.
-
-### Footer
-
-Basic navigation and external links where appropriate.
-
----
-
-## 6. Future Features
-
-These are possible future features and are NOT part of the initial implementation.
-
-### User System
-
-* Registration
-* Login
-* User profile
-
-### Music Management
-
-* Music database
-* Search
-* Categories
-* Favorites
-* Playlists
-
-### Content
-
-* Music details
-* Artist / project information
-* Related content
-
-### Commerce
-
-A simple music purchasing system may be considered later if it provides value to the portfolio project.
-
-Physical merchandise is not currently a priority.
-
-### Backend
-
-Possible future architecture:
-
-Frontend
-→ React
-
-Backend
-→ Java / Spring Boot
-
-Database
-→ MySQL
-
-Communication
-→ REST API
-
----
-
-## 7. Scope Control
-
-The project should prioritize completion over feature quantity.
-
-If a feature significantly increases development time without clearly improving the portfolio value, it should be postponed.
-
-The first goal is:
-
-A polished, functional front-end prototype.
-
-The second goal is:
-
-A working full-stack architecture.
-
-The third goal is:
-
-Additional features only when the core system is stable.
-
----
-
-## 8. Technical Philosophy
-
-The project should evolve gradually.
-
-Do not build the final architecture before the basic website exists.
-
-Recommended progression:
-
-HTML
-→ CSS
-→ JavaScript
-→ React
-→ Java
-→ Spring Boot
-→ MySQL
-→ API integration
-→ Deployment
-
-Each stage should build upon the previous stage.
+- GitHub 帳號：`sakinu7578`
+- Repository：`NOIRSON`

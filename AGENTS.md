@@ -1,213 +1,59 @@
-# NOIRSON Web Project — Agent Instructions
+# NOIRSON 開發協作指引
 
-## 1. Project Overview
+## 溝通方式
 
-NOIRSON is a LOFI / Chill / Neo Soul music sharing platform.
+- 除非另行指定，一律以繁體中文（台灣用語）回覆。
+- 回覆保持務實、聚焦重點；重要變更需簡短說明原因。
+- 程式碼與說明應容易讓正在學習全端開發的創作者理解。
 
-This project is being developed as a portfolio project for a full-stack engineer course.
+## 專案定位
 
-The website should focus on music discovery, visual atmosphere, and a clean modern experience.
+NOIRSON 是一個音樂內容探索平台（music content discovery platform），也是全端工程課程的作品集專案。平台以既有的 NOIRSON 音樂內容與品牌為基礎，提供內容探索、站內播放、品牌介紹，並在後續發展會員功能。
 
-The project will be developed progressively rather than building the entire system at once.
+目前的音樂方向：
 
----
+1. Lofi / Jazz / Chillhop
+2. Ethereal Trap / Cloud Trap / Midnight Jersey
+3. City Pop
 
-## 2. Current Development Stage
+視覺應呈現深色、冷調、Late Night、LOFI／Chill／Neo Soul 的音樂品牌氛圍；保持現代、簡潔、具層次，但避免企業網站感、過度漸層、過度動畫與不必要的卡片或介面元素。
 
-The project is currently starting from zero.
+## 目前階段與工作順序
 
-Current priority:
+目前階段為 **Phase 1 — Front-End Prototype / Home Implementation**。現階段優先完成 HTML、CSS、JavaScript 的前端雛形，不提前導入 React、Java Web、Spring、Spring Boot、JPA、MVC、正式金流、第三方 API、AI 或 RAG。
 
-1. HTML
-2. CSS
-3. JavaScript
+功能優先順序：**MVP → 核心功能 → 全端串接 → 部署 → 額外功能**。
 
-Later stages may introduce:
+- 核心 MVP：內容瀏覽與站內 Music Player。
+- Music Player 是核心功能，不得標示為 Optional；最基本需要 Play、Pause、進度、目前時間、總長度，以及從 Tracklist 選擇歌曲。
+- 時間不足時，刪除額外功能，不犧牲核心播放、內容瀏覽與可擴充的全端能力。
 
-4. React
-5. Java
-6. Spring Boot
-7. MySQL
-8. API integration
-9. Deployment
+## 設計與實作原則
 
-Do not introduce later-stage technologies unless explicitly requested.
+- 開始修改前，先閱讀所有相關現有檔案與既有命名／架構。
+- 不要無理由重寫既有架構；每次只實作目前功能所需的範圍。
+- 使用目前 [Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) 作為 layout、資訊層級與 user flow 的參考，而非 pixel-perfect 規範。
+- 不必等待 High-fidelity Figma Visual Design；視覺可透過 HTML、CSS 與 browser preview 逐步調整。
+- 優先使用語意化 HTML（如 `header`、`nav`、`main`、`section`、`article`、`footer`）、可重用 CSS 與必要的原生 JavaScript。
+- 維持簡單、清晰、可讀、可維護且具基本 RWD 的程式碼；不要為展示技術加入不必要的 package、framework 或複雜抽象。
 
-For example, do not add React, Spring Boot, databases, authentication, payment systems, or unnecessary packages during the initial HTML/CSS stage.
+## MVP 範圍
 
----
+已確認的主要 Desktop 畫面：Home、Music / Explore、Music Detail、About、Login / Register。會員功能階段再加入 My Library。
 
-## 3. Design Direction
+Home 的既定內容為 Header / Navigation、Hero Carousel、Featured Music、About NOIRSON、Footer。Hero Carousel 後續使用左右切換箭頭與底部橫條 indicators，不使用圓點 indicators。
 
-The visual identity should generally follow:
+會員與購買 MVP 保持簡單：Register、Login、數位音樂購買、My Library 與已購內容下載。商品以數位音樂為主；購買可先採 Mock Purchase。YouTube 與 Spotify 僅作外部連結，不能取代站內播放功能。
 
-* LOFI
-* Chill
-* Neo Soul
-* Music-focused
-* Dark and atmospheric
-* Modern
-* Minimal but not empty
-* Stylish rather than overly corporate
-* Comfortable visual hierarchy
-* Strong use of imagery and typography
+目前不做：實體周邊、複雜購物車、複雜會員社群、Favorites、Playlist、真實 Payment Gateway、AI、RAG 與複雜推薦系統。
 
-Avoid:
+## 技術路線
 
-* Generic corporate website styles
-* Excessive gradients
-* Excessive animations
-* Overly complicated layouts
-* Generic AI-generated landing page patterns
-* Excessive use of cards
-* Unnecessary UI elements
+目前以 HTML、CSS、JavaScript 完成前端雛形為優先。React、Java Web、Spring、Spring Boot、JPA、MVC、MySQL、REST API 整合與部署，依課程進度逐步導入；不得提前轉換專案技術架構。
 
-The design should feel like a music brand rather than a typical software company website.
+## Git 與交付
 
----
-
-## 4. Development Principles
-
-Prioritize:
-
-* Simple code
-* Clear structure
-* Readability
-* Maintainability
-* Responsive design
-* Semantic HTML
-* Reusable CSS
-* Progressive development
-
-Do not add complexity unless it provides a clear benefit.
-
-When multiple implementation methods are possible, prefer the simplest practical solution.
-
-Do not unnecessarily rewrite existing code.
-
-Before making major structural changes, inspect the existing project first.
-
----
-
-## 5. Coding Rules
-
-### HTML
-
-Use semantic HTML where appropriate.
-
-Prefer:
-
-* header
-* nav
-* main
-* section
-* article
-* footer
-
-Avoid creating unnecessary nested div elements.
-
-### CSS
-
-Keep styles organized and readable.
-
-Prefer reusable classes over repeating the same declarations.
-
-Do not introduce a CSS framework unless explicitly requested.
-
-### JavaScript
-
-Keep JavaScript separated from HTML when practical.
-
-Do not introduce unnecessary libraries.
-
-Only add functionality that is required by the current project stage.
-
-### React
-
-React will be introduced later.
-
-Do not convert the project to React unless explicitly requested.
-
----
-
-## 6. Working With the User
-
-The user is learning full-stack development while building this project.
-
-Therefore:
-
-* Do not hide important implementation details.
-* Explain significant changes briefly.
-* Prefer understandable solutions over unnecessarily advanced solutions.
-* If a solution is unusually complex, explain why.
-* Do not assume the user already understands advanced concepts.
-
-When modifying files, report:
-
-1. Which files were changed
-2. What was changed
-3. Why it was changed
-4. Any testing or verification performed
-
----
-
-## 7. File Management
-
-Keep the project structure organized.
-
-Suggested structure:
-
-NOIRSON_web/
-├── AGENTS.md
-├── README.md
-├── docs/
-│   ├── project.md
-│   ├── design.md
-│   └── progress.md
-├── index.html
-├── css/
-│   └── style.css
-├── js/
-│   └── main.js
-└── images/
-
-Do not create unnecessary folders or files.
-
----
-
-## 8. Git
-
-The project uses Git and GitHub for version control.
-
-GitHub repository:
-
-NOIRSON_web
-
-GitHub account:
-
-sakinu7578
-
-Before making commits, do not modify Git configuration unless explicitly requested.
-
-Do not perform destructive Git operations such as:
-
-* git reset --hard
-* force push
-* deleting branches
-* rewriting commit history
-
-unless explicitly requested by the user.
-
-Keep commits reasonably focused and descriptive.
-
----
-
-## 9. Important Rule
-
-Do not attempt to build the entire NOIRSON system in one step.
-
-Build the project incrementally.
-
-When the user asks for a specific feature, modify only what is necessary for that feature unless a larger architectural change is genuinely required.
-
-The goal is a functional, understandable, expandable portfolio project — not maximum technical complexity.
+- Repository 名稱為 `NOIRSON`，GitHub 帳號為 `sakinu7578`。
+- 未經明確要求，不修改 Git 設定、不自行 commit 或 push。
+- 不執行 `git reset --hard`、force push、刪除分支或改寫歷史等破壞性 Git 操作。
+- 完成工作時，簡列完成事項、修改檔案與驗證方式。
