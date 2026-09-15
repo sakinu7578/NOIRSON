@@ -47,13 +47,19 @@
 - [x] Desktop / Tablet / Mobile 基礎 RWD
 - [ ] Music Player functionality（後續 JavaScript 階段）
 
+### About
+
+- [x] About Desktop Layout completed
+- [x] About content / image sections completed
+- [x] Shared Header / Footer
+- [x] Basic RWD
+
 ## 下一步
 
 1. 將 Featured Music 逐步替換為真實 NOIRSON 作品。
 2. 整理 Logo、圖片與音樂素材。
 3. 建立站內 Music Player 功能。
-4. 建立 About 頁面。
-5. 建立 Login / Register UI。
+4. 建立 05 Login / Register 頁面。
 
 ## 後續階段
 
