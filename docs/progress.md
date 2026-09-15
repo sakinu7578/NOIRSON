@@ -4,7 +4,7 @@
 
 **Phase 1B — Multi-page HTML Prototype**
 
-目前目標是依 Wireframe 逐頁完成原生 HTML / CSS 前端雛形，暫不提前導入 React、Spring Boot、資料庫或其他後續技術。
+主要靜態頁面版型已完成。現階段成果為原生 HTML / CSS 前端雛形，暫不提前導入 React、Spring Boot、資料庫或其他後續技術。
 
 ## 已完成
 
@@ -54,12 +54,21 @@
 - [x] Shared Header / Footer
 - [x] Basic RWD
 
+### Login / Register
+
+- [x] Login Desktop Layout
+- [x] Login Form UI
+- [x] Register UI / entry
+- [x] Shared Header / Footer
+- [x] Basic RWD
+- [ ] Authentication functionality pending
+
 ## 下一步
 
 1. 將 Featured Music 逐步替換為真實 NOIRSON 作品。
 2. 整理 Logo、圖片與音樂素材。
 3. 建立站內 Music Player 功能。
-4. 建立 05 Login / Register 頁面。
+4. 逐步實作已標示 pending 的互動與會員功能。
 
 ## 後續階段
 

@@ -479,6 +479,25 @@ a {
 .about-page-contact a { display: inline-block; border: 1px solid rgba(241, 238, 232, 0.6); padding: 0.85rem 1.4rem; color: var(--color-cream); font-size: 0.68rem; letter-spacing: 0.14em; }
 .about-page-contact a:hover { border-color: var(--color-amber); color: var(--color-amber); }
 
+/* Login / Register */
+.auth-page { display: grid; grid-template-columns: 1fr 1fr; min-height: 660px; background-color: var(--color-night); }
+.auth-visual { position: relative; display: flex; align-items: flex-end; overflow: hidden; padding: clamp(3rem, 6vw, 6rem); background: linear-gradient(rgba(16, 18, 22, 0.5), rgba(16, 18, 22, 0.85)), url("../images/05.png") center / cover; }
+.auth-visual > div { position: relative; z-index: 1; max-width: 560px; }
+.auth-visual h1 { margin: 0; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(2.5rem, 4.3vw, 4.5rem); font-weight: 400; line-height: 1.12; }
+.auth-visual p:last-child { max-width: 390px; margin: 1.5rem 0 0; color: var(--color-muted); font-size: 0.8rem; line-height: 1.7; }
+.auth-panel { display: grid; padding: 4rem clamp(2rem, 7vw, 7rem); background-color: var(--color-ink); place-items: center; }
+.auth-panel-inner { width: min(420px, 100%); }
+.auth-panel h2 { margin: 0 0 2.5rem; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(2rem, 3vw, 3rem); font-weight: 400; }
+.auth-form { display: grid; gap: 1.5rem; }
+.auth-field { display: grid; gap: 0.55rem; }
+.auth-field label { color: var(--color-muted); font-size: 0.64rem; font-weight: 500; letter-spacing: 0.14em; }
+.auth-field input { width: 100%; border: 0; border-bottom: 1px solid rgba(241, 238, 232, 0.42); border-radius: 0; padding: 0.75rem 0; outline: 0; background: transparent; color: var(--color-cream); font: inherit; font-size: 0.88rem; }
+.auth-field input:focus { border-color: var(--color-amber); }
+.auth-submit { margin-top: 0.75rem; border: 1px solid rgba(241, 238, 232, 0.65); padding: 0.9rem 1.4rem; background: transparent; color: var(--color-cream); font: inherit; font-size: 0.68rem; letter-spacing: 0.14em; cursor: pointer; }
+.auth-submit:hover { border-color: var(--color-amber); color: var(--color-amber); }
+.auth-switch { margin: 2rem 0 0; color: var(--color-muted); font-size: 0.64rem; letter-spacing: 0.08em; text-align: center; }
+.auth-switch a { border-bottom: 1px solid var(--color-amber); padding-bottom: 0.2rem; color: var(--color-amber); }
+
 @media (max-width: 900px) {
     .hero {
         min-height: 580px;
@@ -500,6 +519,8 @@ a {
     .about-page-story { gap: 3rem 5vw; }
     .producer-grid { gap: 3rem; }
     .producer-profile { grid-template-columns: 1fr; align-items: start; gap: 1.25rem; }
+
+    .auth-panel { padding-right: 5vw; padding-left: 5vw; }
 }
 
 @media (max-width: 600px) {
@@ -596,4 +617,8 @@ a {
     .producer-grid { grid-template-columns: 1fr; }
     .producer-profile { grid-template-columns: minmax(110px, 0.7fr) minmax(150px, 1fr); }
     .about-page-contact { padding: 3.5rem 6vw; }
+
+    .auth-page { grid-template-columns: 1fr; }
+    .auth-visual { min-height: 330px; align-items: center; padding: 3.5rem 6vw; }
+    .auth-panel { padding: 3.5rem 6vw 4rem; }
 }

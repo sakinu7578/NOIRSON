@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | NOIRSON</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Slab:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="index.html" aria-label="NOIRSON 首頁">NOIRSON</a>
+        <nav class="main-nav" aria-label="主要導覽">
+            <a href="index.html">HOME</a>
+            <a href="music.html">EXPLORE</a>
+            <a href="about.html">ABOUT</a>
+            <a href="login.html" aria-current="page">LOGIN</a>
+        </nav>
+    </header>
+
+    <main class="auth-page">
+        <section class="auth-visual" aria-labelledby="register-brand-title">
+            <div>
+                <p class="section-label">NOIRSON MEMBERS</p>
+                <h1 id="register-brand-title">JOIN THE<br>LATE NIGHT</h1>
+                <p>Create an account for the next phase of NOIRSON.</p>
+            </div>
+        </section>
+
+        <section class="auth-panel" aria-labelledby="register-title">
+            <div class="auth-panel-inner">
+                <p class="section-label">CREATE ACCOUNT</p>
+                <h2 id="register-title">REGISTER</h2>
+                <form class="auth-form" action="#">
+                    <div class="auth-field">
+                        <label for="register-username">USERNAME</label>
+                        <input id="register-username" name="username" type="text" autocomplete="username" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="register-email">EMAIL</label>
+                        <input id="register-email" name="email" type="email" autocomplete="email" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="register-password">PASSWORD</label>
+                        <input id="register-password" name="password" type="password" autocomplete="new-password" required>
+                    </div>
+                    <div class="auth-field">
+                        <label for="register-confirm-password">CONFIRM PASSWORD</label>
+                        <input id="register-confirm-password" name="confirm-password" type="password" autocomplete="new-password" required>
+                    </div>
+                    <button class="auth-submit" type="submit">REGISTER</button>
+                </form>
+                <p class="auth-switch">ALREADY A MEMBER? <a href="login.html">LOGIN</a></p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <nav class="social-links" aria-label="社群連結">
+            <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">YOUTUBE</a>
+            <a href="https://open.spotify.com/" target="_blank" rel="noreferrer">SPOTIFY</a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">INSTAGRAM</a>
+        </nav>
+        <div class="footer-bottom" aria-hidden="true"></div>
+    </footer>
+</body>
+</html>
