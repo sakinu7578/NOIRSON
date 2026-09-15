@@ -26,16 +26,16 @@ a {
 
 /* Header: positioned over the Hero image */
 .site-header {
-    position: fixed;
+    position: relative;
     z-index: 3;
-    top: 0;
-    left: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    height: 72px;
-    padding: 0 6vw;
+    height: 88px;
+    padding: 0 4vw;
+    background-color: var(--color-ink);
+    color: var(--color-cream);
 }
 
 .logo {
@@ -66,7 +66,7 @@ a {
     position: relative;
     display: flex;
     align-items: center;
-    min-height: 86vh;
+    min-height: 650px;
     overflow: hidden;
     background-color: var(--color-night);
 }
@@ -105,8 +105,7 @@ a {
     position: relative;
     z-index: 2;
     width: min(700px, 88vw);
-    margin-left: 12vw;
-    padding-top: 4rem;
+    margin-left: 4vw;
 }
 
 .hero-brand {
@@ -121,7 +120,7 @@ a {
     margin: 0;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: clamp(2.8rem, 5.3vw, 5.5rem);
+    font-size: clamp(2.8rem, 4.6vw, 4.75rem);
     font-weight: 400;
     line-height: 1.12;
     letter-spacing: 0.025em;
@@ -151,7 +150,34 @@ a {
     color: #ffffff;
 }
 
-/* Carousel pagination */
+/* Carousel controls */
+.carousel-arrow {
+    position: absolute;
+    z-index: 2;
+    top: 50%;
+    display: grid;
+    width: 48px;
+    height: 72px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: rgba(241, 238, 232, 0.85);
+    font: inherit;
+    font-size: 3.5rem;
+    line-height: 1;
+    cursor: pointer;
+    place-items: center;
+    transform: translateY(-50%);
+}
+
+.carousel-arrow--previous {
+    left: 0.4rem;
+}
+
+.carousel-arrow--next {
+    right: 0.4rem;
+}
+
 .carousel-dots {
     position: absolute;
     z-index: 2;
@@ -163,28 +189,27 @@ a {
 }
 
 .carousel-dot {
-    width: 7px;
-    height: 7px;
-    border: 1px solid rgba(241, 238, 232, 0.7);
-    border-radius: 50%;
+    width: 42px;
+    height: 4px;
+    border: 0;
+    border-radius: 0;
     padding: 0;
-    background-color: transparent;
+    background-color: rgba(241, 238, 232, 0.42);
     cursor: pointer;
     transition: background-color 180ms ease, border-color 180ms ease;
 }
 
 .carousel-dot:hover {
-    border-color: var(--color-cream);
+    background-color: rgba(241, 238, 232, 0.72);
 }
 
 .carousel-dot.is-active {
-    border-color: var(--color-cream);
     background-color: var(--color-cream);
 }
 
 /* Featured music */
 .featured-music {
-    padding: 3rem 6vw;
+    padding: 3.5rem 4vw 4rem;
     background-color: var(--color-ink);
 }
 
@@ -193,11 +218,11 @@ a {
     align-items: end;
     justify-content: space-between;
     gap: 2rem;
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
 }
 
 .section-label {
-    margin: 0 0 0.85rem;
+    margin: 0 0 0.65rem;
     color: var(--color-amber);
     font-size: 0.7rem;
     font-weight: 600;
@@ -207,10 +232,10 @@ a {
 .featured-header h2 {
     margin: 0;
     color: var(--color-heading);
-    font-family: "Roboto Slab", serif;
-    font-size: clamp(2rem, 3.2vw, 3.25rem);
+    font-family: "Inter", sans-serif;
+    font-size: 0.78rem;
     font-weight: 400;
-    letter-spacing: 0.025em;
+    letter-spacing: 0.06em;
 }
 
 .featured-link {
@@ -232,7 +257,7 @@ a {
 .music-grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.5rem;
+    gap: 3.2vw;
 }
 
 .music-card {
@@ -259,7 +284,8 @@ a {
 }
 
 .music-info {
-    padding-top: 1rem;
+    padding-top: 0.9rem;
+    text-align: center;
 }
 
 .music-info h3,
@@ -271,8 +297,8 @@ a {
 
 .music-info h3 {
     color: var(--color-heading);
-    font-size: 0.95rem;
-    font-weight: 500;
+    font-size: 0.78rem;
+    font-weight: 400;
 }
 
 .music-info p,
@@ -283,23 +309,138 @@ a {
 }
 
 .music-info p {
-    margin-top: 0.55rem;
+    display: none;
 }
 
 .music-info span {
-    margin-top: 0.35rem;
+    margin-top: 0.8rem;
     color: var(--color-amber);
+    font-size: clamp(1rem, 1.6vw, 1.45rem);
+    letter-spacing: 0.05em;
+}
+
+/* About */
+.about-home {
+    padding: 3rem 4vw 4.5rem;
+    background-color: var(--color-night);
+    color: var(--color-cream);
+}
+
+.about-home h2 {
+    margin: 0 0 2rem;
+    color: var(--color-heading);
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+    letter-spacing: 0.02em;
+}
+
+.about-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
+    align-items: center;
+    gap: 10vw;
+    padding: 0 2vw;
+}
+
+.about-image {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: 14px;
+    background-color: var(--color-night);
+}
+
+.about-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.about-content {
+    max-width: 430px;
+    color: var(--color-muted);
+    font-size: 0.9rem;
+    line-height: 1.8;
+}
+
+.about-content p {
+    margin: 0 0 1rem;
+}
+
+.about-content a {
+    display: inline-block;
+    margin-top: 1.5rem;
+    color: var(--color-amber);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+}
+
+/* Footer */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: clamp(4rem, 13vw, 12rem);
+    padding: 1rem 4vw;
+    background-color: var(--color-night);
+    color: var(--color-muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+}
+
+.footer-bottom {
+    min-height: 150px;
+    background-color: var(--color-ink);
 }
 
 @media (max-width: 900px) {
+    .hero {
+        min-height: 580px;
+    }
+
     .music-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .about-layout {
+        gap: 5vw;
     }
 }
 
 @media (max-width: 600px) {
+    .site-header {
+        height: auto;
+        min-height: 76px;
+        padding: 1.25rem 6vw;
+    }
+
+    .main-nav {
+        gap: 0.85rem;
+    }
+
+    .main-nav a {
+        font-size: 0.6rem;
+    }
+
+    .hero {
+        min-height: 560px;
+    }
+
+    .hero-content {
+        margin-left: 9vw;
+    }
+
+    .hero h1 {
+        font-size: clamp(2.35rem, 12vw, 3.4rem);
+    }
+
+    .carousel-arrow {
+        display: none;
+    }
+
+    .carousel-dot {
+        width: 28px;
+    }
+
     .featured-music {
-        padding: 5rem 6vw;
+        padding: 3.5rem 6vw;
     }
 
     .featured-header {
@@ -312,5 +453,24 @@ a {
     .music-grid {
         grid-template-columns: 1fr;
         gap: 2rem;
+    }
+
+    .about-home {
+        padding: 3rem 6vw;
+    }
+
+    .about-layout {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        padding: 0;
+    }
+
+    .social-links {
+        gap: 0;
+        justify-content: space-between;
+    }
+
+    .footer-bottom {
+        min-height: 110px;
     }
 }

@@ -38,6 +38,13 @@
                 <a class="hero-button" href="#explore">EXPLORE MUSIC</a>
             </div>
 
+            <button class="carousel-arrow carousel-arrow--previous" type="button" aria-label="顯示上一張圖片">
+                <span aria-hidden="true">&#8249;</span>
+            </button>
+            <button class="carousel-arrow carousel-arrow--next" type="button" aria-label="顯示下一張圖片">
+                <span aria-hidden="true">&#8250;</span>
+            </button>
+
             <div class="carousel-dots" aria-label="Hero 圖片切換">
                 <button class="carousel-dot is-active" type="button" aria-label="顯示第 1 張圖片" aria-pressed="true"></button>
                 <button class="carousel-dot" type="button" aria-label="顯示第 2 張圖片" aria-pressed="false"></button>
@@ -103,7 +110,32 @@
                 </article>
             </div>
         </section>
+
+        <section class="about-home" id="about" aria-labelledby="about-title">
+            <h2 id="about-title">ABOUT NOIRSON</h2>
+
+            <div class="about-layout">
+                <div class="about-image">
+                    <img src="images/05.png" alt="NOIRSON 深夜音樂視覺">
+                </div>
+
+                <div class="about-content">
+                    <p>NOIRSON exists for the quiet hours between one day and the next.</p>
+                    <p>Explore late-night sounds shaped by lofi, jazz, cloud trap and city pop.</p>
+                    <a href="#about">[ READ MORE ]</a>
+                </div>
+            </div>
+        </section>
     </main>
+
+    <footer class="site-footer">
+        <nav class="social-links" aria-label="社群連結">
+            <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">YOUTUBE</a>
+            <a href="https://open.spotify.com/" target="_blank" rel="noreferrer">SPOTIFY</a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">INSTAGRAM</a>
+        </nav>
+        <div class="footer-bottom" aria-hidden="true"></div>
+    </footer>
 
     <script src="js/main.js"></script>
 </body>

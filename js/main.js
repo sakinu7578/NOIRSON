@@ -1,5 +1,7 @@
 const slides = document.querySelectorAll(".hero-slide");
 const dotButtons = document.querySelectorAll(".carousel-dot");
+const previousButton = document.querySelector(".carousel-arrow--previous");
+const nextButton = document.querySelector(".carousel-arrow--next");
 
 let currentIndex = 0;
 let carouselInterval;
@@ -24,6 +26,10 @@ function showNextSlide() {
     showSlide(currentIndex + 1);
 }
 
+function showPreviousSlide() {
+    showSlide(currentIndex - 1);
+}
+
 function startAutoSlide() {
     carouselInterval = setInterval(showNextSlide, 6000);
 }
@@ -38,6 +44,16 @@ dotButtons.forEach(function (dotButton, dotIndex) {
         showSlide(dotIndex);
         resetAutoSlide();
     });
+});
+
+previousButton.addEventListener("click", function () {
+    showPreviousSlide();
+    resetAutoSlide();
+});
+
+nextButton.addEventListener("click", function () {
+    showNextSlide();
+    resetAutoSlide();
 });
 
 startAutoSlide();

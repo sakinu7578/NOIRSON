@@ -49,6 +49,7 @@ NOIRSON 是一個音樂內容探索平台（music content discovery platform）�
 ## 文件
 
 - [專案定義](docs/project.md)
+- [設計規範](docs/design.md)
 - [開發進度](docs/progress.md)
 - [協作指引](AGENTS.md)
 

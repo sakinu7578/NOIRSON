@@ -32,7 +32,10 @@ NOIRSON 是一個音樂內容探索平台（music content discovery platform）�
 
 - 開始修改前，先閱讀所有相關現有檔案與既有命名／架構。
 - 不要無理由重寫既有架構；每次只實作目前功能所需的範圍。
-- 使用目前 [Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) 作為 layout、資訊層級與 user flow 的參考，而非 pixel-perfect 規範。
+- 優先直接讀取 [Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) URL 對應的 Frame；只有 Figma 無法讀取或需要特定畫面參考時，才使用 screenshot／PNG 作為 fallback reference。
+- Figma 是 NOIRSON 的 Wireframe／Layout reference，用於確認 Layout、Page structure、Information hierarchy、Size／proportion、Spacing、Alignment 與 User flow，而非 pixel-perfect 視覺規範。
+- Figma Wireframe 中的灰階、黑白與 placeholder 顏色不代表正式 Visual Design，不得依照 Wireframe 顏色修改或覆蓋 NOIRSON 已確立的品牌配色。
+- NOIRSON 正式配色以目前 Home CSS 已確立的深色 Visual Color System 為準；Home、Music／Explore、Music Detail、About、Login／Register 與後續頁面都必須維持一致的品牌色系。
 - 不必等待 High-fidelity Figma Visual Design；視覺可透過 HTML、CSS 與 browser preview 逐步調整。
 - 優先使用語意化 HTML（如 `header`、`nav`、`main`、`section`、`article`、`footer`）、可重用 CSS 與必要的原生 JavaScript。
 - 維持簡單、清晰、可讀、可維護且具基本 RWD 的程式碼；不要為展示技術加入不必要的 package、framework 或複雜抽象。

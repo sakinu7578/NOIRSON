@@ -16,29 +16,27 @@
 - [x] 5 個 Desktop Wireframe
 - [x] MVP 頁面架構：Home、Music / Explore、Music Detail、About、Login / Register
 
-### Home 初版
+### Home
 
-- [x] Home 初版 HTML
-- [x] Home 初版 CSS
+- [x] Home Desktop 主要 Layout 已依 Figma Wireframe 完成
 - [x] Header / Navigation
-- [x] Hero Carousel 初版
-- [x] Featured Music 初版
+- [x] Hero Carousel、左右箭頭與底部橫條 indicators
+- [x] Featured Music 四欄內容排列
+- [x] About NOIRSON
+- [x] Footer
 - [x] Hero 圖片素材加入
-- [x] 初步 Responsive CSS
+- [x] Desktop / Tablet / Mobile 基礎 RWD
+- [x] 正式 Visual Design 延續 NOIRSON 深色系，不採用 Figma Wireframe 灰階配色
 
 ## 下一步
 
-1. 根據 Wireframe 完成 Home。
-2. 將 Hero Carousel 調整為左右箭頭與底部橫條 indicators。
-3. 補上 Home 的 About NOIRSON 與 Footer。
-4. 將 Featured Music 逐步替換為真實 NOIRSON 作品。
-5. 整理 Logo、圖片與音樂素材。
-6. 建立 Music / Explore 頁面。
-7. 建立 Music Detail 頁面。
-8. 建立站內 Music Player。
-9. 建立 About 頁面。
-10. 建立 Login / Register UI。
-11. 完成基本 Desktop / Tablet / Mobile RWD。
+1. 將 Featured Music 逐步替換為真實 NOIRSON 作品。
+2. 整理 Logo、圖片與音樂素材。
+3. 建立 Music / Explore 頁面。
+4. 建立 Music Detail 頁面。
+5. 建立站內 Music Player。
+6. 建立 About 頁面。
+7. 建立 Login / Register UI。
 
 ## 後續階段
 
