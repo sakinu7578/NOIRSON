@@ -2,9 +2,9 @@
 
 ## 目前階段
 
-**Phase 1 — Front-End Prototype / Home Implementation**
+**Phase 1B — Multi-page HTML Prototype**
 
-目前目標是依 Wireframe 完成前端雛形與 Home 頁面，暫不提前導入 React、Spring Boot、資料庫或其他後續技術。
+目前目標是依 Wireframe 逐頁完成原生 HTML / CSS 前端雛形，暫不提前導入 React、Spring Boot、資料庫或其他後續技術。
 
 ## 已完成
 
@@ -28,15 +28,23 @@
 - [x] Desktop / Tablet / Mobile 基礎 RWD
 - [x] 正式 Visual Design 延續 NOIRSON 深色系，不採用 Figma Wireframe 灰階配色
 
+### Music / Explore
+
+- [x] Music / Explore Desktop 主要 Layout
+- [x] Page Header、Search UI 與四大分類 Filter UI
+- [x] 四欄 Music Grid 與 8 張 placeholder Music Cards
+- [x] 共用 Header、Footer 與 NOIRSON Visual Color System
+- [x] Tablet / Mobile 基礎 RWD
+- [ ] Search 與 Category Filter 互動功能（後續 JavaScript 階段）
+
 ## 下一步
 
 1. 將 Featured Music 逐步替換為真實 NOIRSON 作品。
 2. 整理 Logo、圖片與音樂素材。
-3. 建立 Music / Explore 頁面。
-4. 建立 Music Detail 頁面。
-5. 建立站內 Music Player。
-6. 建立 About 頁面。
-7. 建立 Login / Register UI。
+3. 建立 Music Detail 頁面。
+4. 建立站內 Music Player。
+5. 建立 About 頁面。
+6. 建立 Login / Register UI。
 
 ## 後續階段
 

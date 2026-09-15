@@ -12,11 +12,12 @@ NOIRSON 是一個音樂內容探索平台（music content discovery platform）�
 
 ## 目前狀態
 
-目前為 **Phase 1 — Front-End Prototype / Home Implementation**，已具備：
+目前為 **Phase 1B — Multi-page HTML Prototype**，已具備：
 
 - Git 與 GitHub 基礎設定
 - HTML / CSS / JavaScript 專案結構
 - Home 初版：Header / Navigation、Hero Carousel、Featured Music
+- Music / Explore HTML 頁面
 - Hero 圖片素材與初步 Responsive CSS
 - 已完成的 5 個 Desktop Wireframe 與 MVP 頁面架構
 
