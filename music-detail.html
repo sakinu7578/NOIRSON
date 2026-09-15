@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Midnight Session | NOIRSON</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Slab:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="site-header">
+        <a class="logo" href="index.html" aria-label="NOIRSON 首頁">NOIRSON</a>
+        <nav class="main-nav" aria-label="主要導覽">
+            <a href="index.html">HOME</a>
+            <a href="music.html" aria-current="page">EXPLORE</a>
+            <a href="index.html#about">ABOUT</a>
+            <a href="#">LOGIN</a>
+        </nav>
+    </header>
+
+    <main class="music-detail-page">
+        <section class="music-detail-hero" aria-labelledby="music-detail-title">
+            <div class="music-detail-cover">
+                <img src="images/00.png" alt="Midnight Session 的音樂封面">
+            </div>
+
+            <div class="music-detail-info">
+                <p class="section-label">LOFI / CHILL</p>
+                <h1 id="music-detail-title">MIDNIGHT SESSION</h1>
+                <p class="music-detail-artist">NOIRSON</p>
+                <p class="music-detail-description">Late night sounds from NOIRSON.</p>
+                <dl class="music-detail-meta">
+                    <div><dt>RELEASE</dt><dd>2026</dd></div>
+                    <div><dt>TRACKS</dt><dd>05</dd></div>
+                    <div><dt>DURATION</dt><dd>18:25</dd></div>
+                </dl>
+                <nav class="music-detail-actions" aria-label="作品外部連結">
+                    <a href="#">YOUTUBE</a>
+                    <a href="#">SPOTIFY</a>
+                    <a href="#">PURCHASE</a>
+                </nav>
+            </div>
+        </section>
+
+        <section class="player-panel" aria-labelledby="player-title">
+            <h2 class="visually-hidden" id="player-title">Music Player</h2>
+            <button class="player-play" type="button" aria-label="播放功能尚未開放"><span aria-hidden="true">&#9654;</span></button>
+            <span class="player-time">00:00</span>
+            <div class="player-progress" role="img" aria-label="播放進度 0%"><span></span></div>
+            <span class="player-time">03:30</span>
+        </section>
+
+        <section class="tracklist" aria-labelledby="tracklist-title">
+            <div class="tracklist-heading">
+                <p class="section-label">LISTEN</p>
+                <h2 id="tracklist-title">TRACKLIST</h2>
+            </div>
+            <ol class="tracklist-list">
+                <li><span class="track-number">01</span><span class="track-title">TRACK 01</span><span class="track-duration">03:24</span></li>
+                <li><span class="track-number">02</span><span class="track-title">TRACK 02</span><span class="track-duration">04:12</span></li>
+                <li><span class="track-number">03</span><span class="track-title">TRACK 03</span><span class="track-duration">02:58</span></li>
+                <li><span class="track-number">04</span><span class="track-title">TRACK 04</span><span class="track-duration">03:46</span></li>
+                <li><span class="track-number">05</span><span class="track-title">TRACK 05</span><span class="track-duration">04:05</span></li>
+            </ol>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <nav class="social-links" aria-label="社群連結">
+            <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">YOUTUBE</a>
+            <a href="https://open.spotify.com/" target="_blank" rel="noreferrer">SPOTIFY</a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">INSTAGRAM</a>
+        </nav>
+        <div class="footer-bottom" aria-hidden="true"></div>
+    </footer>
+</body>
+</html>

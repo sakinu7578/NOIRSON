@@ -37,14 +37,23 @@
 - [x] Tablet / Mobile 基礎 RWD
 - [ ] Search 與 Category Filter 互動功能（後續 JavaScript 階段）
 
+### Music Detail
+
+- [x] Music Detail Desktop Layout
+- [x] Cover / Metadata
+- [x] External action UI
+- [x] Music Player static UI
+- [x] Tracklist static UI
+- [x] Desktop / Tablet / Mobile 基礎 RWD
+- [ ] Music Player functionality（後續 JavaScript 階段）
+
 ## 下一步
 
 1. 將 Featured Music 逐步替換為真實 NOIRSON 作品。
 2. 整理 Logo、圖片與音樂素材。
-3. 建立 Music Detail 頁面。
-4. 建立站內 Music Player。
-5. 建立 About 頁面。
-6. 建立 Login / Register UI。
+3. 建立站內 Music Player 功能。
+4. 建立 About 頁面。
+5. 建立 Login / Register UI。
 
 ## 後續階段
 
