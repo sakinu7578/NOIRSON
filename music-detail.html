@@ -3,77 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Midnight Session | NOIRSON</title>
+    <title>Mix Detail | NOIRSON</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Slab:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="detail-v2">
     <header class="site-header">
         <a class="logo" href="index.html" aria-label="NOIRSON 首頁">NOIRSON</a>
         <nav class="main-nav" aria-label="主要導覽">
             <a href="index.html">HOME</a>
             <a href="music.html" aria-current="page">EXPLORE</a>
             <a href="about.html">ABOUT</a>
-            <a href="login.html">LOGIN</a>
         </nav>
     </header>
 
     <main class="music-detail-page">
         <section class="music-detail-hero" aria-labelledby="music-detail-title">
-            <div class="music-detail-cover">
-                <img src="images/00.png" alt="Midnight Session 的音樂封面">
+            <div class="music-detail-visual">
+                <img id="detail-main-visual" src="images/00.png" alt="">
             </div>
 
             <div class="music-detail-info">
-                <p class="section-label">LOFI / CHILL</p>
-                <h1 id="music-detail-title">MIDNIGHT SESSION</h1>
-                <p class="music-detail-artist">NOIRSON</p>
-                <p class="music-detail-description">Late night sounds from NOIRSON.</p>
-                <dl class="music-detail-meta">
-                    <div><dt>RELEASE</dt><dd>2026</dd></div>
-                    <div><dt>TRACKS</dt><dd>05</dd></div>
-                    <div><dt>DURATION</dt><dd>18:25</dd></div>
-                </dl>
-                <nav class="music-detail-actions" aria-label="作品外部連結">
-                    <a href="#">YOUTUBE</a>
-                    <a href="#">SPOTIFY</a>
-                    <a href="#">PURCHASE</a>
-                </nav>
+                <p class="music-detail-eyebrow"><span id="detail-mix-id">M001</span><span id="detail-series">MAIN ALBUM / CHILL VIBE</span></p>
+                <h1 id="music-detail-title">Somewhere far from everyone</h1>
+
+                <div class="detail-player" aria-label="Mix 播放器">
+                    <button class="signature-play detail-play" type="button" aria-label="播放" aria-pressed="false">
+                        <span class="play-icon" aria-hidden="true"></span>
+                    </button>
+                    <div class="detail-player-timeline">
+                        <label class="visually-hidden" for="detail-progress">音樂播放進度</label>
+                        <input id="detail-progress" class="signature-progress" type="range" min="0" max="100" value="0" step="0.1">
+                        <div class="detail-player-times"><span id="detail-current-time">00:00</span><span id="detail-total-time">00:00</span></div>
+                    </div>
+                    <audio id="detail-audio" preload="metadata"></audio>
+                </div>
+
+                <p class="music-detail-description" id="detail-description"></p>
+                <a class="detail-youtube" id="detail-youtube" href="#" target="_blank" rel="noreferrer">Listen on YouTube <span aria-hidden="true">↗</span></a>
             </div>
         </section>
 
-        <section class="player-panel" aria-labelledby="player-title">
-            <h2 class="visually-hidden" id="player-title">Music Player</h2>
-            <button class="player-play" type="button" aria-label="播放功能尚未開放"><span aria-hidden="true">&#9654;</span></button>
-            <span class="player-time">00:00</span>
-            <div class="player-progress" role="img" aria-label="播放進度 0%"><span></span></div>
-            <span class="player-time">03:30</span>
-        </section>
-
-        <section class="tracklist" aria-labelledby="tracklist-title">
-            <div class="tracklist-heading">
-                <p class="section-label">LISTEN</p>
-                <h2 id="tracklist-title">TRACKLIST</h2>
+        <section class="detail-gallery-section" aria-labelledby="detail-gallery-title">
+            <div class="detail-gallery-heading">
+                <p class="section-label">VISUALS</p>
+                <h2 id="detail-gallery-title">FROM THIS MIX</h2>
             </div>
-            <ol class="tracklist-list">
-                <li><span class="track-number">01</span><span class="track-title">TRACK 01</span><span class="track-duration">03:24</span></li>
-                <li><span class="track-number">02</span><span class="track-title">TRACK 02</span><span class="track-duration">04:12</span></li>
-                <li><span class="track-number">03</span><span class="track-title">TRACK 03</span><span class="track-duration">02:58</span></li>
-                <li><span class="track-number">04</span><span class="track-title">TRACK 04</span><span class="track-duration">03:46</span></li>
-                <li><span class="track-number">05</span><span class="track-title">TRACK 05</span><span class="track-duration">04:05</span></li>
-            </ol>
+            <div class="detail-gallery"></div>
         </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer site-footer--v2">
         <nav class="social-links" aria-label="社群連結">
-            <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">YOUTUBE</a>
-            <a href="https://open.spotify.com/" target="_blank" rel="noreferrer">SPOTIFY</a>
-            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">INSTAGRAM</a>
+            <a href="https://www.youtube.com/@NOIRSON/featured" target="_blank" rel="noopener noreferrer">YOUTUBE</a>
+            <a href="https://open.spotify.com/artist/2AEwxDNnN3ItPROEBoiIdD?si=mYXE1ziWRpimqdb7zkumOw" target="_blank" rel="noopener noreferrer">SPOTIFY</a>
+            <a href="https://www.instagram.com/noirson_0?utm_source=ig_web_button_share_sheet&amp;stkn=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
         </nav>
-        <div class="footer-bottom" aria-hidden="true"></div>
+        <div class="footer-meta"><span>Produced by NOIRSON</span><span>© NOIRSON</span></div>
     </footer>
+
+    <script src="js/mix-data.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

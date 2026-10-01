@@ -9,73 +9,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Slab:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="about-v2">
     <header class="site-header">
         <a class="logo" href="index.html" aria-label="NOIRSON 首頁">NOIRSON</a>
         <nav class="main-nav" aria-label="主要導覽">
             <a href="index.html">HOME</a>
             <a href="music.html">EXPLORE</a>
             <a href="about.html" aria-current="page">ABOUT</a>
-            <a href="login.html">LOGIN</a>
         </nav>
     </header>
 
     <main class="about-page">
-        <section class="about-page-intro" aria-labelledby="about-page-title">
-            <p class="section-label">OUR STORY</p>
-            <h1 id="about-page-title">ABOUT NOIRSON</h1>
+        <div class="about-background" aria-hidden="true">
+            <div class="about-background-layer is-active"></div>
+            <div class="about-background-layer"></div>
+            <div class="about-background-overlay"></div>
+        </div>
 
-            <div class="about-page-story">
-                <div class="about-page-statement">
-                    <p>NOIRSON is a music content discovery platform made for late-night listening.</p>
-                </div>
-                <div class="about-page-image about-page-image--wide">
-                    <img src="images/05.png" alt="NOIRSON 深夜城市音樂氛圍">
-                </div>
-                <div class="about-page-image about-page-image--secondary">
-                    <img src="images/02.png" alt="NOIRSON 冷調音樂視覺">
-                </div>
-                <div class="about-page-copy">
-                    <p>We bring together lofi, jazz, chillhop, cloud trap and city pop in one focused space.</p>
-                    <p>Every sound is selected to accompany the quiet hours between one day and the next.</p>
-                </div>
+        <section class="about-world" aria-labelledby="about-page-title">
+            <div class="about-world-copy">
+                <p class="section-label">ABOUT</p>
+                <h1 id="about-page-title">THE WORLD<br>OF NOIRSON</h1>
+                <p>NOIRSON is a curated music experience shaped around atmosphere, rhythm and the quiet hours between one day and the next.</p>
+                <p>From lofi and jazz to cloud trap and city pop, every mix opens a different window into the same world.</p>
             </div>
         </section>
 
-        <section class="about-page-producers" aria-labelledby="producers-title">
-            <h2 id="producers-title">THE PRODUCERS</h2>
-            <div class="producer-grid">
-                <article class="producer-profile">
-                    <div class="producer-image"><img src="images/00.png" alt="NOIRSON Producer KINU placeholder"></div>
-                    <div class="producer-copy">
-                        <h3>KINU</h3>
-                        <p>Music producer shaping the late-night sound and creative direction of NOIRSON.</p>
-                    </div>
+        <section class="about-sound" aria-labelledby="behind-sound-title">
+            <div class="about-section-heading">
+                <p class="section-label">PEOPLE</p>
+                <h2 id="behind-sound-title">BEHIND THE SOUND</h2>
+            </div>
+            <div class="about-people">
+                <article class="about-person">
+                    <div class="about-person-image"><img src="images/hunag.png" alt="Hunag"></div>
+                    <div class="about-person-copy"><h3>HUNAG</h3><p>Producer / Featured Artist</p></div>
                 </article>
-                <article class="producer-profile">
-                    <div class="producer-image"><img src="images/01.png" alt="NOIRSON creative collaborator placeholder"></div>
-                    <div class="producer-copy">
-                        <h3>NOIRSON</h3>
-                        <p>A shared space for discovering atmospheric music, stories and visual moods.</p>
-                    </div>
+                <article class="about-person">
+                    <div class="about-person-image"><img src="images/sloth.png" alt="Sloth"></div>
+                    <div class="about-person-copy"><h3>SLOTH</h3><p>Music Producer / Arranger</p></div>
                 </article>
             </div>
         </section>
 
-        <section class="about-page-contact" aria-labelledby="contact-title">
-            <p class="section-label">CONNECT</p>
-            <h2 id="contact-title">CONTACT US</h2>
-            <a href="#">GET IN TOUCH</a>
+        <section class="about-subscribe" aria-labelledby="subscribe-title">
+            <div>
+                <p class="section-label">STAY IN THE LOOP</p>
+                <h2 id="subscribe-title">New mixes. New sounds.<br>No noise.</h2>
+            </div>
+            <form class="subscribe-form">
+                <label class="visually-hidden" for="subscribe-email">Your email</label>
+                <input id="subscribe-email" type="email" placeholder="YOUR EMAIL" autocomplete="email">
+                <button type="button">SUBSCRIBE <span aria-hidden="true">→</span></button>
+            </form>
         </section>
     </main>
 
-    <footer class="site-footer">
+    <footer class="site-footer site-footer--v2">
         <nav class="social-links" aria-label="社群連結">
-            <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">YOUTUBE</a>
-            <a href="https://open.spotify.com/" target="_blank" rel="noreferrer">SPOTIFY</a>
-            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">INSTAGRAM</a>
+            <a href="https://www.youtube.com/@NOIRSON/featured" target="_blank" rel="noopener noreferrer">YOUTUBE</a>
+            <a href="https://open.spotify.com/artist/2AEwxDNnN3ItPROEBoiIdD?si=mYXE1ziWRpimqdb7zkumOw" target="_blank" rel="noopener noreferrer">SPOTIFY</a>
+            <a href="https://www.instagram.com/noirson_0?utm_source=ig_web_button_share_sheet&amp;stkn=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
         </nav>
-        <div class="footer-bottom" aria-hidden="true"></div>
+        <div class="footer-meta"><span>Produced by NOIRSON</span><span>© NOIRSON</span></div>
     </footer>
+    <script src="js/main.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
 
 ## 目前階段
 
-**Phase 1B — Multi-page HTML Prototype**
+**Phase 1C — Home V2 / Global Visual System**
 
 主要靜態頁面版型已完成。現階段成果為原生 HTML / CSS 前端雛形，暫不提前導入 React、Spring Boot、資料庫或其他後續技術。
 
@@ -18,6 +18,10 @@
 
 ### Home
 
+- [x] Home V2 Music-first layout
+- [x] M001 Signature Mix 完整播放、暫停、時間與可拖曳進度列
+- [x] Explore Sound 顯示 M002～M006，支援箭頭與滑鼠拖曳
+- [x] Fixed translucent Header 與簡化 Footer
 - [x] Home Desktop 主要 Layout 已依 Figma Wireframe 完成
 - [x] Header / Navigation
 - [x] Hero Carousel、左右箭頭與底部橫條 indicators
@@ -65,15 +69,16 @@
 
 ## 下一步
 
-1. 將 Featured Music 逐步替換為真實 NOIRSON 作品。
-2. 整理 Logo、圖片與音樂素材。
-3. 建立站內 Music Player 功能。
-4. 逐步實作已標示 pending 的互動與會員功能。
+1. Music Detail 改為依 `?id=Mxxx` 動態載入。
+2. Explore V2 與 8 組 Mix 的完整呈現。
+3. About 加入 `00.png`～`16.png` 自動 Crossfade 背景。
+4. Desktop V2 穩定後再處理 Mobile / RWD。
+5. Email Subscription 留待後續全端階段實作。
 
 ## 後續階段
 
-- **Phase 2 — Modern Front End：** 依課程進度導入 React。
-- **Phase 3 — Back End：** Java Web、Spring、Spring Boot、JPA、MVC。
+- JavaScript / React 課程已完成，目前課程進入 Spring / Back End 階段；專案仍依範圍維持原生 HTML、CSS、JavaScript。
+- **Phase 2 — Back End：** Java Web、Spring、Spring Boot、JPA、MVC。
 - **Phase 4 — Database：** MySQL。
 - **Phase 5 — Integration：** REST API、前後端整合、必要的簡易會員與 Mock Purchase 流程。
 - **Phase 6 — Deployment：** Production build 與部署。
@@ -81,3 +86,5 @@
 ## 範圍提醒
 
 Music Player 是核心 MVP 功能。會員與購買先保持簡單；Favorites、Playlist、實體周邊、真實 Payment Gateway、AI、RAG 與複雜推薦系統目前不在實作範圍。
+
+目前 Search 與 Login / Register 不再列入 MVP；Login / Register 檔案暫時保留。Email Subscription 尚未實作。

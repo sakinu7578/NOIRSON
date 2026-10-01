@@ -9,56 +9,40 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Slab:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="explore-v2">
     <header class="site-header">
         <a class="logo" href="index.html" aria-label="NOIRSON 首頁">NOIRSON</a>
         <nav class="main-nav" aria-label="主要導覽">
             <a href="index.html">HOME</a>
             <a href="music.html" aria-current="page">EXPLORE</a>
             <a href="about.html">ABOUT</a>
-            <a href="login.html">LOGIN</a>
         </nav>
     </header>
     <main class="explore-page">
         <section class="explore-intro" aria-labelledby="explore-title">
-            <p class="section-label">DISCOVER</p>
-            <h1 id="explore-title">EXPLORE MUSIC</h1>
-            <p class="explore-description">Discover the sound of NOIRSON chill radio.</p>
-            <p class="explore-genres">Lofi · Jazz · Chillhop · Cloud Trap · Midnight Jersey · City Pop</p>
-            <form class="music-search" role="search">
-                <label class="visually-hidden" for="music-search-input">搜尋音樂</label>
-                <input id="music-search-input" type="search" placeholder="Search music...">
-                <button type="button" aria-label="搜尋功能尚未開放">SEARCH</button>
-            </form>
+            <p class="section-label">NOIRSON COLLECTION</p>
+            <h1 id="explore-title">EXPLORE SOUND</h1>
+            <p class="explore-description">Eight curated mixes for slow mornings, late nights and everything in between.</p>
         </section>
+
         <section class="explore-catalog" aria-labelledby="catalog-title">
-            <div class="category-filter" aria-label="音樂分類">
-                <button class="is-active" type="button" aria-pressed="true">ALL</button>
-                <button type="button" aria-pressed="false">LOFI / CHILL</button>
-                <button type="button" aria-pressed="false">TRAP / CLOUD</button>
-                <button type="button" aria-pressed="false">URBAN / NIGHT</button>
-                <button type="button" aria-pressed="false">CITY POP</button>
+            <div class="explore-catalog-heading">
+                <h2 id="catalog-title">ALL MIXES</h2>
+                <p>01—08</p>
             </div>
-            <h2 class="catalog-title" id="catalog-title">ALL MUSIC</h2>
-            <div class="music-grid explore-grid">
-                <article class="music-card"><a href="music-detail.html" aria-label="查看 Midnight Coffee 音樂詳情"><div class="music-cover"><img src="images/00.png" alt="Midnight Coffee 的音樂封面"></div><div class="music-info"><h3>Midnight Coffee</h3><p>NOIRSON</p><span>LOFI / CHILL</span></div></a></article>
-                <article class="music-card"><div class="music-cover"><img src="images/01.png" alt="Cloud After Dark 的音樂封面"></div><div class="music-info"><h3>Cloud After Dark</h3><p>NOIRSON</p><span>TRAP / CLOUD</span></div></article>
-                <article class="music-card"><div class="music-cover"><img src="images/02.png" alt="Urban Rain 的音樂封面"></div><div class="music-info"><h3>Urban Rain</h3><p>NOIRSON</p><span>URBAN / NIGHT</span></div></article>
-                <article class="music-card"><div class="music-cover"><img src="images/03.png" alt="Neon City 的音樂封面"></div><div class="music-info"><h3>Neon City</h3><p>NOIRSON</p><span>CITY POP</span></div></article>
-                <article class="music-card"><div class="music-cover"><img src="images/05.png" alt="Late Night Aquarium 的音樂封面"></div><div class="music-info"><h3>Late Night Aquarium</h3><p>NOIRSON</p><span>LOFI / CHILL</span></div></article>
-                <article class="music-card"><div class="music-cover"><img src="images/02.png" alt="Fading Tail Lights 的音樂封面"></div><div class="music-info"><h3>Fading Tail Lights</h3><p>NOIRSON</p><span>TRAP / CLOUD</span></div></article>
-                <article class="music-card"><div class="music-cover"><img src="images/01.png" alt="Rain District 的音樂封面"></div><div class="music-info"><h3>Rain District</h3><p>NOIRSON</p><span>URBAN / NIGHT</span></div></article>
-                <article class="music-card"><div class="music-cover"><img src="images/03.png" alt="Afterglow Station 的音樂封面"></div><div class="music-info"><h3>Afterglow Station</h3><p>NOIRSON</p><span>CITY POP</span></div></article>
-            </div>
+            <div class="explore-gallery" aria-live="polite"></div>
         </section>
     </main>
-    <footer class="site-footer">
+    <footer class="site-footer site-footer--v2">
         <nav class="social-links" aria-label="社群連結">
-            <a href="https://www.youtube.com/" target="_blank" rel="noreferrer">YOUTUBE</a>
-            <a href="https://open.spotify.com/" target="_blank" rel="noreferrer">SPOTIFY</a>
-            <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">INSTAGRAM</a>
+            <a href="https://www.youtube.com/@NOIRSON/featured" target="_blank" rel="noopener noreferrer">YOUTUBE</a>
+            <a href="https://open.spotify.com/artist/2AEwxDNnN3ItPROEBoiIdD?si=mYXE1ziWRpimqdb7zkumOw" target="_blank" rel="noopener noreferrer">SPOTIFY</a>
+            <a href="https://www.instagram.com/noirson_0?utm_source=ig_web_button_share_sheet&amp;stkn=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
         </nav>
-        <div class="footer-bottom" aria-hidden="true"></div>
+        <div class="footer-meta"><span>Produced by NOIRSON</span><span>© NOIRSON</span></div>
     </footer>
+
+    <script src="js/mix-data.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

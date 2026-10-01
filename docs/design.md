@@ -1,5 +1,13 @@
 # NOIRSON 設計規範
 
+## V2 Visual Direction
+
+- V2 視覺參考：`docs/design/noirson-v2-reference.png`，僅作為 Layout、Vibe 與 Visual Hierarchy 參考。
+- 設計方向為 Cinematic / Dark / Minimal / Music-first，以 Black、Charcoal、Deep Brown 建立低調層次，延續 olive 與 muted cream 品牌色。
+- Home 採 Desktop-first；Mobile / RWD V2 留待後續處理。
+- Home 以 M001「Somewhere far from everyone」作為 Signature Mix 與主要視覺，並提供完整站內播放。
+- About 預計在後續版本使用 `images/00.png`～`images/16.png` 自動 Crossfade 背景，目前尚未實作。
+
 ## Figma
 
 [NOIRSON Website Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website)
