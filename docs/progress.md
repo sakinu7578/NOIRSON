@@ -2,89 +2,72 @@
 
 ## 目前階段
 
-**Phase 1C — Home V2 / Global Visual System**
+**Phase 1 — Vanilla Front-End Prototype / V2.1 Integration**
 
-主要靜態頁面版型已完成。現階段成果為原生 HTML / CSS 前端雛形，暫不提前導入 React、Spring Boot、資料庫或其他後續技術。
+目前已建立 React 轉換前的 HTML / CSS / JavaScript 穩定基準：六個頁面具備一致的品牌視覺、共用導覽與 Footer，並完成 Desktop、Tablet、Mobile 基礎 RWD。
 
 ## 已完成
 
-### 專案與規劃
+### 全站
 
-- [x] Repository / Git 基礎設定
-- [x] HTML / CSS / JavaScript 專案結構
-- [x] Figma Wireframe Phase
-- [x] 5 個 Desktop Wireframe
-- [x] MVP 頁面架構：Home、Music / Explore、Music Detail、About、Login / Register
+- [x] Home、Explore、Music Detail、About、Login、Register 六頁版型。
+- [x] 共用 Logo、Fixed translucent Header、正式社群連結與統一 Footer。
+- [x] Neutral Black / Graphite / Warm White + 少量 Olive / Amber 的 V2.1 Visual System。
+- [x] Desktop / Tablet / Mobile 基礎響應式布局。
 
 ### Home
 
-- [x] Home V2 Music-first layout
-- [x] M001 Signature Mix 完整播放、暫停、時間與可拖曳進度列
-- [x] Explore Sound 顯示 M002～M006，支援箭頭與滑鼠拖曳
-- [x] Fixed translucent Header 與簡化 Footer
-- [x] Home Desktop 主要 Layout 已依 Figma Wireframe 完成
-- [x] Header / Navigation
-- [x] Hero Carousel、左右箭頭與底部橫條 indicators
-- [x] Featured Music 四欄內容排列
-- [x] About NOIRSON
-- [x] Footer
-- [x] Hero 圖片素材加入
-- [x] Desktop / Tablet / Mobile 基礎 RWD
-- [x] 正式 Visual Design 延續 NOIRSON 深色系，不採用 Figma Wireframe 灰階配色
+- [x] M001 滿版 Signature Hero 與完整 Play / Pause、Progress、時間、Seek。
+- [x] M001～M008 無限循環 Explore Sound Carousel。
+- [x] 左右箭頭、Mouse Drag、Hover 與 Detail 連結。
 
-### Music / Explore
+### Explore
 
-- [x] Music / Explore Desktop 主要 Layout
-- [x] Page Header、Search UI 與四大分類 Filter UI
-- [x] 四欄 Music Grid 與 8 張 placeholder Music Cards
-- [x] 共用 Header、Footer 與 NOIRSON Visual Color System
-- [x] Tablet / Mobile 基礎 RWD
-- [ ] Search 與 Category Filter 互動功能（後續 JavaScript 階段）
+- [x] 由 `mix-data.js` 動態載入 M001～M008。
+- [x] Desktop 三欄、Tablet 兩欄、Mobile 單欄 Gallery。
 
 ### Music Detail
 
-- [x] Music Detail Desktop Layout
-- [x] Cover / Metadata
-- [x] External action UI
-- [x] Music Player static UI
-- [x] Tracklist static UI
-- [x] Desktop / Tablet / Mobile 基礎 RWD
-- [ ] Music Player functionality（後續 JavaScript 階段）
+- [x] 依 `?id=Mxxx` 動態載入 Cover、Title、Series、Audio、Description、Gallery 與 YouTube。
+- [x] Play / Pause、Progress、時間與 Seek。
+- [x] Previous / Next 循環切換與浮動 Playlist。
+- [x] 16:9 Main Visual、包含原始 Cover 的水平 Gallery、縮圖切換與左右捲動按鈕。
+- [x] Favorite 與 Comments 預留 UI（未實作功能）。
 
 ### About
 
-- [x] About Desktop Layout completed
-- [x] About content / image sections completed
-- [x] Shared Header / Footer
-- [x] Basic RWD
+- [x] `images/00.png`～`images/16.png` 自動 Crossfade 背景。
+- [x] 品牌介紹、Behind the Sound、人物內容與 Social Footer。
+- [x] Email Subscription UI（未串接後端）。
 
 ### Login / Register
 
-- [x] Login Desktop Layout
-- [x] Login Form UI
-- [x] Register UI / entry
-- [x] Shared Header / Footer
-- [x] Basic RWD
-- [ ] Authentication functionality pending
+- [x] 一致雙欄表單 UI 與響應式上下排列。
+- [ ] Authentication 與會員資料功能。
 
-## 下一步
+## 尚未完成
 
-1. Music Detail 改為依 `?id=Mxxx` 動態載入。
-2. Explore V2 與 8 組 Mix 的完整呈現。
-3. About 加入 `00.png`～`16.png` 自動 Crossfade 背景。
-4. Desktop V2 穩定後再處理 Mobile / RWD。
-5. Email Subscription 留待後續全端階段實作。
+- [ ] SEO。
+- [ ] Spring MVC / Spring Boot。
+- [ ] React 與 Spring Boot 系統整合。
+- [ ] MySQL 實際資料串接。
+- [ ] Authentication、Favorite、Comments、Subscription 等後端功能。
+- [ ] 測試、Production build 與雲端部署。
 
-## 後續階段
+## 課程進度
 
-- JavaScript / React 課程已完成，目前課程進入 Spring / Back End 階段；專案仍依範圍維持原生 HTML、CSS、JavaScript。
-- **Phase 2 — Back End：** Java Web、Spring、Spring Boot、JPA、MVC。
-- **Phase 4 — Database：** MySQL。
-- **Phase 5 — Integration：** REST API、前後端整合、必要的簡易會員與 Mock Purchase 流程。
-- **Phase 6 — Deployment：** Production build 與部署。
+已完成：HTML、CSS、JavaScript、React、Java、MySQL、Java Web、Maven、Spring IoC、Spring Data JPA。
+
+尚未完成：SEO、Spring MVC / Spring Boot、系統整合與雲端部署。
+
+## 後續方向
+
+1. 補強 JavaScript 基礎與現有程式碼理解。
+2. 以目前 Vanilla V2.1 為基準逐步轉換 React 元件。
+3. 建立 Spring Boot 後端與 REST API。
+4. 使用 Spring Data JPA 串接 MySQL。
+5. 完成前後端整合、SEO、測試與部署。
 
 ## 範圍提醒
 
-Music Player 是核心 MVP 功能。會員與購買先保持簡單；Favorites、Playlist、實體周邊、真實 Payment Gateway、AI、RAG 與複雜推薦系統目前不在實作範圍。
-
-目前 Search 與 Login / Register 不再列入 MVP；Login / Register 檔案暫時保留。Email Subscription 尚未實作。
+Music Player 與內容探索仍是核心 MVP。現階段不加入新框架或擴充額外功能；Favorite、Comments、會員、訂閱與購買流程必須等後端階段明確規劃後再實作。

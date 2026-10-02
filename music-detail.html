@@ -11,18 +11,32 @@
 </head>
 <body class="detail-v2">
     <header class="site-header">
-        <a class="logo" href="index.html" aria-label="NOIRSON 首頁">NOIRSON</a>
+        <a class="logo" href="index.html" aria-label="NOIRSON 首頁"><img src="images/Logo.png" alt="NOIRSON"></a>
         <nav class="main-nav" aria-label="主要導覽">
             <a href="index.html">HOME</a>
             <a href="music.html" aria-current="page">EXPLORE</a>
             <a href="about.html">ABOUT</a>
+            <a href="login.html">LOGIN</a>
         </nav>
     </header>
 
     <main class="music-detail-page">
         <section class="music-detail-hero" aria-labelledby="music-detail-title">
-            <div class="music-detail-visual">
-                <img id="detail-main-visual" src="images/00.png" alt="">
+            <div class="music-detail-media">
+                <div class="music-detail-visual">
+                    <img id="detail-main-visual" src="images/00.png" alt="">
+                </div>
+                <section class="detail-gallery-section" aria-labelledby="detail-gallery-title">
+                    <div class="detail-gallery-heading">
+                        <p class="section-label">VISUALS</p>
+                        <h2 id="detail-gallery-title">FROM THIS MIX</h2>
+                    </div>
+                    <div class="detail-gallery-controls">
+                        <button class="detail-gallery-arrow detail-gallery-previous" type="button" aria-label="向左瀏覽 Gallery">←</button>
+                        <div class="detail-gallery"></div>
+                        <button class="detail-gallery-arrow detail-gallery-next" type="button" aria-label="向右瀏覽 Gallery">→</button>
+                    </div>
+                </section>
             </div>
 
             <div class="music-detail-info">
@@ -30,29 +44,46 @@
                 <h1 id="music-detail-title">Somewhere far from everyone</h1>
 
                 <div class="detail-player" aria-label="Mix 播放器">
-                    <button class="signature-play detail-play" type="button" aria-label="播放" aria-pressed="false">
-                        <span class="play-icon" aria-hidden="true"></span>
-                    </button>
+                    <div class="detail-player-controls">
+                        <button class="detail-skip detail-previous" type="button" aria-label="上一首 Mix"><span aria-hidden="true">←</span></button>
+                        <button class="signature-play detail-play" type="button" aria-label="播放" aria-pressed="false">
+                            <span class="play-icon" aria-hidden="true"></span>
+                        </button>
+                        <button class="detail-skip detail-next" type="button" aria-label="下一首 Mix"><span aria-hidden="true">→</span></button>
+                    </div>
                     <div class="detail-player-timeline">
                         <label class="visually-hidden" for="detail-progress">音樂播放進度</label>
                         <input id="detail-progress" class="signature-progress" type="range" min="0" max="100" value="0" step="0.1">
                         <div class="detail-player-times"><span id="detail-current-time">00:00</span><span id="detail-total-time">00:00</span></div>
                     </div>
+                    <button class="detail-playlist-toggle" type="button" aria-label="開啟播放清單" aria-expanded="false">
+                        <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+                    </button>
+                    <aside class="detail-playlist-panel" aria-label="NOIRSON 播放清單" hidden>
+                        <div class="detail-playlist-header">
+                            <div><span>PLAYLIST</span><strong>NOIRSON MIXES</strong></div>
+                            <button class="detail-playlist-close" type="button" aria-label="關閉播放清單">×</button>
+                        </div>
+                        <div class="detail-playlist-list"></div>
+                    </aside>
                     <audio id="detail-audio" preload="metadata"></audio>
                 </div>
 
                 <p class="music-detail-description" id="detail-description"></p>
-                <a class="detail-youtube" id="detail-youtube" href="#" target="_blank" rel="noreferrer">Listen on YouTube <span aria-hidden="true">↗</span></a>
+                <button class="detail-favorite" type="button">+ Add to Favorite</button>
+
+                <section class="detail-comments" aria-labelledby="detail-comments-title">
+                    <h2 id="detail-comments-title">COMMENTS</h2>
+                    <label class="visually-hidden" for="detail-comment">Leave a comment</label>
+                    <textarea id="detail-comment" rows="3" placeholder="Leave a comment..." disabled></textarea>
+                </section>
+
+                <div class="detail-youtube-row">
+                    <a class="detail-youtube" id="detail-youtube" href="#" target="_blank" rel="noreferrer">Listen on YouTube <span aria-hidden="true">↗</span></a>
+                </div>
             </div>
         </section>
 
-        <section class="detail-gallery-section" aria-labelledby="detail-gallery-title">
-            <div class="detail-gallery-heading">
-                <p class="section-label">VISUALS</p>
-                <h2 id="detail-gallery-title">FROM THIS MIX</h2>
-            </div>
-            <div class="detail-gallery"></div>
-        </section>
     </main>
 
     <footer class="site-footer site-footer--v2">

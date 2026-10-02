@@ -2,62 +2,52 @@
 
 ## 專案定位
 
-NOIRSON 是一個 Curated Music Experience／Music-first platform，以既有的 NOIRSON 音樂內容與品牌為基礎。網站將逐步提供音樂內容探索、站內播放與品牌介紹。
+NOIRSON 是一個音樂內容探索與互動平台，以既有的 NOIRSON 音樂內容與品牌為基礎，提供 Mix 探索、站內播放與品牌內容。這也是全端工程課程的作品集專案，目標是建立功能核心明確、視覺一致且能逐步串接後端的 Web Application。
 
-本專案是全端工程課程的作品集，目標是完成一個功能核心明確、視覺一致、可逐步擴充的 Web Application。
+音樂內容方向包含 Lofi / Jazz / Chillhop、Ethereal Trap / Cloud Trap / Midnight Jersey，以及 City Pop。
 
-## 音樂內容方向
+## 目前版本
 
-1. Lofi / Jazz / Chillhop
-2. Ethereal Trap / Cloud Trap / Midnight Jersey
-3. City Pop
+目前為 Vanilla HTML / CSS / JavaScript 的 V2.1 前端穩定版，包含六個響應式頁面：
 
-## 使用者體驗
+1. Home：M001 Signature Mix 完整播放器與 8 Mix 無限循環 Carousel。
+2. Explore：由 `js/mix-data.js` 動態產生 M001～M008 Gallery。
+3. Music Detail：依 `?id=Mxxx` 動態載入內容，包含播放器、Previous / Next、Playlist 與 Gallery。
+4. About：品牌介紹、人物內容、背景 Crossfade 與訂閱介面。
+5. Login / Register：會員表單 UI，目前沒有 Authentication。
 
-使用者進入 NOIRSON 時，應能立即理解這是一個以音樂內容與探索為核心的平台。體驗應呈現 Chill、Atmospheric、Stylish、Immersive、Modern 且容易導覽的風格。
+全站共用 Header、Footer、Logo 與 V2.1 Visual System，並支援 Desktop、Tablet 與 Mobile 基礎布局。
 
-## Wireframe 與 MVP 頁面
+## MVP 與目前功能
 
-[Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) 已完成，用於確認 layout、資訊層級與 user flow；它不是 pixel-perfect 的視覺規範。實際圖片、Logo、文案、色彩、字體、spacing、hover 與 RWD 將直接在 HTML / CSS 中迭代。
+Music Player 是核心 MVP 功能。Home 與 Music Detail 已支援 Play / Pause、Progress、Current time / Duration 與 Seek；Music Detail 另有依 Mix 順序循環的 Previous / Next 和浮動 Playlist。YouTube、Spotify 與 Instagram 為外部連結，不能取代站內播放。
 
-目前規劃的 Desktop 頁面：
+目前 Favorite、Comments 與 Email Subscription 只有介面預留，沒有資料儲存、寄信或後端功能。Login / Register 也僅為 UI。
 
-1. Home
-2. Music / Explore
-3. Music Detail
-4. About
-5. Login / Register（不列入目前 MVP，檔案暫時保留）
+## 尚未完成功能
 
-會員功能階段再新增 My Library。
+- Authentication、會員資料與 My Library。
+- Favorite、Comments、Email Subscription 的真實功能。
+- Search、Genre Filter、購買與下載流程。
+- SEO、後端 API、前後端整合、測試與雲端部署。
 
-## Home 範圍
+實體周邊、複雜購物車、複雜會員社群、真實 Payment Gateway、AI、RAG 與複雜推薦系統目前不在實作範圍。
 
-Home V2 為 Music-first Experience，以 M001「Somewhere far from everyone」作為 Signature Mix，提供完整播放；Explore Sound 呈現其餘精選 Mix。全站目前共有 M001～M008 共 8 組 Mix。
+## 後續技術方向
 
-## 核心播放功能
+現有 Vanilla 版本將作為 React 轉換前的功能與視覺基準。後續規劃為：
 
-Music Player 是 MVP 的核心功能，不是 Optional。基礎播放器需支援：
+- Front End：React，拆分頁面與 Header、Footer、Player、Mix Card 等共用元件。
+- Back End：Spring Boot 建立 REST API，負責 Mix、會員與互動資料。
+- Persistence：Spring Data JPA 搭配 MySQL。
+- Integration：React 呼叫 REST API，完成 Authentication 與必要 MVP 資料流程。
+- Delivery：加入 SEO、測試、Production build 與雲端部署。
 
-- Play / Pause
-- Progress
-- Current time / Duration
-- 從 Tracklist 選擇歌曲
+功能順序維持：**MVP → 核心功能 → 全端串接 → 部署 → 額外功能**。
 
-Previous / Next、Volume、Shuffle 與其他進階控制，可在核心版本穩定後再加入。YouTube 與 Spotify 僅作外部連結，不能取代 NOIRSON 本身的播放功能。
+## 設計參考與 Repository
 
-## 後續功能
-
-Search 與 Login / Register 不列入目前 MVP，既有 Login / Register 檔案暫時保留。Email Subscription 為後續全端功能，目前尚未實作。Music Detail 未來將依網址 `?id=Mxxx` 動態載入；About 未來將使用 `images/00.png`～`images/16.png` 自動 Crossfade 背景。
-
-目前延後：實體周邊、複雜購物車、複雜會員社群、Favorites、Playlist、真實 Payment Gateway、AI、RAG 與複雜推薦系統。
-
-## 技術路線與範圍控制
-
-目前優先完成 Desktop-first 的 HTML、CSS、JavaScript 前端雛形，Mobile / RWD 後續處理。JavaScript / React 課程已完成，目前課程進入 Spring / Back End 階段；專案仍依課程與 MVP 範圍逐步導入，不提前轉換技術架構。
-
-功能優先順序為：**MVP → 核心功能 → 全端串接 → 部署 → 額外功能**。若時間不足，優先刪除額外功能，保留核心播放、內容瀏覽與全端能力。
-
-## Repository
-
+- [Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) 用於 Layout、資訊層級與 User flow，不是正式配色規範。
+- V2 Reference：`docs/design/noirson-v2-reference.png`。
 - GitHub 帳號：`sakinu7578`
 - Repository：`NOIRSON`

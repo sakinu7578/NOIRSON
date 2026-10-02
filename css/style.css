@@ -1,4 +1,7 @@
-/* Base */
+/* ========================================
+   GLOBAL：CSS Variables 與共用設定
+   集中管理全站色彩、盒模型與文字基礎樣式
+======================================== */
 :root {
     --color-ink: #0d0f0e;
     --color-night: #151715;
@@ -37,8 +40,15 @@ a {
     white-space: nowrap;
 }
 
-/* Header: positioned over the Hero image */
+/* ========================================
+   GLOBAL：Header
+   固定於視窗頂端，並以半透明背景覆蓋頁面內容
+======================================== */
 .site-header {
+    /*
+      fixed 讓導覽在捲動時仍保持可見。
+      z-index 必須高於 Hero、About 背景與一般內容。
+    */
     position: fixed;
     z-index: 20;
     top: 0;
@@ -56,10 +66,20 @@ a {
 }
 
 .logo {
+    display: flex;
+    align-items: center;
     color: var(--color-amber);
     font-size: 0.75rem;
     font-weight: 600;
     letter-spacing: 0.5em;
+}
+
+.logo img {
+    display: block;
+    width: 138px;
+    height: auto;
+    mix-blend-mode: screen;
+    opacity: 0.92;
 }
 
 .main-nav {
@@ -69,7 +89,7 @@ a {
 
 .main-nav a {
     color: var(--color-muted);
-    font-size: 0.66rem;
+    font-size: 0.72rem;
     font-weight: 500;
     letter-spacing: 0.16em;
     transition: color 180ms ease;
@@ -395,7 +415,10 @@ a {
     letter-spacing: 0.08em;
 }
 
-/* Footer */
+/* ========================================
+   GLOBAL：舊版 Footer 基礎樣式
+   保留給既有結構使用
+======================================== */
 .social-links {
     display: flex;
     justify-content: center;
@@ -412,52 +435,56 @@ a {
     background: transparent;
 }
 
-/* Home V2: Signature Mix */
+/* ========================================
+   HOME：Signature Hero
+   首頁滿版主視覺、標題與 M001 播放器
+======================================== */
 .home-v2 {
-    min-width: 1000px;
     background:
         radial-gradient(circle at 83% 12%, rgba(118, 112, 88, 0.07), transparent 30%),
         linear-gradient(145deg, #0d0f0e 0%, #141614 52%, #1a1b18 100%);
 }
 
 .home-v2 main {
-    padding-top: 64px;
+    padding-top: 0;
 }
 
 .signature-mix {
-    width: min(1680px, 94vw);
-    margin: 0 auto;
-    padding: clamp(0.9rem, 1.6vw, 1.75rem) 0 clamp(2.75rem, 4vw, 4.25rem);
+    width: 100%;
+    min-height: 640px;
+    height: 100svh;
+    margin: 0;
+    padding: 0;
 }
 
 .signature-visual {
+    /* relative 建立定位基準，讓圖片、遮罩與文字能疊放在同一個 Hero。 */
     position: relative;
-    aspect-ratio: 16 / 6.65;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
-    border-radius: 4px;
+    border-radius: 0;
     background-color: #151715;
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.24);
+    box-shadow: none;
 }
 
 .signature-visual img {
+    /* cover 填滿 Hero；可能裁切圖片邊緣，但不會拉伸原始比例。 */
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center 52%;
+    object-position: center 48%;
 }
 
 .signature-visual-shade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(8, 9, 8, 0.06) 55%, rgba(8, 9, 8, 0.56) 100%);
+    background: linear-gradient(180deg, rgba(8, 9, 8, 0.04) 38%, rgba(8, 9, 8, 0.42) 68%, rgba(8, 9, 8, 0.9) 100%);
 }
 
 .signature-kicker {
-    position: absolute;
-    bottom: 1.25rem;
-    left: 1.5rem;
-    margin: 0;
+    margin: 0 0 0.55rem;
     color: rgba(228, 224, 214, 0.76);
     font-size: 0.62rem;
     font-weight: 500;
@@ -465,7 +492,16 @@ a {
 }
 
 .signature-content {
-    padding: 1.25rem 0 0;
+    /*
+      absolute 將標題與播放器疊放在圖片下方。
+      z-index 使內容位於深色遮罩之上，確保操作與文字可讀。
+    */
+    position: absolute;
+    z-index: 2;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: clamp(1.5rem, 2.8vw, 3rem);
 }
 
 .signature-heading {
@@ -483,7 +519,8 @@ a {
     margin: 0;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: clamp(1.9rem, 2.8vw, 3.2rem);
+    max-width: 900px;
+    font-size: clamp(1.8rem, 2.7vw, 3.1rem);
     font-weight: 400;
     line-height: 1.15;
     letter-spacing: -0.015em;
@@ -533,7 +570,7 @@ a {
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 1rem;
-    margin-top: 1.25rem;
+    margin-top: 0.9rem;
 }
 
 .signature-progress {
@@ -567,11 +604,14 @@ a {
     background: var(--color-ink);
 }
 
-/* Home V2: Explore Sound */
+/* ========================================
+   HOME：Explore Sound Carousel
+   顯示五張卡片視野與無限循環切換效果
+======================================== */
 .explore-sound {
     overflow: hidden;
     border-top: 1px solid var(--color-line);
-    padding: clamp(3.5rem, 5vw, 5rem) 0 clamp(4.5rem, 6vw, 6.5rem);
+    padding: clamp(2.5rem, 3.5vw, 3.75rem) 0 clamp(3rem, 4.2vw, 4.5rem);
     background:
         radial-gradient(circle at 18% 20%, rgba(153, 150, 106, 0.035), transparent 24%),
         linear-gradient(120deg, #131513, #1a1b18);
@@ -582,7 +622,7 @@ a {
     align-items: flex-end;
     justify-content: space-between;
     width: min(1680px, 94vw);
-    margin: 0 auto 2.75rem;
+    margin: 0 auto 1.75rem;
 }
 
 .explore-sound-header h2 {
@@ -614,6 +654,7 @@ a {
 }
 
 .explore-viewport {
+    /* 隱藏超出閱讀區的卡片，只露出左右局部內容提示可繼續瀏覽。 */
     overflow: hidden;
     cursor: grab;
     user-select: none;
@@ -624,11 +665,12 @@ a {
 }
 
 .explore-track {
+    /* Grid 固定同時排列五張卡片，卡片內容由 JavaScript 循環更新。 */
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: clamp(1.1rem, 2vw, 2rem);
-    width: 116%;
-    margin-left: -8%;
+    width: 120%;
+    margin-left: -10%;
     padding: 0.75rem 0;
     transition: opacity 180ms ease, transform 240ms cubic-bezier(0.22, 0.75, 0.24, 1);
     will-change: transform;
@@ -731,14 +773,17 @@ a {
     cursor: default;
 }
 
-/* Global Footer V2 */
+/* ========================================
+   GLOBAL：Footer V2
+   六頁共用社群連結與次要版權資訊
+======================================== */
 .site-footer {
     background: linear-gradient(120deg, #111311, #171816);
 }
 
 .site-footer--v2 {
     border-top: 1px solid rgba(238, 234, 222, 0.08);
-    padding: 2.5rem 4vw 1.5rem;
+    padding: 0.8rem 4vw 0.55rem;
 }
 
 .site-footer--v2 .social-links {
@@ -762,15 +807,17 @@ a {
 .footer-meta {
     display: flex;
     justify-content: space-between;
-    margin-top: 2.5rem;
+    margin-top: 0.5rem;
     color: rgba(170, 168, 160, 0.4);
     font-size: 0.52rem;
     letter-spacing: 0.08em;
 }
 
-/* Music / Explore */
+/* ========================================
+   EXPLORE：Intro 與 Mix Gallery
+   Desktop 三欄、圖片導向的 Editorial Grid
+======================================== */
 .explore-v2 {
-    min-width: 1000px;
     background:
         radial-gradient(circle at 82% 8%, rgba(153, 150, 106, 0.045), transparent 25%),
         linear-gradient(145deg, #0d0f0e, #151715 58%, #1a1b18);
@@ -782,10 +829,10 @@ a {
 }
 
 .explore-intro {
-    width: min(1560px, 90vw);
+    width: min(1680px, 94vw);
     margin: 0 auto;
     border-bottom: 1px solid var(--color-line);
-    padding: clamp(4rem, 7vw, 7rem) 0 clamp(3rem, 4.5vw, 4.5rem);
+    padding: clamp(2.25rem, 3.5vw, 3.5rem) 0 clamp(1.75rem, 2.5vw, 2.5rem);
 }
 
 .explore-intro h1 {
@@ -793,15 +840,15 @@ a {
     margin: 0;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: clamp(3.6rem, 7.4vw, 7.5rem);
+    font-size: clamp(2.75rem, 4.8vw, 5.25rem);
     font-weight: 400;
-    line-height: 0.96;
+    line-height: 1;
     letter-spacing: -0.035em;
 }
 
 .explore-description {
     max-width: 460px;
-    margin: 1.75rem 0 0;
+    margin: 1rem 0 0;
     color: var(--color-muted);
     font-size: 0.8rem;
     line-height: 1.75;
@@ -809,20 +856,19 @@ a {
 }
 
 .explore-catalog {
-    width: min(1560px, 90vw);
+    width: min(1680px, 94vw);
     margin: 0 auto;
-    padding: 2.5rem 0 clamp(6rem, 8vw, 9rem);
+    padding: 1.5rem 0 clamp(4.5rem, 6vw, 6.5rem);
 }
 
 .explore-catalog-heading {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 2.25rem;
+    margin-bottom: 1.25rem;
 }
 
-.explore-catalog-heading h2,
-.explore-catalog-heading p {
+.explore-catalog-heading h2 {
     margin: 0;
     color: var(--color-muted);
     font-size: 0.63rem;
@@ -830,14 +876,11 @@ a {
     letter-spacing: 0.2em;
 }
 
-.explore-catalog-heading p {
-    color: rgba(170, 168, 160, 0.58);
-}
-
 .explore-gallery {
+    /* minmax(0, 1fr) 可避免較長標題把 Grid 欄位撐破。 */
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(3.5rem, 5vw, 6rem) clamp(1.5rem, 2.8vw, 3rem);
+    gap: clamp(2.75rem, 4vw, 4.5rem) clamp(1rem, 2vw, 2rem);
 }
 
 .explore-gallery-item,
@@ -918,9 +961,11 @@ a {
     color: var(--color-cream);
 }
 
-/* Music Detail */
+/* ========================================
+   MUSIC DETAIL：主要版面與播放器
+   左側視覺／Gallery，右側資訊與播放控制
+======================================== */
 .detail-v2 {
-    min-width: 1000px;
     background:
         radial-gradient(circle at 80% 12%, rgba(153, 150, 106, 0.04), transparent 27%),
         linear-gradient(145deg, #0d0f0e, #151715 58%, #1a1b18);
@@ -928,20 +973,26 @@ a {
 
 .music-detail-page {
     min-height: 100vh;
-    padding: calc(64px + clamp(2rem, 4vw, 4rem)) 5vw clamp(6rem, 8vw, 9rem);
+    padding: calc(64px + clamp(1rem, 1.8vw, 1.75rem)) 3vw clamp(4rem, 5vw, 5.5rem);
 }
 
 .music-detail-hero {
+    /* Desktop 並排主視覺與資訊區，窄螢幕再由 Media Query 改為單欄。 */
     display: grid;
-    grid-template-columns: minmax(520px, 1.15fr) minmax(390px, 0.85fr);
-    align-items: center;
-    gap: clamp(3.5rem, 6vw, 7.5rem);
-    width: min(1580px, 100%);
+    grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.75fr);
+    align-items: start;
+    gap: clamp(2rem, 3.5vw, 4.5rem);
+    width: min(1720px, 100%);
     margin: 0 auto;
 }
 
+.music-detail-media {
+    min-width: 0;
+}
+
 .music-detail-visual {
-    aspect-ratio: 4 / 3;
+    /* 16:9 保留原始視覺比例，避免固定高度造成明顯裁切。 */
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     background: var(--color-night);
     box-shadow: 0 28px 70px rgba(0, 0, 0, 0.25);
@@ -951,12 +1002,13 @@ a {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     transition: opacity 220ms ease;
 }
 
 .music-detail-info {
     min-width: 0;
+    padding-top: 0.25rem;
 }
 
 .music-detail-eyebrow {
@@ -983,21 +1035,55 @@ a {
     margin: 0;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: clamp(2.6rem, 4.7vw, 5.25rem);
+    font-size: clamp(2.25rem, 3.7vw, 4.25rem);
     font-weight: 400;
     line-height: 1.02;
     letter-spacing: -0.035em;
 }
 
 .detail-player {
+    /* relative 是浮動 Playlist 的定位基準，因此面板不會推擠原有內容。 */
+    position: relative;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 1.25rem;
-    margin-top: clamp(2rem, 3vw, 3rem);
+    margin-top: clamp(1.35rem, 2vw, 2rem);
     border-top: 1px solid var(--color-line);
     border-bottom: 1px solid var(--color-line);
-    padding: 1.25rem 0;
+    padding: 1rem 0;
+}
+
+.detail-player-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.detail-skip,
+.detail-playlist-toggle,
+.detail-playlist-close {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: var(--color-muted);
+    font: inherit;
+    cursor: pointer;
+    transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.detail-skip {
+    display: grid;
+    width: 30px;
+    height: 38px;
+    font-size: 0.95rem;
+    place-items: center;
+}
+
+.detail-skip:hover,
+.detail-playlist-toggle:hover,
+.detail-playlist-close:hover {
+    color: var(--color-amber);
 }
 
 .detail-play {
@@ -1008,6 +1094,139 @@ a {
 
 .detail-player-timeline {
     min-width: 0;
+}
+
+.detail-playlist-toggle {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(228, 224, 214, 0.2);
+    place-content: center;
+    gap: 4px;
+}
+
+.detail-playlist-toggle span {
+    display: block;
+    width: 14px;
+    height: 1px;
+    background: currentColor;
+}
+
+.detail-playlist-toggle[aria-expanded="true"] {
+    border-color: var(--color-amber);
+    color: var(--color-amber);
+}
+
+.detail-playlist-panel {
+    /*
+      absolute 讓 Playlist 浮在播放器附近；z-index 確保面板位於內容上方。
+      Mobile 會改用 fixed 並限制高度，避免超出 Viewport。
+    */
+    position: absolute;
+    z-index: 12;
+    top: calc(100% + 0.75rem);
+    right: 0;
+    width: min(390px, 88vw);
+    max-height: min(520px, 65vh);
+    overflow: hidden;
+    border: 1px solid rgba(228, 224, 214, 0.13);
+    background: rgba(15, 17, 15, 0.94);
+    box-shadow: 0 24px 55px rgba(0, 0, 0, 0.42);
+    backdrop-filter: blur(18px);
+}
+
+.detail-playlist-panel[hidden] {
+    display: none;
+}
+
+.detail-playlist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--color-line);
+    padding: 1rem 1.1rem;
+}
+
+.detail-playlist-header > div {
+    display: grid;
+    gap: 0.2rem;
+}
+
+.detail-playlist-header span {
+    color: var(--color-amber);
+    font-size: 0.52rem;
+    letter-spacing: 0.18em;
+}
+
+.detail-playlist-header strong {
+    color: var(--color-heading);
+    font-family: "Roboto Slab", serif;
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+.detail-playlist-close {
+    width: 30px;
+    height: 30px;
+    font-size: 1.25rem;
+}
+
+.detail-playlist-list {
+    max-height: min(440px, 56vh);
+    overflow-y: auto;
+    scrollbar-color: rgba(153, 150, 106, 0.45) transparent;
+    scrollbar-width: thin;
+}
+
+.detail-playlist-item {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: center;
+    gap: 0.9rem;
+    border-bottom: 1px solid rgba(228, 224, 214, 0.07);
+    padding: 0.7rem 1rem;
+    transition: background-color 180ms ease;
+}
+
+.detail-playlist-item:hover {
+    background: rgba(228, 224, 214, 0.045);
+}
+
+.detail-playlist-item.is-active {
+    background: rgba(153, 150, 106, 0.09);
+    box-shadow: inset 2px 0 var(--color-amber);
+}
+
+.detail-playlist-item img {
+    display: block;
+    width: 64px;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+.detail-playlist-item-copy {
+    display: grid;
+    min-width: 0;
+    gap: 0.25rem;
+}
+
+.detail-playlist-item-copy strong {
+    overflow: hidden;
+    color: var(--color-heading);
+    font-family: "Roboto Slab", serif;
+    font-size: 0.75rem;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.detail-playlist-item-copy small {
+    overflow: hidden;
+    color: var(--color-muted);
+    font-size: 0.56rem;
+    letter-spacing: 0.05em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .detail-player-times {
@@ -1021,16 +1240,15 @@ a {
 
 .music-detail-description {
     max-width: 580px;
-    margin: 2rem 0 0;
+    margin: 1.35rem 0 0;
     color: var(--color-muted);
     font-size: 0.78rem;
-    line-height: 1.85;
+    line-height: 1.7;
     white-space: pre-line;
 }
 
 .detail-youtube {
     display: inline-block;
-    margin-top: 1.75rem;
     border-bottom: 1px solid rgba(228, 224, 214, 0.28);
     padding-bottom: 0.3rem;
     color: var(--color-heading);
@@ -1039,23 +1257,84 @@ a {
     transition: border-color 180ms ease, color 180ms ease;
 }
 
+.detail-favorite {
+    margin-top: 1.25rem;
+    border: 1px solid rgba(228, 224, 214, 0.25);
+    padding: 0.7rem 1rem;
+    background: transparent;
+    color: var(--color-heading);
+    font: inherit;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
+}
+
+.detail-favorite:hover {
+    border-color: var(--color-amber);
+    background: rgba(153, 150, 106, 0.08);
+    color: var(--color-amber);
+}
+
+.detail-comments {
+    margin-top: 1.25rem;
+}
+
+.detail-comments h2 {
+    margin: 0 0 0.55rem;
+    color: var(--color-muted);
+    font-size: 0.58rem;
+    font-weight: 500;
+    letter-spacing: 0.17em;
+}
+
+.detail-comments textarea {
+    display: block;
+    width: 100%;
+    min-height: 76px;
+    resize: none;
+    border: 1px solid rgba(228, 224, 214, 0.14);
+    border-radius: 0;
+    padding: 0.8rem;
+    background: rgba(13, 15, 14, 0.36);
+    color: var(--color-muted);
+    font: inherit;
+    font-size: 0.7rem;
+    line-height: 1.5;
+}
+
+.detail-comments textarea::placeholder {
+    color: rgba(170, 168, 160, 0.55);
+}
+
+.detail-comments textarea:disabled {
+    cursor: default;
+    opacity: 1;
+}
+
+.detail-youtube-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.85rem;
+}
+
 .detail-youtube:hover {
     border-color: var(--color-amber);
     color: var(--color-amber);
 }
 
 .detail-gallery-section {
-    width: min(1580px, 100%);
-    margin: clamp(5rem, 8vw, 9rem) auto 0;
-    border-top: 1px solid var(--color-line);
-    padding-top: 2rem;
+    width: 100%;
+    margin: 1rem 0 0;
+    border-top: 0;
+    padding-top: 0;
 }
 
 .detail-gallery-heading {
     display: flex;
     align-items: end;
     justify-content: space-between;
-    margin-bottom: 2rem;
+    margin-bottom: 0.7rem;
 }
 
 .detail-gallery-heading .section-label {
@@ -1070,15 +1349,49 @@ a {
     letter-spacing: 0.18em;
 }
 
-.detail-gallery {
+.detail-gallery-controls {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: clamp(1rem, 2vw, 2rem);
+    grid-template-columns: 32px minmax(0, 1fr) 32px;
+    align-items: center;
+    gap: 0.55rem;
+}
+
+.detail-gallery-arrow {
+    display: grid;
+    width: 32px;
+    height: 44px;
+    border: 1px solid rgba(228, 224, 214, 0.15);
+    padding: 0;
+    background: rgba(13, 15, 14, 0.32);
+    color: var(--color-muted);
+    font: inherit;
+    cursor: pointer;
+    place-items: center;
+    transition: border-color 180ms ease, color 180ms ease, background-color 180ms ease;
+}
+
+.detail-gallery-arrow:hover {
+    border-color: var(--color-amber);
+    background: rgba(153, 150, 106, 0.07);
+    color: var(--color-amber);
+}
+
+.detail-gallery {
+    /* Flex 保持縮圖單排，overflow-x 讓圖片較多時可水平捲動。 */
+    display: flex;
+    gap: clamp(0.55rem, 0.9vw, 0.9rem);
+    overflow-x: auto;
+    padding-bottom: 0.45rem;
+    scrollbar-color: rgba(153, 150, 106, 0.5) rgba(228, 224, 214, 0.08);
+    scrollbar-width: thin;
 }
 
 .detail-gallery-thumb {
+    /* 固定縮圖寬度並維持 16:9，不因 Gallery 圖片數量改變比例。 */
     position: relative;
-    aspect-ratio: 4 / 3;
+    width: clamp(140px, 13vw, 210px);
+    flex: 0 0 auto;
+    aspect-ratio: 16 / 9;
     overflow: hidden;
     border: 1px solid transparent;
     padding: 0;
@@ -1105,9 +1418,11 @@ a {
     border-color: var(--color-amber);
 }
 
-/* About Page */
+/* ========================================
+   ABOUT：背景 Crossfade 與內容區塊
+   背景層只負責視覺，文字保持在較高層級
+======================================== */
 .about-v2 {
-    min-width: 1000px;
     background: var(--color-ink);
 }
 
@@ -1119,10 +1434,13 @@ a {
 }
 
 .about-background {
+    /* absolute 將輪播限制在 About Hero，不讓背景層覆蓋後方 Footer。 */
     position: absolute;
     z-index: 0;
-    inset: 0;
-    min-height: 100%;
+    top: 64px;
+    right: 0;
+    height: calc(100svh - 64px);
+    left: 0;
     pointer-events: none;
 }
 
@@ -1133,10 +1451,12 @@ a {
 }
 
 .about-background-layer {
+    /* 兩個背景層交替 opacity，配合 JavaScript 形成平滑 Crossfade。 */
     background-position: center;
+    background-repeat: no-repeat;
     background-size: cover;
     opacity: 0;
-    transform: scale(1.025);
+    transform: none;
     transition: opacity 2.4s ease;
 }
 
@@ -1145,18 +1465,19 @@ a {
 }
 
 .about-background-layer.is-active {
-    opacity: 0.32;
+    opacity: 0.48;
 }
 
 .about-background-overlay {
     background:
-        linear-gradient(180deg, rgba(9, 11, 10, 0.48), rgba(9, 11, 10, 0.76) 42%, rgba(9, 11, 10, 0.94) 100%),
-        linear-gradient(90deg, rgba(9, 11, 10, 0.72), rgba(9, 11, 10, 0.2) 62%, rgba(9, 11, 10, 0.55));
+        linear-gradient(180deg, rgba(9, 11, 10, 0.32), rgba(9, 11, 10, 0.56) 55%, rgba(9, 11, 10, 0.88) 100%),
+        linear-gradient(90deg, rgba(9, 11, 10, 0.62), rgba(9, 11, 10, 0.12) 64%, rgba(9, 11, 10, 0.38));
 }
 
 .about-world,
 .about-sound,
 .about-subscribe {
+    /* z-index: 1 讓內容位於背景圖片與 Overlay 上方，維持文字可讀性。 */
     position: relative;
     z-index: 1;
     width: min(1500px, 90vw);
@@ -1166,27 +1487,27 @@ a {
 .about-world {
     display: flex;
     align-items: center;
-    min-height: calc(100vh - 64px);
-    padding: 5rem 0;
+    min-height: calc(82svh - 64px);
+    padding: 3.5rem 0;
 }
 
 .about-world-copy {
-    max-width: 720px;
+    max-width: 1120px;
 }
 
 .about-world h1 {
     margin: 0;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: clamp(4rem, 7.5vw, 8rem);
+    font-size: clamp(2.8rem, 5.4vw, 6rem);
     font-weight: 400;
-    line-height: 0.94;
+    line-height: 1;
     letter-spacing: -0.045em;
 }
 
 .about-world-copy > p:not(.section-label) {
     max-width: 540px;
-    margin: 1.75rem 0 0;
+    margin: 1.25rem 0 0;
     color: rgba(228, 224, 214, 0.76);
     font-size: 0.82rem;
     line-height: 1.85;
@@ -1194,14 +1515,14 @@ a {
 
 .about-sound {
     border-top: 1px solid rgba(228, 224, 214, 0.16);
-    padding: clamp(4rem, 7vw, 7rem) 0 clamp(5rem, 8vw, 8rem);
+    padding: clamp(3rem, 4.8vw, 4.75rem) 0 clamp(3.75rem, 5.5vw, 5.5rem);
 }
 
 .about-section-heading {
     display: flex;
     align-items: end;
     justify-content: space-between;
-    margin-bottom: 2.5rem;
+    margin-bottom: 1.75rem;
 }
 
 .about-section-heading .section-label {
@@ -1275,14 +1596,14 @@ a {
     align-items: end;
     gap: 5rem;
     border-top: 1px solid rgba(228, 224, 214, 0.16);
-    padding: clamp(4rem, 7vw, 7rem) 0;
+    padding: clamp(3rem, 4.8vw, 4.75rem) 0;
 }
 
 .about-subscribe h2 {
     margin: 0;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: clamp(2.5rem, 4.8vw, 5rem);
+    font-size: clamp(2.25rem, 4vw, 4.25rem);
     font-weight: 400;
     line-height: 1.08;
     letter-spacing: -0.03em;
@@ -1320,13 +1641,16 @@ a {
     cursor: pointer;
 }
 
-/* Login / Register */
-.auth-page { display: grid; grid-template-columns: 1fr 1fr; min-height: 660px; background-color: var(--color-night); }
-.auth-visual { position: relative; display: flex; align-items: flex-end; overflow: hidden; padding: clamp(3rem, 6vw, 6rem); background: linear-gradient(rgba(16, 18, 22, 0.5), rgba(16, 18, 22, 0.85)), url("../images/05.png") center / cover; }
+/* ========================================
+   LOGIN / REGISTER：共用會員表單版型
+   Desktop 使用等寬雙欄，Mobile 改為上下排列
+======================================== */
+.auth-page { display: grid; grid-template-columns: 1fr 1fr; width: 100%; height: calc(100svh - 64px - 58px); min-height: 620px; margin-top: 64px; overflow: hidden; background-color: var(--color-night); }
+.auth-visual { position: relative; display: flex; height: 100%; align-items: flex-end; overflow: hidden; padding: clamp(3rem, 6vw, 6rem); background: linear-gradient(rgba(16, 18, 22, 0.5), rgba(16, 18, 22, 0.85)), url("../images/05.png") center / cover no-repeat; }
 .auth-visual > div { position: relative; z-index: 1; max-width: 560px; }
 .auth-visual h1 { margin: 0; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(2.5rem, 4.3vw, 4.5rem); font-weight: 400; line-height: 1.12; }
 .auth-visual p:last-child { max-width: 390px; margin: 1.5rem 0 0; color: var(--color-muted); font-size: 0.8rem; line-height: 1.7; }
-.auth-panel { display: grid; padding: 4rem clamp(2rem, 7vw, 7rem); background-color: var(--color-ink); place-items: center; }
+.auth-panel { display: grid; height: 100%; overflow-y: auto; padding: 3rem clamp(2rem, 7vw, 7rem); background-color: var(--color-ink); place-items: center; }
 .auth-panel-inner { width: min(420px, 100%); }
 .auth-panel h2 { margin: 0 0 2.5rem; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(2rem, 3vw, 3rem); font-weight: 400; }
 .auth-form { display: grid; gap: 1.5rem; }
@@ -1462,4 +1786,103 @@ a {
     .auth-page { grid-template-columns: 1fr; }
     .auth-visual { min-height: 330px; align-items: center; padding: 3.5rem 6vw; }
     .auth-panel { padding: 3.5rem 6vw 4rem; }
+}
+
+/* ========================================
+   RWD：Tablet（900px 以下）
+   減少欄數與留白，Detail、About 逐步轉為單欄
+======================================== */
+@media (max-width: 900px) {
+    .site-header { padding-inline: 3vw; }
+    .logo img { width: 120px; }
+    .main-nav { gap: clamp(0.9rem, 2.2vw, 1.5rem); }
+    .signature-mix { min-height: 600px; }
+    .signature-content { padding: 2rem 4vw; }
+    .explore-sound-header,
+    .explore-intro,
+    .explore-catalog { width: 92vw; }
+    .explore-track { width: 150%; margin-left: -25%; }
+    .explore-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .music-detail-page { padding: calc(64px + 2rem) 4vw 4rem; }
+    .music-detail-hero { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+    .music-detail-info { width: 100%; max-width: 720px; }
+    .detail-playlist-panel { width: min(360px, calc(100vw - 8vw)); }
+    .about-world,
+    .about-sound,
+    .about-subscribe { width: 90vw; }
+    .about-people { grid-template-columns: minmax(0, 1fr); max-width: 650px; }
+    .about-subscribe { grid-template-columns: minmax(0, 1fr); gap: 2.5rem; }
+    .auth-visual { padding: 3rem 4vw; }
+    .auth-panel { padding: 2.5rem 4vw; }
+}
+
+/* ========================================
+   RWD：Mobile（600px 以下）
+   保持導覽與播放器可操作，主要內容改為垂直閱讀
+======================================== */
+@media (max-width: 600px) {
+    .site-header { height: 64px; min-height: 64px; padding: 0 4vw; }
+    .logo img { width: 100px; }
+    .main-nav { gap: clamp(0.45rem, 2.3vw, 0.75rem); }
+    .main-nav a { font-size: 0.54rem; letter-spacing: 0.08em; }
+    .signature-mix { height: 100svh; min-height: 620px; }
+    .signature-content { padding: 1rem 1rem 1.25rem; }
+    .signature-heading { gap: 0.85rem; }
+    .signature-title { font-size: clamp(1.55rem, 7vw, 2rem); line-height: 1.04; }
+    .signature-kicker,
+    .section-label { font-size: 0.58rem; letter-spacing: 0.14em; }
+    .signature-player { gap: 0.65rem; }
+    .signature-play { width: 46px; height: 46px; flex: 0 0 46px; }
+    .explore-sound { padding-block: 2.5rem 3rem; }
+    .explore-sound-header { width: 90vw; margin-bottom: 1.5rem; }
+    .explore-track { width: 230%; margin-left: -65%; }
+    .explore-carousel { grid-template-columns: 8vw minmax(0, 1fr) 8vw; }
+    .carousel-button { width: 32px; height: 32px; }
+    .site-footer--v2 { padding: 0.75rem 4vw 0.55rem; }
+    .site-footer--v2 .social-links { justify-content: space-between; gap: 0.5rem; }
+    .site-footer--v2 .social-links a { font-size: 0.55rem; letter-spacing: 0.1em; }
+    .footer-meta { margin-top: 0.45rem; font-size: 0.48rem; }
+    .explore-intro,
+    .explore-catalog { width: 90vw; }
+    .explore-intro { padding: calc(64px + 2rem) 0 1.5rem; }
+    .explore-title { font-size: clamp(2.35rem, 12vw, 3.2rem); }
+    .explore-description { font-size: 0.9rem; }
+    .explore-gallery { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+    .music-detail-page { padding: calc(64px + 1.25rem) 4vw 3rem; }
+    .music-detail-hero { gap: 2rem; }
+    .detail-title { font-size: clamp(2rem, 10vw, 2.8rem); }
+    .detail-player { gap: 0.6rem; }
+    .detail-player-controls { gap: 0.25rem; }
+    .detail-skip { width: 26px; height: 26px; }
+    .detail-play { width: 44px; height: 44px; flex-basis: 44px; }
+    .detail-playlist-panel {
+        position: fixed;
+        top: 72px;
+        right: 1rem;
+        width: calc(100vw - 2rem);
+        max-height: calc(100svh - 88px);
+    }
+    .detail-gallery-controls { grid-template-columns: 28px minmax(0, 1fr) 28px; gap: 0.45rem; }
+    .detail-gallery-arrow { width: 28px; height: 28px; }
+    .detail-gallery-button { flex-basis: 135px; }
+    .about-world,
+    .about-sound,
+    .about-subscribe { width: 90vw; }
+    .about-background-layer { background-position: center; }
+    .about-world { min-height: calc(100svh - 64px); padding-block: calc(64px + 2.5rem) 2.5rem; }
+    .about-world h1 { font-size: clamp(2.25rem, 11vw, 3.1rem); }
+    .about-sound,
+    .about-subscribe { padding-block: 3.5rem; }
+    .about-person { grid-template-columns: minmax(0, 1fr); }
+    .about-person img { width: min(100%, 300px); }
+    .subscribe-form { grid-template-columns: minmax(0, 1fr); }
+    .auth-page {
+        grid-template-columns: minmax(0, 1fr);
+        height: auto;
+        min-height: 0;
+        margin-top: 64px;
+        overflow: visible;
+    }
+    .auth-visual { height: auto; min-height: 280px; padding: 2.5rem 6vw; align-items: center; }
+    .auth-panel { height: auto; overflow: visible; padding: 2.75rem 6vw 3rem; }
 }
