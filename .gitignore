@@ -1,2 +1,29 @@
 # Website music files are kept locally
 music/*.mp3
+
+# Local environment variables
+.env
+.env.*
+
+# IDE settings
+.idea/
+.vscode/
+
+# Java / Maven build output
+target/
+
+# Local Spring Boot configuration
+application-local.properties
+
+# Full-size local audio files
+*.mp3
+*.wav
+*.flac
+*.aac
+*.m4a
+*.ogg
+
+# Allow compressed public demo MP3 files
+!musicDemo/
+!musicDemo/*.mp3
+!musicDemo/**/*.mp3
