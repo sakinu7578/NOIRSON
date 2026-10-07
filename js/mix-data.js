@@ -6,7 +6,7 @@ const mixes = {
         title: "Somewhere far from everyone",
         series: "Main Album / Chill Vibe",
         cover: "images/00.png",
-        audio: "music/01.mp3",
+        audio: "musicDemo/01-preview.mp3",
         gallery: [
             "images/01.png",
             "images/02.png",
@@ -28,7 +28,7 @@ const mixes = {
         title: "Train to Nowhere",
         series: "Chill / Lofi / Jazz",
         cover: "images/16.png",
-        audio: "music/02.mp3",
+        audio: "musicDemo/02-preview.mp3",
         gallery: [
             "images/01.png",
             "images/03.png",
@@ -53,7 +53,7 @@ const mixes = {
         title: "Still Awake Above the City",
         series: "Chill / Lofi / Jazz",
         cover: "images/10.png",
-        audio: "music/03.mp3",
+        audio: "musicDemo/03-preview.mp3",
         gallery: [
             "images/01.png",
             "images/03.png",
@@ -76,7 +76,7 @@ const mixes = {
         title: "Quieter thoughts",
         series: "Chill / Lofi / Jazz",
         cover: "images/01.png",
-        audio: "music/04.mp3",
+        audio: "musicDemo/04-preview.mp3",
         gallery: [
             "images/01.png",
             "images/03.png",
@@ -100,7 +100,7 @@ const mixes = {
         title: "Don't know which way to go",
         series: "Midnight Jersey",
         cover: "images/07.png",
-        audio: "music/05.mp3",
+        audio: "musicDemo/05-preview.mp3",
         gallery: [
             "images/06.png"
         ],
@@ -116,7 +116,7 @@ const mixes = {
         title: "After the Rain",
         series: "Ethereal Trap / Cloud Trap",
         cover: "images/08.png",
-        audio: "music/06.mp3",
+        audio: "musicDemo/06-preview.mp3",
         gallery: [
             "images/02.png",
             "images/11.png",
@@ -136,7 +136,7 @@ const mixes = {
         title: "Stay Floating",
         series: "Ethereal Trap / Cloud Trap",
         cover: "images/11.png",
-        audio: "music/07.mp3",
+        audio: "musicDemo/07-preview.mp3",
         gallery: [
             "images/02.png",
             "images/08.png",
@@ -156,7 +156,7 @@ const mixes = {
         title: "Tokyo Slow Nights",
         series: "City Pop",
         cover: "images/09.png",
-        audio: "music/08.mp3",
+        audio: "musicDemo/08-preview.mp3",
         gallery: [
             "images/04.png",
             "images/12.png"
