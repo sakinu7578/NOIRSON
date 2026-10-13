@@ -62,126 +62,291 @@ function initializeAudioPlayer({ audio, playButton, progress, currentTimeLabel, 
 // 只在 body 具有 home-v2 時初始化，避免影響其他頁面的播放器。
 // ========================================
 if (document.body.classList.contains("home-v2")) {
-const signatureMix = mixes.M001;
-const signatureCover = document.querySelector("#signature-cover");
-const signatureSeries = document.querySelector("#signature-series");
-const signatureTitle = document.querySelector("#signature-title");
-const audio = document.querySelector("#signature-audio");
-const playButton = document.querySelector(".signature-play");
-const progress = document.querySelector("#player-progress");
-const currentTimeLabel = document.querySelector("#current-time");
-const totalTimeLabel = document.querySelector("#total-time");
+    const signatureMix = mixes.M001;
+    const signatureCover = document.querySelector("#signature-cover");
+    const signatureSeries = document.querySelector("#signature-series");
+    const signatureTitle = document.querySelector("#signature-title");
+    const audio = document.querySelector("#signature-audio");
+    const playButton = document.querySelector(".signature-play");
+    const progress = document.querySelector("#player-progress");
+    const currentTimeLabel = document.querySelector("#current-time");
+    const totalTimeLabel = document.querySelector("#total-time");
 
-// 從 mix-data.js 的 mixes 取得 M001，更新首頁文字、圖片與音訊來源。
-signatureCover.src = signatureMix.cover;
-signatureCover.alt = `${signatureMix.title} 音樂封面`;
-signatureSeries.textContent = signatureMix.series.toUpperCase();
-signatureTitle.textContent = signatureMix.title;
-audio.src = signatureMix.audio;
+    // 從 mix-data.js 的 mixes 取得 M001，更新首頁文字、圖片與音訊來源。
+    signatureCover.src = signatureMix.cover;
+    signatureCover.alt = `${signatureMix.title} 音樂封面`;
+    signatureSeries.textContent = signatureMix.series.toUpperCase();
+    signatureTitle.textContent = signatureMix.title;
+    audio.src = signatureMix.audio;
 
-initializeAudioPlayer({ audio, playButton, progress, currentTimeLabel, totalTimeLabel, title: signatureMix.title });
+    initializeAudioPlayer({ audio, playButton, progress, currentTimeLabel, totalTimeLabel, title: signatureMix.title });
 
-// ========================================
-// HOME：Explore Sound 無限循環 Carousel
-// Object.keys 取得 M001～M008 ID，畫面每次只重新產生目前附近五張卡片。
-// ========================================
-const exploreMixIds = Object.keys(mixes);
-const exploreTrack = document.querySelector(".explore-track");
-const exploreViewport = document.querySelector(".explore-viewport");
-const previousMixButton = document.querySelector(".explore-arrow--previous");
-const nextMixButton = document.querySelector(".explore-arrow--next");
+    // ========================================
+    // HOME：Explore Sound 無限循環 Carousel
+    // Object.keys 取得 M001～M008 ID，並建立前、中、後三組卡片供無限循環使用。
+    // ========================================
+    const exploreMixIds = Object.keys(mixes);
+    const exploreTrack = document.querySelector(".explore-track");
+    const exploreViewport = document.querySelector(".explore-viewport");
+    const previousMixButton = document.querySelector(".explore-arrow--previous");
+    const nextMixButton = document.querySelector(".explore-arrow--next");
+    const carouselMixIds = [
+        ...exploreMixIds,
+        ...exploreMixIds,
+        ...exploreMixIds
+    ];
 
-let carouselIndex = 2;
-let dragStartX = 0;
-let isDragging = false;
-let hasDragged = false;
-let isSwitching = false;
+    let cardStep = 0;
+    let baseTranslateX = 0;
+    let carouselIndex = exploreMixIds.length + 2;
+    let dragStartX = 0;
+    let dragDistance = 0;
+    let isDragging = false;
+    let hasDragged = false;
+    let isSwitching = false;
 
-// 計算循環後的 Mix index。
-// JavaScript 的負數取餘數仍可能為負，因此先加陣列長度再取餘數。
-function getLoopedIndex(index) {
-    return (index + exploreMixIds.length) % exploreMixIds.length;
-}
+    function updateCardStep() {
+        const firstCard = exploreTrack.querySelector(".explore-card");
 
-// 更新目前 Carousel 顯示內容。
-// offset 代表中心卡片前後各兩張，不需要複製整組 DOM。
-function renderCarousel() {
-    const visibleOffsets = [-2, -1, 0, 1, 2];
+        if (!firstCard) return;
 
-    exploreTrack.innerHTML = visibleOffsets.map(function (offset) {
-        const mixId = exploreMixIds[getLoopedIndex(carouselIndex + offset)];
-        const mix = mixes[mixId];
+        const trackStyle = window.getComputedStyle(exploreTrack);
+        const gap = parseFloat(trackStyle.columnGap) || 0;
 
-        return `
-            <a class="explore-card" href="music-detail.html?id=${mixId}" aria-label="前往 ${mix.title} 詳細頁">
-                <span class="explore-card-image"><img src="${mix.cover}" alt="${mix.title} 音樂封面" draggable="false"></span>
-                <span class="explore-card-copy"><strong>${mix.title}</strong><small>${mix.series}</small></span>
-            </a>
-        `;
-    }).join("");
-}
+        const nextCardStep = firstCard.getBoundingClientRect().width + gap;
 
-// 控制 Explore Sound 無限循環切換。
-// isSwitching 防止短時間重複點擊造成多次索引更新。
-function moveCarousel(direction) {
-    if (isSwitching) return;
+        if (Number.isFinite(nextCardStep) && nextCardStep > 0) {
+            cardStep = nextCardStep;
+        }
+    }
 
-    isSwitching = true;
-    const switchingClass = direction > 0 ? "is-switching-next" : "is-switching-previous";
-    exploreTrack.classList.add(switchingClass);
+    function updateCarouselPosition() {
+        const cards = exploreTrack.querySelectorAll(".explore-card");
+        const currentCard = cards[carouselIndex];
 
-    window.setTimeout(function () {
-        carouselIndex = getLoopedIndex(carouselIndex + direction);
-        renderCarousel();
-        exploreTrack.classList.remove(switchingClass);
+        if (!currentCard) return;
+
+        const viewportCenter = exploreViewport.clientWidth / 2;
+
+        const cardCenter =
+            currentCard.offsetLeft + currentCard.offsetWidth / 2;
+
+        baseTranslateX = viewportCenter - cardCenter;
+
+        exploreTrack.style.transform =
+            `translate3d(${baseTranslateX}px, 0, 0)`;
+
+        updateCardClasses();
+    }
+    function updateCardClasses() {
+        const cards = exploreTrack.querySelectorAll(".explore-card");
+
+        cards.forEach(function (card) {
+            card.classList.remove("is-edge");
+        });
+
+        const leftEdge = cards[carouselIndex - 2];
+        const rightEdge = cards[carouselIndex + 2];
+
+        if (leftEdge) {
+            leftEdge.classList.add("is-edge");
+        }
+
+        if (rightEdge) {
+            rightEdge.classList.add("is-edge");
+        }
+    }
+
+    function normalizeCarouselIndex() {
+        const mixCount = exploreMixIds.length;
+
+        carouselIndex =
+            ((carouselIndex % mixCount) + mixCount) % mixCount
+            + mixCount;
+    }
+
+    // 更新目前 Carousel 顯示內容。
+    function renderCarousel() {
+        exploreTrack.innerHTML = carouselMixIds.map(function (mixId) {
+            const mix = mixes[mixId];
+
+            return `
+                <a class="explore-card"
+                    href="music-detail.html?id=${mixId}"
+                    aria-label="前往 ${mix.title} 詳細頁">
+                    <span class="explore-card-image">
+                        <img src="${mix.cover}"
+                            alt="${mix.title} 音樂封面"
+                            draggable="false">
+                        <span class="explore-card-copy">
+                            <strong>${mix.title}</strong>
+                            <small>${mix.series}</small>
+                        </span>
+                    </span>
+                </a>
+            `;
+        }).join("");
+
+        updateCardStep();
+        updateCarouselPosition();
+    }
+
+    // 控制 Explore Sound 無限循環切換。
+    // isSwitching 防止短時間重複點擊造成多次索引更新。
+    function moveCarousel(direction) {
+        if (isSwitching || isDragging) return;
+
+        isSwitching = true;
+
+        carouselIndex += direction;
+
+        updateCarouselPosition();
+    }
+
+    // Carousel 動畫完成
+    exploreTrack.addEventListener("transitionend", function (event) {
+        if (event.target !== exploreTrack) return;
+        if (event.propertyName !== "transform") return;
+        if (isDragging) return;
+        if (!isSwitching) return;
+
+        const previousIndex = carouselIndex;
+
+        normalizeCarouselIndex();
+
+        if (carouselIndex !== previousIndex) {
+            exploreTrack.style.transition = "none";
+
+            updateCarouselPosition();
+
+            exploreTrack.offsetHeight;
+
+            exploreTrack.style.transition = "";
+        }
+
         isSwitching = false;
-    }, 180);
-}
 
-previousMixButton.addEventListener("click", function () { moveCarousel(-1); });
-nextMixButton.addEventListener("click", function () { moveCarousel(1); });
+    });
+    // 尺寸改變後重新量測；若正在拖曳或 Snap，等操作完成再置中。
+    let resizeFrameId = 0;
+    window.addEventListener("resize", function () {
+        window.cancelAnimationFrame(resizeFrameId);
 
-// 處理滑鼠拖曳切換：mousedown 記錄起點，mousemove 只顯示有限位移。
-exploreViewport.addEventListener("mousedown", function (event) {
-    isDragging = true;
-    hasDragged = false;
-    dragStartX = event.clientX;
-    exploreViewport.classList.add("is-grabbing");
-    exploreTrack.classList.add("is-dragging");
-});
+        function refreshCarouselSize() {
+            if (isDragging || isSwitching) {
+                resizeFrameId = window.requestAnimationFrame(refreshCarouselSize);
+                return;
+            }
 
-window.addEventListener("mousemove", function (event) {
-    if (!isDragging) return;
-    const dragDistance = event.clientX - dragStartX;
-    hasDragged = hasDragged || Math.abs(dragDistance) > 5;
-    const limitedDistance = Math.max(-80, Math.min(80, dragDistance));
-    exploreTrack.style.transform = `translate3d(${limitedDistance}px, 0, 0)`;
-});
+            updateCardStep();
+            exploreTrack.style.transition = "none";
+            updateCarouselPosition();
+            exploreTrack.offsetHeight;
+            exploreTrack.style.transition = "";
+            resizeFrameId = 0;
+        }
 
-window.addEventListener("mouseup", function (event) {
-    if (!isDragging) return;
+        resizeFrameId = window.requestAnimationFrame(refreshCarouselSize);
+    });
 
-    const dragDistance = event.clientX - dragStartX;
-    isDragging = false;
-    exploreViewport.classList.remove("is-grabbing");
-    exploreTrack.classList.remove("is-dragging");
-    exploreTrack.style.transform = "";
+    previousMixButton.addEventListener("click", function () { moveCarousel(-1); });
+    nextMixButton.addEventListener("click", function () { moveCarousel(1); });
 
-    // 超過門檻才切換卡片，避免一般點擊被誤判為拖曳。
-    if (Math.abs(dragDistance) >= 50) {
-        moveCarousel(dragDistance < 0 ? 1 : -1);
-    }
-});
-
-exploreTrack.addEventListener("click", function (event) {
-    if (hasDragged) {
+    // 禁止瀏覽器接管圖片／連結的原生拖曳，交由下方 Pointer Events 控制。
+    exploreTrack.addEventListener("dragstart", function (event) {
         event.preventDefault();
-        hasDragged = false;
-    }
-});
+    });
 
-renderCarousel();
+    // Pointer Events 同時支援滑鼠與觸控；超過門檻後才視為拖曳。
+    exploreViewport.addEventListener("pointerdown", function (event) {
+        if (isSwitching) return;
+
+        updateCardStep();
+        if (!Number.isFinite(cardStep) || cardStep <= 0) return;
+
+        isDragging = true;
+        hasDragged = false;
+        dragStartX = event.clientX;
+        dragDistance = 0;
+
+        exploreViewport.classList.add("is-grabbing");
+        exploreTrack.classList.add("is-dragging");
+
+    });
+
+    exploreViewport.addEventListener("pointermove", function (event) {
+        if (!isDragging) return;
+
+        const rawDragDistance =
+            event.clientX - dragStartX;
+
+        const maxDragDistance =
+            cardStep * (exploreMixIds.length - 1);
+
+        dragDistance = Math.max(
+            -maxDragDistance,
+            Math.min(maxDragDistance, rawDragDistance)
+        );
+
+        if (Math.abs(dragDistance) > 5 && !hasDragged) {
+            hasDragged = true;
+
+            // 只有確認為拖曳後才 Capture，讓一般點按保留原生連結行為。
+            exploreViewport.setPointerCapture(event.pointerId);
+        }
+
+        exploreTrack.style.transform =
+            `translate3d(${baseTranslateX + dragDistance}px, 0, 0)`;
+    });
+
+    exploreViewport.addEventListener("click", function (event) {
+        // detail === 0 代表鍵盤觸發，不能被先前的拖曳狀態攔截。
+        if (hasDragged && event.detail !== 0) {
+            event.preventDefault();
+            hasDragged = false;
+        } else if (event.detail === 0) {
+            hasDragged = false;
+        }
+    }, true);
+
+    function endDrag(event) {
+        if (!isDragging) return;
+
+        isDragging = false;
+
+        exploreViewport.classList.remove("is-grabbing");
+        exploreTrack.classList.remove("is-dragging");
+
+        let movedCards = Math.round(
+            -dragDistance / cardStep
+        );
+
+        const maxMove = exploreMixIds.length - 1;
+
+        movedCards = Math.max(
+            -maxMove,
+            Math.min(maxMove, movedCards)
+        );
+
+        carouselIndex += movedCards;
+
+        if (Math.abs(dragDistance) > 0.5) {
+            isSwitching = true;
+        }
+
+        updateCarouselPosition();
+
+        if (exploreViewport.hasPointerCapture(event.pointerId)) {
+            exploreViewport.releasePointerCapture(event.pointerId);
+        }
+
+        dragDistance = 0;
+    }
+    exploreViewport.addEventListener("pointerup", endDrag);
+    exploreViewport.addEventListener("pointercancel", endDrag);
+    renderCarousel();
 }
+
 
 const exploreGallery = document.querySelector(".explore-gallery");
 
