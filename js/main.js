@@ -174,7 +174,8 @@ if (document.body.classList.contains("home-v2")) {
                 <a class="explore-card"
                     href="music-detail.html?id=${mixId}"
                     aria-label="前往 ${mix.title} 詳細頁">
-                    <span class="explore-card-image">
+                    <span class="explore-card-image"
+                        style="background-image: url('${mix.cover}')">
                         <img src="${mix.cover}"
                             alt="${mix.title} 音樂封面"
                             draggable="false">
@@ -186,6 +187,23 @@ if (document.body.classList.contains("home-v2")) {
                 </a>
             `;
         }).join("");
+
+        exploreTrack.querySelectorAll(".explore-card-image img").forEach(function (image) {
+            const cover = image.closest(".explore-card-image");
+
+            function setCoverMode() {
+                const fillsByHeight = image.naturalWidth / image.naturalHeight >= 4 / 3;
+
+                cover.classList.toggle("is-cover-by-height", fillsByHeight);
+                cover.classList.toggle("is-cover-by-width", !fillsByHeight);
+            }
+
+            if (image.complete && image.naturalWidth > 0) {
+                setCoverMode();
+            } else {
+                image.addEventListener("load", setCoverMode, { once: true });
+            }
+        });
 
         updateCardStep();
         updateCarouselPosition();
@@ -467,39 +485,76 @@ if (detailPage) {
         title: mix.title
     });
 
-    // 建立 Gallery 並切換左側主視覺。
-    // 先放入 Cover，再過濾 gallery[] 中重複的 Cover，確保可切回原始封面。
+    // 建立共用 Visual Gallery，縮圖只負責切換左側主視覺。
     const detailGallery = document.querySelector(".detail-gallery");
-    const galleryImages = [mix.cover].concat(mix.gallery.filter(function (imagePath) {
-        return imagePath !== mix.cover;
-    }));
+    const galleryImages = Array.from({ length: 17 }, function (_, index) {
+        return `images/${String(index).padStart(2, "0")}.png`;
+    });
 
     detailGallery.innerHTML = galleryImages.map(function (imagePath, index) {
+        const isActive = imagePath === mix.cover;
+
         return `
-            <button class="detail-gallery-thumb${index === 0 ? " is-active" : ""}" type="button" data-image="${imagePath}" aria-label="顯示第 ${index + 1} 張 Mix 圖片">
-                <img src="${imagePath}" alt="${mix.title} Gallery ${index + 1}">
+            <button class="detail-gallery-thumb${isActive ? " is-active" : ""}" type="button" data-image="${imagePath}" data-image-index="${index}" aria-label="顯示第 ${index + 1} 張 Gallery 圖片" aria-pressed="${isActive}">
+                <img src="${imagePath}" alt="${mix.title} Gallery ${index + 1}" loading="lazy">
             </button>
         `;
     }).join("");
 
-    // 以「縮圖寬度 + Grid Gap」計算一次捲動距離，保持每次前進一張。
-    function scrollDetailGallery(direction) {
-        const thumbnail = detailGallery.querySelector(".detail-gallery-thumb");
-        if (!thumbnail) return;
+    const galleryThumbnails = Array.from(detailGallery.querySelectorAll(".detail-gallery-thumb"));
+    let currentGalleryIndex = galleryImages.indexOf(mix.cover);
 
-        const galleryGap = parseFloat(window.getComputedStyle(detailGallery).gap) || 0;
-        detailGallery.scrollBy({
-            left: direction * (thumbnail.offsetWidth + galleryGap),
-            behavior: "smooth"
+    function scrollGalleryThumbnailIntoView(thumbnail, behavior) {
+        const galleryRect = detailGallery.getBoundingClientRect();
+        const thumbnailRect = thumbnail.getBoundingClientRect();
+
+        if (thumbnailRect.left >= galleryRect.left && thumbnailRect.right <= galleryRect.right) {
+            return;
+        }
+
+        const targetLeft = detailGallery.scrollLeft
+            + thumbnailRect.left
+            - galleryRect.left
+            - (detailGallery.clientWidth - thumbnail.offsetWidth) / 2;
+
+        detailGallery.scrollTo({ left: targetLeft, behavior: behavior });
+    }
+
+    function selectGalleryImage(index, behavior = "smooth") {
+        currentGalleryIndex = (index + galleryImages.length) % galleryImages.length;
+
+        const imagePath = galleryImages[currentGalleryIndex];
+        const activeThumbnail = galleryThumbnails[currentGalleryIndex];
+
+        mainVisual.src = imagePath;
+        mainVisual.alt = imagePath === mix.cover
+            ? `${mix.title} 主視覺`
+            : `${mix.title} Gallery ${currentGalleryIndex + 1}`;
+
+        galleryThumbnails.forEach(function (button, thumbnailIndex) {
+            const isActive = thumbnailIndex === currentGalleryIndex;
+
+            button.classList.toggle("is-active", isActive);
+            button.setAttribute("aria-pressed", String(isActive));
         });
+
+        scrollGalleryThumbnailIntoView(activeThumbnail, behavior);
+    }
+
+    function moveGallerySelection(direction) {
+        const nextIndex = currentGalleryIndex === -1
+            ? (direction > 0 ? 0 : galleryImages.length - 1)
+            : currentGalleryIndex + direction;
+
+        selectGalleryImage(nextIndex);
     }
 
     document.querySelector(".detail-gallery-previous").addEventListener("click", function () {
-        scrollDetailGallery(-1);
+        moveGallerySelection(-1);
     });
 
     document.querySelector(".detail-gallery-next").addEventListener("click", function () {
-        scrollDetailGallery(1);
+        moveGallerySelection(1);
     });
 
     detailGallery.addEventListener("click", function (event) {
@@ -507,11 +562,14 @@ if (detailPage) {
         const thumbnail = event.target.closest(".detail-gallery-thumb");
         if (!thumbnail) return;
 
-        mainVisual.src = thumbnail.dataset.image;
-        document.querySelectorAll(".detail-gallery-thumb").forEach(function (button) {
-            button.classList.toggle("is-active", button === thumbnail);
-        });
+        selectGalleryImage(Number(thumbnail.dataset.imageIndex));
     });
+
+    if (currentGalleryIndex !== -1) {
+        requestAnimationFrame(function () {
+            scrollGalleryThumbnailIntoView(galleryThumbnails[currentGalleryIndex], "auto");
+        });
+    }
 }
 
 const aboutBackgroundLayers = document.querySelectorAll(".about-background-layer");

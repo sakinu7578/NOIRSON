@@ -715,31 +715,46 @@ a {
     aspect-ratio: 4 / 3;
     overflow: hidden;
     background: #151612;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     isolation: isolate;
 }
 
 .explore-card-image img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
 
     pointer-events: none;
     user-select: none;
     -webkit-user-drag: none;
-
-    filter: saturate(0.84) brightness(0.86);
-    transition: filter 280ms ease;
 }
 
-.explore-card:hover img {
-    filter: saturate(1) brightness(1);
+.explore-card-image.is-cover-by-height {
+    background-size: auto 100%;
+    transition: background-size 320ms ease;
+}
+
+.explore-card-image.is-cover-by-width {
+    background-size: 100% auto;
+    transition: background-size 320ms ease;
+}
+
+.explore-card:hover .explore-card-image.is-cover-by-height {
+    background-size: auto 101.5%;
+}
+
+.explore-card:hover .explore-card-image.is-cover-by-width {
+    background-size: 101.5% auto;
 }
 
 .explore-card-copy {
     position: absolute;
     z-index: 1;
-    inset: 0;
+    inset: auto 0 0;
+    height: 62%;
 
     display: flex;
     flex-direction: column;
@@ -749,31 +764,25 @@ a {
 
     background: linear-gradient(
         to top,
-        rgba(0, 0, 0.78) 0%,
-        rgba(0, 0, 0.28) 25%,
-        rgba(0, 0, 0) 50%
+        rgba(0, 0, 0, 0.58) 0%,
+        rgba(0, 0, 0, 0.22) 52%,
+        rgba(0, 0, 0, 0) 100%
     );
-
-    opacity: 0;
-    transition: opacity 180ms ease;
 
     pointer-events: none;
 }
 
-.explore-card:hover .explore-card-copy{
-    opacity: 0.5;
-}
-.explore-card-copy strong {
-    color: #fff;
-}
-
+.explore-card-copy strong,
 .explore-card-copy small {
-    color: rgba(255, 255, 255, 0.7);
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 250ms ease, transform 250ms ease;
 }
 
 .explore-card-copy strong {
     display: -webkit-box;
     overflow: hidden;
+    color: #fff;
     font-family: "Roboto Slab", serif;
     font-size: 0.82rem;
     font-weight: 400;
@@ -784,8 +793,25 @@ a {
 }
 
 .explore-card-copy small {
+    color: rgba(255, 255, 255, 0.7);
     font-size: 0.63rem;
     letter-spacing: 0.05em;
+}
+
+.explore-card:hover .explore-card-copy strong,
+.explore-card:hover .explore-card-copy small,
+.explore-card:focus-within .explore-card-copy strong,
+.explore-card:focus-within .explore-card-copy small {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+@media (hover: none) {
+    .explore-card-copy strong,
+    .explore-card-copy small {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .explore-arrow {
@@ -1417,8 +1443,12 @@ a {
     gap: clamp(0.55rem, 0.9vw, 0.9rem);
     overflow-x: auto;
     padding-bottom: 0.45rem;
-    scrollbar-color: rgba(153, 150, 106, 0.5) rgba(228, 224, 214, 0.08);
-    scrollbar-width: thin;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.detail-gallery::-webkit-scrollbar {
+    display: none;
 }
 
 .detail-gallery-thumb {
@@ -1901,7 +1931,7 @@ a {
     }
     .detail-gallery-controls { grid-template-columns: 28px minmax(0, 1fr) 28px; gap: 0.45rem; }
     .detail-gallery-arrow { width: 28px; height: 28px; }
-    .detail-gallery-button { flex-basis: 135px; }
+    .detail-gallery-thumb { flex-basis: 135px; }
     .about-world,
     .about-sound,
     .about-subscribe { width: 90vw; }
