@@ -1499,14 +1499,18 @@ a {
 }
 
 .about-background {
-    /* absolute 將輪播限制在 About Hero，不讓背景層覆蓋後方 Footer。 */
-    position: absolute;
+    /* 固定在視窗，頁面內容捲動時背景維持原位。 */
+    position: fixed;
     z-index: 0;
-    top: 64px;
-    right: 0;
-    height: calc(100svh - 64px);
-    left: 0;
+    inset: 0;
     pointer-events: none;
+}
+
+/* Footer 使用實色背景，避免固定輪播透過 Footer 顯示。 */
+.about-v2 .site-footer {
+    position: relative;
+    z-index: 1;
+    background: var(--color-ink);
 }
 
 .about-background-layer,
