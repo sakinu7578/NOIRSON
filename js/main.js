@@ -768,9 +768,33 @@ const exploreGallery = document.querySelector(".explore-gallery");
 // 使用 mix-data.js 的正式資料動態建立八張卡片，不在 HTML 重複維護內容。
 // ========================================
 if (exploreGallery) {
-    exploreGallery.innerHTML = Object.entries(mixes).map(function ([mixId, mix]) {
+    const exploreStageShell = document.querySelector(".explore-stage-shell");
+    const exploreStageProgress = document.querySelector(".explore-stage-progress");
+    const exploreStageCurrent = document.querySelector(".explore-stage-current");
+    const exploreStageTotal = document.querySelector(".explore-stage-total");
+    const exploreFilterButtons = Array.from(document.querySelectorAll(".explore-filter"));
+    const exploreMixEntries = Object.entries(mixes);
+    let exploreStages = createExploreStages(exploreMixEntries);
+    let currentExploreStage = 0;
+    let isExploreStageSwitching = false;
+    let exploreWheelDelta = 0;
+    let exploreWheelResetTimer = null;
+    let exploreTouchStartY = null;
+    let exploreRenderId = 0;
+
+    function createExploreStages(mixEntries) {
+        const stages = [];
+
+        for (let index = 0; index < mixEntries.length; index += 3) {
+            stages.push(mixEntries.slice(index, index + 3));
+        }
+
+        return stages.length ? stages : [[]];
+    }
+
+    function createExploreCard([mixId, mix], cardIndex, direction) {
         return `
-            <article class="explore-gallery-item">
+            <article class="explore-gallery-item is-entering-${direction}" style="--stage-delay: ${cardIndex * 60}ms">
                 <a href="music-detail.html?id=${mixId}" aria-label="前往 ${mix.title} 詳細頁">
                     <span class="explore-gallery-cover">
                         <img src="${mix.cover}" alt="${mix.title} 音樂封面">
@@ -783,7 +807,167 @@ if (exploreGallery) {
                 </a>
             </article>
         `;
-    }).join("");
+    }
+
+    function renderExploreStage(direction = "next") {
+        const renderId = ++exploreRenderId;
+        const currentStageMixes = exploreStages[currentExploreStage];
+
+        exploreGallery.dataset.count = String(currentStageMixes.length);
+        exploreGallery.innerHTML = currentStageMixes.length
+            ? currentStageMixes.map(function (mixEntry, cardIndex) {
+                return createExploreCard(mixEntry, cardIndex, direction);
+            }).join("")
+            : '<p class="explore-no-results">No Mixes Found</p>';
+        exploreStageProgress.hidden = currentStageMixes.length === 0;
+        exploreStageCurrent.textContent = String(currentExploreStage + 1).padStart(2, "0");
+        exploreStageTotal.textContent = String(exploreStages.length).padStart(2, "0");
+
+        const enteringCards = Array.from(exploreGallery.querySelectorAll(".explore-gallery-item"));
+        const enteringImagesReady = enteringCards.map(function (card) {
+            const image = card.querySelector("img");
+            if (!image || image.complete) return Promise.resolve();
+
+            return new Promise(function (resolve) {
+                image.addEventListener("load", resolve, { once: true });
+                image.addEventListener("error", resolve, { once: true });
+            });
+        });
+
+        Promise.all(enteringImagesReady).then(function () {
+            if (renderId !== exploreRenderId) return;
+
+            window.requestAnimationFrame(function () {
+                window.requestAnimationFrame(function () {
+                    if (renderId !== exploreRenderId) return;
+
+                    enteringCards.forEach(function (card) {
+                        card.classList.add("is-stage-visible");
+                    });
+
+                    window.setTimeout(function () {
+                        if (renderId !== exploreRenderId) return;
+
+                        enteringCards.forEach(function (card) {
+                            card.classList.remove("is-entering-next", "is-entering-previous", "is-stage-visible");
+                            card.style.removeProperty("--stage-delay");
+                        });
+                    }, 760);
+                });
+            });
+        });
+    }
+
+    function switchExploreStage(direction) {
+        if (isExploreStageSwitching || exploreStages.length <= 1) return false;
+
+        const nextStage = (currentExploreStage + direction + exploreStages.length) % exploreStages.length;
+
+        isExploreStageSwitching = true;
+        const directionName = direction > 0 ? "next" : "previous";
+        const currentCards = exploreGallery.querySelectorAll(".explore-gallery-item");
+
+        currentCards.forEach(function (card) {
+            card.style.setProperty("--stage-delay", "0ms");
+            card.classList.add(`is-leaving-${directionName}`);
+        });
+
+        window.setTimeout(function () {
+            currentExploreStage = nextStage;
+            renderExploreStage(directionName);
+        }, 220);
+
+        window.setTimeout(function () {
+            isExploreStageSwitching = false;
+        }, 900);
+
+        return true;
+    }
+
+    function applyExploreFilter(genre, activeButton) {
+        if (isExploreStageSwitching) return;
+
+        isExploreStageSwitching = true;
+        const currentCards = exploreGallery.querySelectorAll(".explore-gallery-item");
+
+        currentCards.forEach(function (card) {
+            card.style.setProperty("--stage-delay", "0ms");
+            card.classList.add("is-leaving-next");
+        });
+
+        exploreFilterButtons.forEach(function (button) {
+            const isActive = button === activeButton;
+            button.classList.toggle("is-active", isActive);
+            button.setAttribute("aria-pressed", String(isActive));
+        });
+
+        window.setTimeout(function () {
+            const filteredEntries = genre === "all"
+                ? exploreMixEntries
+                : exploreMixEntries.filter(function ([, mix]) { return mix.series === genre; });
+
+            exploreStages = createExploreStages(filteredEntries);
+            currentExploreStage = 0;
+            renderExploreStage("next");
+        }, 220);
+
+        window.setTimeout(function () {
+            isExploreStageSwitching = false;
+        }, 900);
+    }
+
+    exploreFilterButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+            if (button.getAttribute("aria-pressed") === "true") return;
+            applyExploreFilter(button.dataset.genre, button);
+        });
+    });
+
+    exploreStageShell.addEventListener("wheel", function (event) {
+        if (event.ctrlKey) return;
+
+        const normalizedDelta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY;
+        if (Math.abs(normalizedDelta) < 1) return;
+
+        if (isExploreStageSwitching) {
+            event.preventDefault();
+            return;
+        }
+
+        const direction = normalizedDelta > 0 ? 1 : -1;
+        if (exploreStages.length <= 1) return;
+
+        event.preventDefault();
+
+        if (exploreWheelDelta !== 0 && Math.sign(exploreWheelDelta) !== direction) exploreWheelDelta = 0;
+        exploreWheelDelta += normalizedDelta;
+        window.clearTimeout(exploreWheelResetTimer);
+        exploreWheelResetTimer = window.setTimeout(function () { exploreWheelDelta = 0; }, 120);
+
+        if (Math.abs(exploreWheelDelta) < 24) return;
+
+        exploreWheelDelta = 0;
+        switchExploreStage(direction);
+    }, { passive: false });
+
+    exploreStageShell.addEventListener("touchstart", function (event) {
+        exploreTouchStartY = event.touches[0].clientY;
+    }, { passive: true });
+
+    exploreStageShell.addEventListener("touchend", function (event) {
+        if (exploreTouchStartY === null || !event.changedTouches.length) return;
+
+        const touchDistance = event.changedTouches[0].clientY - exploreTouchStartY;
+        exploreTouchStartY = null;
+
+        if (Math.abs(touchDistance) >= 50) switchExploreStage(touchDistance < 0 ? 1 : -1);
+    }, { passive: true });
+
+    exploreStageShell.addEventListener("touchcancel", function () {
+        exploreTouchStartY = null;
+    }, { passive: true });
+
+    renderExploreStage();
 }
 
 const detailPage = document.querySelector(".detail-v2");
@@ -797,8 +981,12 @@ if (detailPage) {
     const mixId = mixes[requestedMixId] ? requestedMixId : "M001";
     const mix = mixes[mixId];
     const mainVisual = document.querySelector("#detail-main-visual");
+    const mainVisualLayers = Array.from(document.querySelectorAll(".detail-main-visual-layer"));
     const detailAudio = document.querySelector("#detail-audio");
     const detailLoopButton = document.querySelector(".detail-loop");
+    const detailAutoNextButton = document.querySelector(".detail-auto-next");
+    const detailVolumeButton = document.querySelector(".detail-volume-toggle");
+    const detailVolumeSlider = document.querySelector("#detail-volume");
 
     document.title = `${mix.title} | NOIRSON`;
     document.querySelector("#detail-mix-id").textContent = mixId;
@@ -810,33 +998,82 @@ if (detailPage) {
     mainVisual.alt = `${mix.title} 主視覺`;
     detailAudio.src = mix.audio;
 
-    // 同一個分頁切換 Mix 時保留循環設定；首次進入預設關閉。
+    // 同一個分頁切換 Mix 時保留播放模式；首次進入預設全部關閉。
     const detailLoopStorageKey = "noirson-detail-loop";
+    const detailAutoNextStorageKey = "noirson-detail-auto-next";
+    const detailAutoplayStorageKey = "noirson-detail-autoplay";
+    let detailAutoNextEnabled = false;
 
     try {
         detailAudio.loop = window.sessionStorage.getItem(detailLoopStorageKey) === "true";
+        detailAutoNextEnabled = window.sessionStorage.getItem(detailAutoNextStorageKey) === "true";
     } catch (error) {
         detailAudio.loop = false;
+        detailAutoNextEnabled = false;
     }
 
-    function updateDetailLoopControl() {
+    // 舊狀態若同時為 true，優先保留 Loop，確保兩種結束行為不會衝突。
+    if (detailAudio.loop && detailAutoNextEnabled) detailAutoNextEnabled = false;
+
+    function saveDetailPlaybackModes() {
+        try {
+            window.sessionStorage.setItem(detailLoopStorageKey, String(detailAudio.loop));
+            window.sessionStorage.setItem(detailAutoNextStorageKey, String(detailAutoNextEnabled));
+        } catch (error) {
+            // 儲存空間不可用時，模式仍可在目前頁面正常運作。
+        }
+    }
+
+    function updateDetailPlaybackModeControls() {
         detailLoopButton.setAttribute("aria-pressed", String(detailAudio.loop));
         detailLoopButton.setAttribute("aria-label", detailAudio.loop ? "關閉循環播放" : "開啟循環播放");
+        detailAutoNextButton.setAttribute("aria-pressed", String(detailAutoNextEnabled));
+        detailAutoNextButton.setAttribute("aria-label", detailAutoNextEnabled ? "關閉自動下一首" : "開啟自動下一首");
     }
 
     detailLoopButton.addEventListener("click", function () {
         detailAudio.loop = !detailAudio.loop;
-
-        try {
-            window.sessionStorage.setItem(detailLoopStorageKey, String(detailAudio.loop));
-        } catch (error) {
-            // 儲存空間不可用時仍保留目前頁面的 audio.loop 行為。
-        }
-
-        updateDetailLoopControl();
+        if (detailAudio.loop) detailAutoNextEnabled = false;
+        saveDetailPlaybackModes();
+        updateDetailPlaybackModeControls();
     });
 
-    updateDetailLoopControl();
+    detailAutoNextButton.addEventListener("click", function () {
+        detailAutoNextEnabled = !detailAutoNextEnabled;
+        if (detailAutoNextEnabled) detailAudio.loop = false;
+        saveDetailPlaybackModes();
+        updateDetailPlaybackModeControls();
+    });
+
+    saveDetailPlaybackModes();
+    updateDetailPlaybackModeControls();
+
+    function updateDetailVolumeControl() {
+        const isMuted = detailAudio.muted;
+        detailVolumeSlider.value = detailAudio.volume;
+        detailVolumeSlider.style.setProperty("--volume", `${detailAudio.volume * 100}%`);
+        detailVolumeSlider.hidden = isMuted;
+        detailVolumeButton.setAttribute("aria-pressed", String(isMuted));
+        detailVolumeButton.setAttribute("aria-label", isMuted ? "解除靜音" : "靜音");
+        detailVolumeButton.title = isMuted ? "解除靜音" : "靜音";
+    }
+
+    detailVolumeSlider.addEventListener("input", function () {
+        detailAudio.volume = Number(detailVolumeSlider.value);
+        if (detailAudio.volume > 0) detailAudio.muted = false;
+    });
+
+    detailVolumeButton.addEventListener("click", function () {
+        if (detailAudio.muted) {
+            detailAudio.muted = false;
+            detailAudio.volume = 0;
+        } else {
+            detailAudio.muted = true;
+        }
+    });
+
+    detailAudio.addEventListener("volumechange", updateDetailVolumeControl);
+    updateDetailVolumeControl();
 
     const youtubeLink = document.querySelector("#detail-youtube");
     youtubeLink.href = mix.youtube;
@@ -909,8 +1146,38 @@ if (detailPage) {
         title: mix.title
     });
 
+    detailAudio.addEventListener("ended", function () {
+        if (!detailAutoNextEnabled || detailAudio.loop) return;
+
+        try {
+            window.sessionStorage.setItem(detailAutoplayStorageKey, "true");
+        } catch (error) {
+            // 即使無法保存自動播放提示，仍導向下一首 Mix。
+        }
+
+        window.location.href = `music-detail.html?id=${nextMixId}`;
+    });
+
+    let shouldAutoplayDetailMix = false;
+
+    try {
+        shouldAutoplayDetailMix = window.sessionStorage.getItem(detailAutoplayStorageKey) === "true";
+        window.sessionStorage.removeItem(detailAutoplayStorageKey);
+    } catch (error) {
+        shouldAutoplayDetailMix = false;
+    }
+
+    if (shouldAutoplayDetailMix && detailAutoNextEnabled) {
+        detailAudio.play().catch(function () {
+            // 瀏覽器若阻擋跨頁自動播放，保留新 Mix 並等待使用者手動播放。
+        });
+    }
+
     // 建立共用 Visual Gallery，縮圖只負責切換左側主視覺。
     const detailGallery = document.querySelector(".detail-gallery");
+    const detailGalleryAutoButton = document.querySelector(".detail-gallery-auto");
+    const gallerySlideshowInterval = 6000;
+    const galleryAutoplayStorageKey = "noirson-detail-gallery-auto";
     const galleryImages = Array.from({ length: 17 }, function (_, index) {
         return `images/${String(index).padStart(2, "0")}.png`;
     });
@@ -927,6 +1194,18 @@ if (detailPage) {
 
     const galleryThumbnails = Array.from(detailGallery.querySelectorAll(".detail-gallery-thumb"));
     let currentGalleryIndex = galleryImages.indexOf(mix.cover);
+    let galleryAutoplayTimer = null;
+    let isGalleryAutoplayActive = true;
+    let activeMainVisualLayer = 0;
+    let mainVisualRequest = 0;
+    let mainVisualTransitionTimer = null;
+
+    try {
+        const savedGalleryAutoplay = window.sessionStorage.getItem(galleryAutoplayStorageKey);
+        isGalleryAutoplayActive = savedGalleryAutoplay === null ? true : savedGalleryAutoplay === "true";
+    } catch (error) {
+        isGalleryAutoplayActive = true;
+    }
 
     function scrollGalleryThumbnailIntoView(thumbnail, behavior) {
         const galleryRect = detailGallery.getBoundingClientRect();
@@ -944,16 +1223,68 @@ if (detailPage) {
         detailGallery.scrollTo({ left: targetLeft, behavior: behavior });
     }
 
+    function updateMainVisual(imagePath, altText) {
+        const requestId = ++mainVisualRequest;
+        const preloadImage = new Image();
+
+        function beginMainVisualCrossfade() {
+            if (requestId !== mainVisualRequest) return;
+
+            window.clearTimeout(mainVisualTransitionTimer);
+
+            const currentLayer = mainVisualLayers[activeMainVisualLayer];
+            const nextLayerIndex = activeMainVisualLayer === 0 ? 1 : 0;
+            const nextLayer = mainVisualLayers[nextLayerIndex];
+            const nextImage = nextLayer.querySelector("img");
+
+            // 快速連續切換時，先固定目前可見層，再讓最新圖片從另一層淡入。
+            currentLayer.classList.add("is-resetting", "is-active");
+            currentLayer.style.zIndex = "0";
+            void currentLayer.offsetWidth;
+            currentLayer.classList.remove("is-resetting");
+
+            nextLayer.classList.add("is-resetting");
+            nextLayer.classList.remove("is-active");
+            nextLayer.style.zIndex = "1";
+            nextImage.src = imagePath;
+            nextImage.alt = altText;
+            currentLayer.setAttribute("aria-hidden", "true");
+            nextLayer.removeAttribute("aria-hidden");
+            void nextLayer.offsetWidth;
+            nextLayer.classList.remove("is-resetting");
+            nextLayer.classList.add("is-active");
+            activeMainVisualLayer = nextLayerIndex;
+
+            mainVisualTransitionTimer = window.setTimeout(function () {
+                currentLayer.classList.add("is-resetting");
+                currentLayer.classList.remove("is-active");
+                currentLayer.style.zIndex = "0";
+                nextLayer.style.zIndex = "0";
+                void currentLayer.offsetWidth;
+                currentLayer.classList.remove("is-resetting");
+                mainVisualTransitionTimer = null;
+            }, 800);
+        }
+
+        preloadImage.addEventListener("load", beginMainVisualCrossfade, { once: true });
+        preloadImage.src = imagePath;
+
+        if (preloadImage.complete && preloadImage.naturalWidth > 0) {
+            preloadImage.removeEventListener("load", beginMainVisualCrossfade);
+            beginMainVisualCrossfade();
+        }
+    }
+
     function selectGalleryImage(index, behavior = "smooth") {
         currentGalleryIndex = (index + galleryImages.length) % galleryImages.length;
 
         const imagePath = galleryImages[currentGalleryIndex];
         const activeThumbnail = galleryThumbnails[currentGalleryIndex];
-
-        mainVisual.src = imagePath;
-        mainVisual.alt = imagePath === mix.cover
+        const mainVisualAlt = imagePath === mix.cover
             ? `${mix.title} 主視覺`
             : `${mix.title} Gallery ${currentGalleryIndex + 1}`;
+
+        updateMainVisual(imagePath, mainVisualAlt);
 
         galleryThumbnails.forEach(function (button, thumbnailIndex) {
             const isActive = thumbnailIndex === currentGalleryIndex;
@@ -973,12 +1304,59 @@ if (detailPage) {
         selectGalleryImage(nextIndex);
     }
 
+    function updateGalleryAutoplayControl() {
+        detailGalleryAutoButton.setAttribute("aria-pressed", String(isGalleryAutoplayActive));
+        detailGalleryAutoButton.setAttribute(
+            "aria-label",
+            isGalleryAutoplayActive ? "停止 Visuals 自動輪播" : "開啟 Visuals 自動輪播"
+        );
+    }
+
+    function saveGalleryAutoplayState() {
+        try {
+            window.sessionStorage.setItem(galleryAutoplayStorageKey, String(isGalleryAutoplayActive));
+        } catch (error) {
+            // 儲存空間不可用時，Auto 狀態仍可在目前頁面運作。
+        }
+    }
+
+    function clearGalleryAutoplayTimer() {
+        window.clearTimeout(galleryAutoplayTimer);
+        galleryAutoplayTimer = null;
+    }
+
+    function scheduleGalleryAutoplay() {
+        clearGalleryAutoplayTimer();
+        if (!isGalleryAutoplayActive) return;
+
+        galleryAutoplayTimer = window.setTimeout(function () {
+            const nextIndex = currentGalleryIndex === -1 ? 0 : currentGalleryIndex + 1;
+            selectGalleryImage(nextIndex);
+            scheduleGalleryAutoplay();
+        }, gallerySlideshowInterval);
+    }
+
+    function setGalleryAutoplay(isActive) {
+        isGalleryAutoplayActive = isActive;
+        clearGalleryAutoplayTimer();
+        updateGalleryAutoplayControl();
+        saveGalleryAutoplayState();
+
+        if (isGalleryAutoplayActive) scheduleGalleryAutoplay();
+    }
+
+    detailGalleryAutoButton.addEventListener("click", function () {
+        setGalleryAutoplay(!isGalleryAutoplayActive);
+    });
+
     document.querySelector(".detail-gallery-previous").addEventListener("click", function () {
         moveGallerySelection(-1);
+        if (isGalleryAutoplayActive) scheduleGalleryAutoplay();
     });
 
     document.querySelector(".detail-gallery-next").addEventListener("click", function () {
         moveGallerySelection(1);
+        if (isGalleryAutoplayActive) scheduleGalleryAutoplay();
     });
 
     detailGallery.addEventListener("click", function (event) {
@@ -987,7 +1365,11 @@ if (detailPage) {
         if (!thumbnail) return;
 
         selectGalleryImage(Number(thumbnail.dataset.imageIndex));
+        if (isGalleryAutoplayActive) scheduleGalleryAutoplay();
     });
+
+    updateGalleryAutoplayControl();
+    if (isGalleryAutoplayActive) scheduleGalleryAutoplay();
 
     if (currentGalleryIndex !== -1) {
         requestAnimationFrame(function () {
@@ -1034,4 +1416,85 @@ if (aboutBackgroundLayers.length === 2) {
         aboutBackgroundLayers[activeLayerIndex].classList.remove("is-active");
         activeLayerIndex = nextLayerIndex;
     }, 3500);
+}
+
+const memberBackgroundLayers = document.querySelectorAll(".auth-background-layer");
+
+// ========================================
+// LOGIN / REGISTER：會員頁背景 Crossfade
+// 兩個背景層交替淡入；圖片載入完成後才開始轉場。
+// ========================================
+if (memberBackgroundLayers.length === 2) {
+    const memberSlideshowInterval = 8000;
+    const memberSlideshowFadeDuration = 2000;
+    const memberSlideshowImages = [
+        "images/05.png",
+        "images/06.png",
+        "images/10.png",
+        "images/12.png"
+    ];
+    const reduceMemberMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const memberPreloads = memberSlideshowImages.map(function (imagePath) {
+        const image = new Image();
+        image.src = imagePath;
+        return image;
+    });
+    let memberImageIndex = Math.floor(Math.random() * memberSlideshowImages.length);
+    let activeMemberLayer = 0;
+    let memberSlideshowTimer = null;
+    let memberFadeTimer = null;
+    let memberRequestId = 0;
+
+    memberBackgroundLayers[0].style.backgroundImage = `url("${memberSlideshowImages[memberImageIndex]}")`;
+
+    function scheduleMemberSlideshow() {
+        window.clearTimeout(memberSlideshowTimer);
+        memberSlideshowTimer = window.setTimeout(advanceMemberSlideshow, memberSlideshowInterval);
+    }
+
+    function advanceMemberSlideshow() {
+        let nextIndex;
+
+        do {
+            nextIndex = Math.floor(Math.random() * memberSlideshowImages.length);
+        } while (nextIndex === memberImageIndex);
+
+        const requestedImage = memberPreloads[nextIndex];
+        const requestId = ++memberRequestId;
+
+        function beginMemberCrossfade() {
+            if (requestId !== memberRequestId) return;
+
+            const nextLayerIndex = activeMemberLayer === 0 ? 1 : 0;
+            const currentLayer = memberBackgroundLayers[activeMemberLayer];
+            const nextLayer = memberBackgroundLayers[nextLayerIndex];
+
+            nextLayer.style.backgroundImage = `url("${memberSlideshowImages[nextIndex]}")`;
+            nextLayer.style.zIndex = "1";
+            nextLayer.classList.add("is-active");
+            scheduleMemberSlideshow();
+
+            window.clearTimeout(memberFadeTimer);
+            memberFadeTimer = window.setTimeout(function () {
+                currentLayer.classList.add("is-resetting");
+                currentLayer.classList.remove("is-active");
+                currentLayer.style.zIndex = "0";
+                nextLayer.style.zIndex = "0";
+                void currentLayer.offsetWidth;
+                currentLayer.classList.remove("is-resetting");
+                activeMemberLayer = nextLayerIndex;
+                memberImageIndex = nextIndex;
+                memberFadeTimer = null;
+            }, memberSlideshowFadeDuration);
+        }
+
+        if (requestedImage.complete && requestedImage.naturalWidth > 0) {
+            beginMemberCrossfade();
+        } else {
+            requestedImage.addEventListener("load", beginMemberCrossfade, { once: true });
+            requestedImage.addEventListener("error", scheduleMemberSlideshow, { once: true });
+        }
+    }
+
+    if (!reduceMemberMotion) scheduleMemberSlideshow();
 }

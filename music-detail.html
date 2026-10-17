@@ -24,12 +24,22 @@
         <section class="music-detail-hero" aria-labelledby="music-detail-title">
             <div class="music-detail-media">
                 <div class="music-detail-visual">
-                    <img id="detail-main-visual" src="images/00.png" alt="">
+                    <div class="detail-main-visual-layer is-active">
+                        <img id="detail-main-visual" src="images/00.png" alt="">
+                    </div>
+                    <div class="detail-main-visual-layer" aria-hidden="true">
+                        <img src="images/00.png" alt="">
+                    </div>
                 </div>
                 <section class="detail-gallery-section" aria-labelledby="detail-gallery-title">
                     <div class="detail-gallery-heading">
                         <p class="section-label">VISUALS</p>
-                        <h2 id="detail-gallery-title">FROM THIS MIX</h2>
+                        <div class="detail-gallery-title-row">
+                            <h2 id="detail-gallery-title">FROM THIS MIX</h2>
+                            <button class="detail-gallery-auto" type="button" aria-label="開啟 Visuals 自動輪播" aria-pressed="false" title="自動輪播">
+                                <span class="detail-gallery-auto-icon" aria-hidden="true"></span>
+                            </button>
+                        </div>
                     </div>
                     <div class="detail-gallery-controls">
                         <button class="detail-gallery-arrow detail-gallery-previous" type="button" aria-label="向左瀏覽 Gallery">←</button>
@@ -56,22 +66,42 @@
                         <input id="detail-progress" class="signature-progress" type="range" min="0" max="100" value="0" step="0.1">
                         <div class="detail-player-times">
                             <span id="detail-current-time">00:00</span>
-                            <button class="detail-loop" type="button" aria-label="開啟循環播放" aria-pressed="false" title="循環播放">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M17 2l3 3-3 3"></path>
-                                    <path d="M4 11V9a4 4 0 0 1 4-4h12"></path>
-                                    <path d="M7 22l-3-3 3-3"></path>
-                                    <path d="M20 13v2a4 4 0 0 1-4 4H4"></path>
-                                    <path d="M12 9v6"></path>
-                                    <path d="M10.5 10.5 12 9"></path>
-                                </svg>
-                            </button>
                             <span id="detail-total-time">00:00</span>
                         </div>
                     </div>
                     <button class="detail-playlist-toggle" type="button" aria-label="開啟播放清單" aria-expanded="false">
                         <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
                     </button>
+                    <div class="detail-player-secondary" aria-label="播放模式與音量控制">
+                        <button class="detail-loop" type="button" aria-label="開啟循環播放" aria-pressed="false" title="循環播放">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M17 2l3 3-3 3"></path>
+                                <path d="M4 11V9a4 4 0 0 1 4-4h12"></path>
+                                <path d="M7 22l-3-3 3-3"></path>
+                                <path d="M20 13v2a4 4 0 0 1-4 4H4"></path>
+                                <path d="M12 9v6"></path>
+                                <path d="M10.5 10.5 12 9"></path>
+                            </svg>
+                        </button>
+                        <div class="detail-volume">
+                            <button class="detail-volume-toggle" type="button" aria-label="靜音" aria-pressed="false" title="靜音">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M5 9v6h4l5 4V5L9 9H5"></path>
+                                    <path class="detail-volume-wave" d="M17 9.5a4 4 0 0 1 0 5"></path>
+                                    <path class="detail-volume-wave" d="M19.5 7a7.5 7.5 0 0 1 0 10"></path>
+                                    <path class="detail-volume-x" d="m17 9 5 6m0-6-5 6"></path>
+                                </svg>
+                            </button>
+                            <label class="visually-hidden" for="detail-volume">音量</label>
+                            <input id="detail-volume" class="detail-volume-slider" type="range" min="0" max="1" value="1" step="0.01">
+                        </div>
+                        <button class="detail-auto-next" type="button" aria-label="開啟自動下一首" aria-pressed="false" title="自動下一首">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="m5 6 8 6-8 6V6"></path>
+                                <path d="m13 6 8 6-8 6V6"></path>
+                            </svg>
+                        </button>
+                    </div>
                     <aside class="detail-playlist-panel" aria-label="NOIRSON 播放清單" hidden>
                         <div class="detail-playlist-header">
                             <div><span>PLAYLIST</span><strong>NOIRSON MIXES</strong></div>

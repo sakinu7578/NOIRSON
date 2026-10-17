@@ -22,25 +22,28 @@
     <main class="explore-page">
         <section class="explore-intro" aria-labelledby="explore-title">
             <p class="section-label">NOIRSON COLLECTION</p>
-            <h1 id="explore-title">EXPLORE SOUND</h1>
-            <p class="explore-description">Eight curated mixes for slow mornings, late nights and everything in between.</p>
+            <h1 id="explore-title">Explore Sound.</h1>
+            <p class="explore-description">從慵懶的清晨到城市的深夜，探索適合每個時刻的聲音。</p>
         </section>
 
         <section class="explore-catalog" aria-labelledby="catalog-title">
             <div class="explore-catalog-heading">
-                <h2 id="catalog-title">ALL MIXES</h2>
+                <button class="explore-filter is-active" type="button" data-genre="all" aria-pressed="true" id="catalog-title">ALL MIXES</button>
+                <nav class="explore-genres" aria-label="Mix 曲風分類">
+                    <span class="explore-genres-label">GENRE:</span>
+                    <button class="explore-filter" type="button" data-genre="Chill / Lofi / Jazz" aria-pressed="false">CHILL / LOFI / JAZZ</button>
+                    <button class="explore-filter" type="button" data-genre="Ethereal Trap / Cloud Trap" aria-pressed="false">ETHEREAL TRAP / CLOUD TRAP</button>
+                    <button class="explore-filter" type="button" data-genre="Midnight Jersey" aria-pressed="false">MIDNIGHT JERSEY</button>
+                    <button class="explore-filter" type="button" data-genre="City Pop" aria-pressed="false">CITY POP</button>
+                </nav>
             </div>
-            <div class="explore-gallery" aria-live="polite"></div>
+            <div class="explore-catalog-divider" aria-hidden="true"></div>
+            <div class="explore-stage-shell">
+                <div class="explore-gallery" aria-live="polite"></div>
+                <p class="explore-stage-progress" aria-live="polite"><span class="explore-stage-current">01</span> / <span class="explore-stage-total">03</span></p>
+            </div>
         </section>
     </main>
-    <footer class="site-footer site-footer--v2">
-        <nav class="social-links" aria-label="社群連結">
-            <a href="https://www.youtube.com/@NOIRSON/featured" target="_blank" rel="noopener noreferrer">YOUTUBE</a>
-            <a href="https://open.spotify.com/artist/2AEwxDNnN3ItPROEBoiIdD?si=mYXE1ziWRpimqdb7zkumOw" target="_blank" rel="noopener noreferrer">SPOTIFY</a>
-            <a href="https://www.instagram.com/noirson_0?utm_source=ig_web_button_share_sheet&amp;stkn=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">INSTAGRAM</a>
-        </nav>
-        <div class="footer-meta"><span>Produced by NOIRSON</span><span>© NOIRSON</span></div>
-    </footer>
 
     <script src="js/mix-data.js"></script>
     <script src="js/main.js"></script>

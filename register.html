@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Roboto+Slab:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="auth-v2">
     <header class="site-header">
         <a class="logo" href="index.html" aria-label="NOIRSON 首頁"><img src="images/Logo.png" alt="NOIRSON"></a>
         <nav class="main-nav" aria-label="主要導覽">
@@ -22,7 +22,12 @@
 
     <main class="auth-page">
         <section class="auth-visual" aria-labelledby="register-brand-title">
-            <div>
+            <div class="auth-background" aria-hidden="true">
+                <div class="auth-background-layer is-active"></div>
+                <div class="auth-background-layer"></div>
+                <div class="auth-background-shade"></div>
+            </div>
+            <div class="auth-visual-copy">
                 <p class="section-label">NOIRSON MEMBERS</p>
                 <h1 id="register-brand-title">JOIN THE<br>LATE NIGHT</h1>
                 <p>Create an account for the next phase of NOIRSON.</p>
@@ -65,5 +70,6 @@
         </nav>
         <div class="footer-meta"><span>Produced by NOIRSON</span><span>© NOIRSON</span></div>
     </footer>
+    <script src="js/main.js"></script>
 </body>
 </html>
