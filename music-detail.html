@@ -54,7 +54,20 @@
                     <div class="detail-player-timeline">
                         <label class="visually-hidden" for="detail-progress">音樂播放進度</label>
                         <input id="detail-progress" class="signature-progress" type="range" min="0" max="100" value="0" step="0.1">
-                        <div class="detail-player-times"><span id="detail-current-time">00:00</span><span id="detail-total-time">00:00</span></div>
+                        <div class="detail-player-times">
+                            <span id="detail-current-time">00:00</span>
+                            <button class="detail-loop" type="button" aria-label="開啟循環播放" aria-pressed="false" title="循環播放">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M17 2l3 3-3 3"></path>
+                                    <path d="M4 11V9a4 4 0 0 1 4-4h12"></path>
+                                    <path d="M7 22l-3-3 3-3"></path>
+                                    <path d="M20 13v2a4 4 0 0 1-4 4H4"></path>
+                                    <path d="M12 9v6"></path>
+                                    <path d="M10.5 10.5 12 9"></path>
+                                </svg>
+                            </button>
+                            <span id="detail-total-time">00:00</span>
+                        </div>
                     </div>
                     <button class="detail-playlist-toggle" type="button" aria-label="開啟播放清單" aria-expanded="false">
                         <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>

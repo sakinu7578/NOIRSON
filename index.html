@@ -24,44 +24,80 @@
     <main>
         <section class="signature-mix" aria-labelledby="signature-title">
             <div class="signature-visual">
-                <img id="signature-cover" src="images/00.png" alt="Somewhere far from everyone 音樂封面">
+                <img id="signature-cover" class="signature-background is-active" src="images/00.png" alt="Somewhere far from everyone 音樂封面">
+                <img class="signature-background" src="images/02.png" alt="" aria-hidden="true">
                 <div class="signature-visual-shade" aria-hidden="true"></div>
                 <div class="signature-content">
-                    <p class="signature-kicker">NOIRSON SIGNATURE MIX · M001</p>
+                    <p class="signature-kicker">NOIRSON — CHILL MUSIC RADIO</p>
                     <div class="signature-heading">
-                        <div>
-                            <p id="signature-series" class="section-label">MAIN ALBUM / CHILL VIBE</p>
-                            <h1 id="signature-title">Somewhere far from everyone</h1>
-                        </div>
-                        <button class="signature-play" type="button" aria-label="播放 Somewhere far from everyone" aria-pressed="false">
-                            <span class="play-icon" aria-hidden="true"></span>
-                        </button>
+                        <h1 id="signature-title">A slower kind of sound.</h1>
+                        <p class="signature-description">在城市與日常之間，探索值得停留的聲音。從深夜節奏到慵懶午後，找到屬於你的聆聽片刻。</p>
                     </div>
-                    <div class="signature-player">
-                        <span class="player-time" id="current-time">00:00</span>
-                        <label class="visually-hidden" for="player-progress">音樂播放進度</label>
-                        <input id="player-progress" class="signature-progress" type="range" min="0" max="100" value="0" step="0.1">
-                        <span class="player-time" id="total-time">00:00</span>
-                    </div>
-                    <audio id="signature-audio" preload="metadata"></audio>
                 </div>
+                <div class="listening-atmosphere" aria-hidden="true">
+                    <a class="listening-about-link" href="about.html">DISCOVER NOIRSON <span aria-hidden="true">↗</span></a>
+                    <p>STAY FOR A WHILE.</p>
+                    <canvas class="signature-visualizer" aria-hidden="true"></canvas>
+                </div>
+                <audio id="signature-audio" preload="metadata"></audio>
             </div>
         </section>
 
+        <div class="signature-mini-player" aria-label="M001 Mini Player">
+            <div class="signature-mini-header">
+                <div class="signature-mini-copy">
+                    <span id="signature-mini-kicker">NOW PLAYING · M001</span>
+                    <strong id="signature-mini-title">Somewhere far from everyone</strong>
+                </div>
+                <button class="signature-play" type="button" aria-label="播放 Somewhere far from everyone" aria-pressed="false">
+                    <span class="play-icon" aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="signature-player">
+                <label class="visually-hidden" for="player-progress">音樂播放進度</label>
+                <input id="player-progress" class="signature-progress" type="range" min="0" max="100" value="0" step="0.1">
+                <div class="signature-mini-footer">
+                    <div class="signature-time" aria-label="播放時間">
+                        <span class="player-time" id="current-time">00:00</span>
+                        <span aria-hidden="true">/</span>
+                        <span class="player-time" id="total-time">00:00</span>
+                    </div>
+                    <div class="signature-secondary-controls">
+                        <button class="signature-loop" type="button" aria-label="循環播放" aria-pressed="false" title="循環播放">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3M11 10h1v4"></path>
+                            </svg>
+                        </button>
+                        <div class="signature-volume">
+                            <svg class="signature-volume-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M4 9v6h4l5 4V5L8 9H4Zm12.5-.5a5 5 0 0 1 0 7M18.8 6.2a8 8 0 0 1 0 11.6"></path>
+                            </svg>
+                            <label class="visually-hidden" for="signature-volume">音量</label>
+                            <input id="signature-volume" class="signature-volume-slider" type="range" min="0" max="1" value="1" step="0.01" aria-label="調整音量">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <section class="explore-sound" aria-labelledby="explore-sound-title">
             <div class="explore-sound-header">
-                <div>
-                    <p class="section-label">CURATED FOR THE QUIET HOURS</p>
-                    <h2 id="explore-sound-title">EXPLORE SOUND</h2>
-                </div>
+                <h2 id="explore-sound-title">EXPLORE SOUND</h2>
                 <a class="explore-all-link" href="music.html">View all mix <span aria-hidden="true">→</span></a>
             </div>
+
             <div class="explore-carousel" aria-label="精選 Mix 輪播">
                 <button class="explore-arrow explore-arrow--previous" type="button" aria-label="向左瀏覽 Mix"><span aria-hidden="true">←</span></button>
                 <div class="explore-viewport"><div class="explore-track"></div></div>
                 <button class="explore-arrow explore-arrow--next" type="button" aria-label="向右瀏覽 Mix"><span aria-hidden="true">→</span></button>
             </div>
         </section>
+
+        <div class="home-scroll-stages" aria-hidden="true">
+            <div class="home-scroll-stage" data-home-stage="1"></div>
+            <div class="home-scroll-stage" data-home-stage="2"></div>
+            <div class="home-scroll-stage" data-home-stage="3"></div>
+        </div>
     </main>
 
     <footer class="site-footer site-footer--v2">
