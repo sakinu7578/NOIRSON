@@ -18,9 +18,10 @@ NOIRSON 是一個以音樂探索與聆聽體驗為核心的 Web Application。�
 
 目前已使用：
 
-- HTML5
-- CSS3、Flexbox、CSS Grid、Responsive Web Design
-- Vanilla JavaScript、Pointer Events、Web Audio API
+- HTML
+- CSS
+- JavaScript
+- RWD（響應式網頁設計）
 - Git / GitHub
 
 未來規劃中的 React、Spring Boot、REST API 與 MySQL 尚未整合至目前前端版本。
@@ -43,7 +44,6 @@ NOIRSON 是一個以音樂探索與聆聽體驗為核心的 Web Application。�
 
 - [專案說明](docs/project.md)
 - [設計規範](docs/design.md)
-- [開發協作規範](AGENTS.md)
 
 ## Repository
 
