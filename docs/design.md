@@ -1,51 +1,53 @@
-# NOIRSON V2.1 設計規範
+# NOIRSON 設計規範
 
 ## Visual Direction
 
-- 方向：Cinematic / Editorial / Dark / Minimal / Music-first。
-- V2 參考：`docs/design/noirson-v2-reference.png`，用於 Layout、Vibe 與 Visual Hierarchy，不要求 pixel-perfect。
-- 色彩以 Neutral Black、Graphite、Warm Charcoal 與 Warm White / Cream 為主；Muted Olive / Amber 僅用於 Active、Hover、Label 與小型細節。
-- Mix 圖片與 About 背景是主要色彩來源，避免大面積棕色、橘色或高彩度漸層。
-- UI / Navigation / Label 與 Metadata 使用 Sans Serif；Mix Title 與大型品牌標題使用 Editorial Serif。
+NOIRSON 的視覺方向為 **Cinematic Editorial Radio / Minimal Analog Hi-Fi**，以深色、低飽和、沉浸式的 Chill Radio 氛圍為核心。
 
-色彩變數集中於 `css/style.css` 的 `:root`，所有頁面沿用同一套 Visual Color System。
+- 主色使用 Neutral Black、Graphite、Warm Charcoal 與 Warm White / Cream。
+- Muted Amber、Olive 與柔和灰金用於 Active、Hover、Label 與播放器細節。
+- Mix 封面與全版背景是主要色彩來源；環境光暈保持低透明度，不搶內容焦點。
+- UI、Navigation 與 Metadata 使用 Sans Serif；大型標題與 Mix Title 使用 Editorial Serif。
+- 色彩變數集中於 `css/style.css` 的 `:root`。
 
-## 共用元件
+## 共用介面
 
 ### Header
 
-- Fixed、約 64px 高、半透明深色背景與 Blur。
-- Logo 使用 `images/Logo.png`，導覽統一為 HOME / EXPLORE / ABOUT / LOGIN。
-- 目前頁面以低調 Olive / Amber 呈現 Active 狀態。
+- 固定於 Viewport 上方，使用半透明深色背景。
+- Logo、主要導覽與語言切換在各頁維持一致。
+- Active、Hover 與 Focus 使用低調暖灰金色。
 
 ### Footer
 
-- 六頁使用相同結構與深色背景。
-- YouTube、Spotify、Instagram 為主要連結；Produced by NOIRSON 與版權為次要小字。
-- Footer 不使用 fixed 定位，避免覆蓋內容。
+- 桌面版以單排呈現版權、社群連結與署名；Mobile 改為兩排。
+- YouTube、Spotify、Instagram 使用一致的單色 SVG 圖示。
+- Footer 保持在文件或場景布局中，不以固定定位覆蓋內容。
 
 ### Player
 
-- Home 與 Music Detail 共用 Play / Pause、Progress、時間與 Seek 的互動模式。
-- Music Detail 另有 Previous / Next、浮動 Playlist；面板不能推擠頁面或超出 Mobile Viewport。
-- 不使用瀏覽器原生 Controls 外觀，也不 Autoplay。
+- Home 與 Music Detail 使用一致的 Play / Pause、Progress、Seek、Volume / Mute 與 Loop 互動語言。
+- 控制介面保持低對比、可操作與鍵盤可存取，不使用瀏覽器原生 Controls 外觀。
+- Music Detail 另提供 Previous / Next、Playlist 與 Auto Next。
 
-## 六個頁面布局
+## 主要頁面
 
-- Home：滿版 M001 Signature Hero，文字與 Player 疊放於圖片底部；下方為 8 Mix 無限循環 Carousel。
-- Explore：Intro 加三欄 Editorial Gallery，資料由 `mix-data.js` 動態產生。
-- Music Detail：Desktop 為左側 16:9 Main Visual / 單排 Gallery、右側資訊與 Player；窄螢幕改為上下排列。
-- About：大型 Crossfade 背景、品牌介紹、Behind the Sound 與 Subscription UI。
-- Login / Register：Desktop 使用一致雙欄版型，圖片與表單各自控制高度；Mobile 改為上下排列。
+- **Home**：固定全版背景與三階段沉浸場景。Mini Player 持續可見；Stage 2 顯示 Explore Carousel；Stage 3 顯示 Listening Atmosphere、真實音訊頻譜與 Footer。
+- **Explore**：上方標題與 Genre 導覽保持穩定，下方 Mix 卡片依 Viewport 動態分組並循環切換。Ambient Glow 僅作為底層氣氛。
+- **Music Detail**：主視覺、Visual Gallery、Mix 資訊與 Player 組成主要內容；Gallery 保持水平捲動與選取狀態同步。
+- **About**：全版背景 Crossfade 搭配品牌內容、人物介紹與 Subscription UI。
+- **Login / Register**：Desktop 採 60 / 40 Split Layout，左側為圖片輪播，右側為表單；Mobile 改為上下排列。
 
-## RWD 原則
+## Motion
 
-- Desktop：維持目前 V2.1 比例、視覺密度與圖片主導布局。
-- Tablet（約 900px 以下）：Explore 改兩欄；Music Detail 改上下排列；About 人物與訂閱區簡化為單欄。
-- Mobile（約 600px 以下）：Header 縮小字級與間距但保留全部導覽；Explore 改單欄；Player 控制維持可操作；Gallery 保持水平捲動；Playlist 限制於 Viewport；Login / Register 改上下排列。
-- 圖片保持原始比例並使用合適的 `object-fit`；內容高度可自然延伸，不以固定高度造成重疊。
-- Footer 維持文件流，所有頁面皆不得被背景、浮動面板或內容層覆蓋。
+- 動畫以緩慢 Crossfade、輕微位移、背景呼吸與低調 Hover 為主。
+- Carousel、Stage 與 Gallery 動畫不得妨礙連結、表單或播放器操作。
+- 非必要動畫尊重 `prefers-reduced-motion`。
 
-## Reference 使用原則
+## Responsive Principles
 
-[NOIRSON Website Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) 是 Wireframe / Layout reference，用於確認頁面結構、比例、Spacing、Alignment 與 User flow。Figma 灰階與 Placeholder 不代表正式 Visual Design，不得覆蓋目前 Home CSS 建立的品牌配色。
+- Desktop 保留沉浸式場景、完整資訊層級與三欄內容密度。
+- Tablet 調整欄數、間距與播放器寬度，避免標題和控制元件重疊。
+- Mobile 優先確保觸控操作、文字完整與無水平溢出；必要時允許自然垂直捲動。
+- 圖片維持既定比例，使用 `object-fit` 或背景裁切，避免拉伸變形。
+- Fixed、Absolute 與動畫圖層不得擴張文件捲動範圍。

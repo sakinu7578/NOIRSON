@@ -1,4 +1,10 @@
 // ========================================
+// 共用語系判斷
+// i18n.js 會先建立 NoirsonI18n；各頁動態產生的文字再由此判斷目前語系。
+// ========================================
+function isEnglishInterface() {
+    return window.NoirsonI18n && window.NoirsonI18n.getLanguage() === "en";
+}
 // 共用工具：音訊播放器
 // Home 與 Music Detail 使用同一套播放、時間與進度處理。
 // mixes 物件由 HTML 先載入的 mix-data.js 提供，本檔不重複建立 Mix 資料。
@@ -18,7 +24,8 @@ function initializeAudioPlayer({ audio, playButton, progress, currentTimeLabel, 
     function updatePlayButton(isPlaying) {
         playButton.classList.toggle("is-playing", isPlaying);
         playButton.setAttribute("aria-pressed", String(isPlaying));
-        playButton.setAttribute("aria-label", `${isPlaying ? "暫停" : "播放"} ${title}`);
+        const action = isEnglishInterface() ? (isPlaying ? "Pause" : "Play") : (isPlaying ? "暫停" : "播放");
+        playButton.setAttribute("aria-label", `${action} ${title}`);
     }
 
     playButton.addEventListener("click", function () {
@@ -33,6 +40,7 @@ function initializeAudioPlayer({ audio, playButton, progress, currentTimeLabel, 
     audio.addEventListener("play", function () { updatePlayButton(true); });
     audio.addEventListener("pause", function () { updatePlayButton(false); });
     audio.addEventListener("ended", function () { updatePlayButton(false); });
+    document.addEventListener("noirson:languagechange", function () { updatePlayButton(!audio.paused); });
 
     audio.addEventListener("loadedmetadata", function () {
         // 音訊 Metadata 載入後才能取得 duration，並設定進度列最大值。
@@ -57,6 +65,56 @@ function initializeAudioPlayer({ audio, playButton, progress, currentTimeLabel, 
     });
 }
 
+// Home 與 Music Detail 共用相同的音量、靜音及 Icon 狀態。
+// muted 不改動 volume，因此點擊解除靜音時可回到原本滑桿位置。
+function initializeVolumeControl({ audio, button, slider }) {
+    let lastAudibleVolume = audio.volume > 0 ? audio.volume : 1;
+
+    function updateVolumeControl() {
+        const isSilent = audio.muted || audio.volume === 0;
+
+        slider.value = audio.volume;
+        slider.style.setProperty("--volume", `${audio.volume * 100}%`);
+        button.setAttribute("aria-pressed", String(isSilent));
+
+        const volumeLabel = isEnglishInterface()
+            ? (isSilent ? "Unmute" : "Mute")
+            : (isSilent ? "解除靜音" : "靜音");
+        button.setAttribute("aria-label", volumeLabel);
+        button.title = volumeLabel;
+    }
+
+    slider.addEventListener("input", function () {
+        const nextVolume = Number(slider.value);
+
+        if (nextVolume > 0) {
+            lastAudibleVolume = nextVolume;
+            audio.volume = nextVolume;
+            audio.muted = false;
+        } else {
+            if (audio.volume > 0) lastAudibleVolume = audio.volume;
+            audio.volume = 0;
+            audio.muted = true;
+        }
+    });
+
+    button.addEventListener("click", function () {
+        const isSilent = audio.muted || audio.volume === 0;
+
+        if (isSilent) {
+            if (audio.volume === 0) audio.volume = lastAudibleVolume;
+            audio.muted = false;
+        } else {
+            lastAudibleVolume = audio.volume;
+            audio.muted = true;
+        }
+    });
+
+    audio.addEventListener("volumechange", updateVolumeControl);
+    document.addEventListener("noirson:languagechange", updateVolumeControl);
+    updateVolumeControl();
+}
+
 // ========================================
 // HOME：M001 Signature Player
 // 只在 body 具有 home-v2 時初始化，避免影響其他頁面的播放器。
@@ -75,6 +133,7 @@ if (document.body.classList.contains("home-v2")) {
     const playButton = document.querySelector(".signature-play");
     const progress = document.querySelector("#player-progress");
     const volumeSlider = document.querySelector("#signature-volume");
+    const volumeButton = document.querySelector(".signature-volume-toggle");
     const loopButton = document.querySelector(".signature-loop");
     const currentTimeLabel = document.querySelector("#current-time");
     const totalTimeLabel = document.querySelector("#total-time");
@@ -89,9 +148,17 @@ if (document.body.classList.contains("home-v2")) {
     // 從 mix-data.js 的 mixes 取得 M001，更新首頁文字、圖片與音訊來源。
     signatureCover.src = signatureMix.cover;
     signatureCover.alt = `${signatureMix.title} 音樂封面`;
-    signatureMiniKicker.textContent = `NOW PLAYING · ${signatureMixId}`;
+    function updateSignatureLanguage() {
+        signatureCover.alt = isEnglishInterface() ? `${signatureMix.title} cover` : `${signatureMix.title} 音樂封面`;
+        signatureMiniKicker.textContent = `${isEnglishInterface() ? "NOW PLAYING" : "正在播放"} · ${signatureMixId}`;
+        signatureMiniPlayer.setAttribute("aria-label", isEnglishInterface()
+            ? `${signatureMixId} Mini Player: ${signatureMix.title}`
+            : `${signatureMixId} 迷你播放器：${signatureMix.title}`);
+    }
+
+    updateSignatureLanguage();
+    document.addEventListener("noirson:languagechange", updateSignatureLanguage);
     signatureMiniTitle.textContent = signatureMix.title;
-    signatureMiniPlayer.setAttribute("aria-label", `${signatureMixId} Mini Player：${signatureMix.title}`);
     audio.src = signatureMix.audio;
 
     // Home 三個 Stage 共用同一組固定順序背景；兩層圖片交替淡入，避免換圖瞬間露出底色。
@@ -181,6 +248,9 @@ if (document.body.classList.contains("home-v2")) {
     let spectrumHeight = 0;
     let displayedSpectrumHeights = [];
 
+    // HOME：真實音訊頻譜
+    // 同一個 Audio 元素只建立一次 MediaElementSource，播放時以 AnalyserNode 更新 Canvas。
+    // 暫停或結束後保留動畫迴圈讓 Bar 平滑回落；Reduced Motion 則直接顯示基準線。
     function resizeSpectrumCanvas() {
         const bounds = spectrumCanvas.getBoundingClientRect();
         const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
@@ -305,22 +375,16 @@ if (document.body.classList.contains("home-v2")) {
     playButton.addEventListener("pointerdown", ensureAudioSpectrum);
     playButton.addEventListener("click", ensureAudioSpectrum);
 
-    function updateVolumeControl() {
-        volumeSlider.value = audio.volume;
-        volumeSlider.style.setProperty("--volume", `${audio.volume * 100}%`);
-    }
-
-    volumeSlider.addEventListener("input", function () {
-        audio.volume = Number(volumeSlider.value);
-    });
-
-    audio.addEventListener("volumechange", updateVolumeControl);
-    updateVolumeControl();
+    initializeVolumeControl({ audio, button: volumeButton, slider: volumeSlider });
 
     function updateLoopControl() {
         loopButton.setAttribute("aria-pressed", String(audio.loop));
-        loopButton.setAttribute("aria-label", audio.loop ? "關閉循環播放" : "開啟循環播放");
+        loopButton.setAttribute("aria-label", isEnglishInterface()
+            ? (audio.loop ? "Disable loop" : "Enable loop")
+            : (audio.loop ? "關閉循環播放" : "開啟循環播放"));
     }
+
+    document.addEventListener("noirson:languagechange", updateLoopControl);
 
     audio.loop = false;
     loopButton.addEventListener("click", function () {
@@ -343,6 +407,8 @@ if (document.body.classList.contains("home-v2")) {
 
     let activeHomeStage = 1;
 
+    // HOME：三階段場景狀態
+    // data-home-stage 控制前景淡入淡出；inert 防止隱藏場景仍接收滑鼠或鍵盤操作。
     function setHomeStage(stageNumber) {
         const activeStage = String(stageNumber);
         activeHomeStage = stageNumber;
@@ -379,12 +445,14 @@ if (document.body.classList.contains("home-v2")) {
     setHomeStage(getHomeStageFromScroll());
 
     let homeScrollFrame = null;
+    let isHomeStageWrapping = false;
 
     function requestHomeStageUpdate() {
+        if (isHomeStageWrapping) return;
         if (homeScrollFrame !== null) return;
 
         homeScrollFrame = window.requestAnimationFrame(function () {
-            setHomeStage(getHomeStageFromScroll());
+            if (!isHomeStageWrapping) setHomeStage(getHomeStageFromScroll());
             homeScrollFrame = null;
         });
     }
@@ -392,7 +460,7 @@ if (document.body.classList.contains("home-v2")) {
     window.addEventListener("scroll", requestHomeStageUpdate, { passive: true });
     window.addEventListener("resize", requestHomeStageUpdate);
 
-    const desktopWheelQuery = window.matchMedia("(min-width: 901px) and (hover: hover) and (pointer: fine)");
+    const desktopWheelQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
     let wheelUnlockTimer = null;
     let wheelCooldownDirection = 0;
     let isWheelStageAnimating = false;
@@ -408,18 +476,26 @@ if (document.body.classList.contains("home-v2")) {
         }, 180);
     }
 
+    // 滑鼠裝置使用 760ms 原生 scroll 動畫；首尾循環時暫停 scroll observer，
+    // 避免跨越中間 Marker 的過程把畫面誤判成 Stage 2。
     function scrollToHomeStage(stageNumber, direction) {
         const targetMarker = homeStageMarkers[stageNumber - 1];
+        const isWrapping = Math.abs(stageNumber - activeHomeStage) > 1;
         const startPosition = window.scrollY;
         const targetPosition = targetMarker.offsetTop;
         const distance = targetPosition - startPosition;
         const duration = reducedMotionQuery.matches ? 0 : 760;
         isWheelStageAnimating = true;
+        isHomeStageWrapping = isWrapping;
+
+        // 首尾循環會跨過中間的 Scroll Marker；先固定目標場景，避免途中閃出 Stage 2。
+        if (isWrapping) setHomeStage(stageNumber);
 
         if (duration === 0) {
             window.scrollTo(0, targetPosition);
             setHomeStage(stageNumber);
             isWheelStageAnimating = false;
+            isHomeStageWrapping = false;
             beginWheelCooldown(direction);
             return;
         }
@@ -438,6 +514,7 @@ if (document.body.classList.contains("home-v2")) {
 
             setHomeStage(stageNumber);
             isWheelStageAnimating = false;
+            isHomeStageWrapping = false;
             beginWheelCooldown(direction);
         }
 
@@ -468,12 +545,51 @@ if (document.body.classList.contains("home-v2")) {
             isWheelStageCoolingDown = false;
         }
 
-        const targetStage = Math.min(3, Math.max(1, activeHomeStage + direction));
-
-        if (targetStage === activeHomeStage) return;
+        const targetStage = ((activeHomeStage - 1 + direction + homeStageMarkers.length) % homeStageMarkers.length) + 1;
 
         scrollToHomeStage(targetStage, direction);
     }, { passive: false });
+
+    let homeTouchStartY = null;
+    let homeTouchStartX = null;
+    let homeTouchTarget = null;
+
+    window.addEventListener("touchstart", function (event) {
+        if (desktopWheelQuery.matches || event.touches.length !== 1) return;
+        homeTouchStartY = event.touches[0].clientY;
+        homeTouchStartX = event.touches[0].clientX;
+        homeTouchTarget = event.target;
+    }, { passive: true });
+
+    window.addEventListener("touchend", function (event) {
+        if (homeTouchStartY === null || !event.changedTouches.length || isWheelStageAnimating) return;
+
+        const touchDistanceY = event.changedTouches[0].clientY - homeTouchStartY;
+        const touchDistanceX = event.changedTouches[0].clientX - homeTouchStartX;
+        const startedOnControl = homeTouchTarget instanceof Element
+            && homeTouchTarget.closest("a, button, input, textarea, select");
+
+        homeTouchStartY = null;
+        homeTouchStartX = null;
+        homeTouchTarget = null;
+
+        if (startedOnControl || Math.abs(touchDistanceY) < 60 || Math.abs(touchDistanceY) <= Math.abs(touchDistanceX)) return;
+
+        const direction = touchDistanceY < 0 ? 1 : -1;
+        const isBoundaryWrap = (activeHomeStage === 3 && direction === 1)
+            || (activeHomeStage === 1 && direction === -1);
+
+        if (isBoundaryWrap) {
+            const targetStage = direction === 1 ? 1 : 3;
+            scrollToHomeStage(targetStage, direction);
+        }
+    }, { passive: true });
+
+    window.addEventListener("touchcancel", function () {
+        homeTouchStartY = null;
+        homeTouchStartX = null;
+        homeTouchTarget = null;
+    }, { passive: true });
 
     // ========================================
     // HOME：Explore Sound 無限循環 Carousel
@@ -774,19 +890,30 @@ if (exploreGallery) {
     const exploreStageTotal = document.querySelector(".explore-stage-total");
     const exploreFilterButtons = Array.from(document.querySelectorAll(".explore-filter"));
     const exploreMixEntries = Object.entries(mixes);
-    let exploreStages = createExploreStages(exploreMixEntries);
+    let currentExploreEntries = exploreMixEntries;
+    let exploreCardsPerStage = getExploreCardsPerStage();
+    let exploreStages = createExploreStages(currentExploreEntries, exploreCardsPerStage);
     let currentExploreStage = 0;
     let isExploreStageSwitching = false;
     let exploreWheelDelta = 0;
     let exploreWheelResetTimer = null;
     let exploreTouchStartY = null;
     let exploreRenderId = 0;
+    let exploreTransitionId = 0;
+    let exploreResizeFrame = null;
 
-    function createExploreStages(mixEntries) {
+    // Explore 每段卡片數必須與 CSS 斷點一致：Desktop 3、Tablet 2、Mobile 1。
+    function getExploreCardsPerStage() {
+        if (window.innerWidth <= 600) return 1;
+        if (window.innerWidth <= 1024) return 2;
+        return 3;
+    }
+
+    function createExploreStages(mixEntries, cardsPerStage) {
         const stages = [];
 
-        for (let index = 0; index < mixEntries.length; index += 3) {
-            stages.push(mixEntries.slice(index, index + 3));
+        for (let index = 0; index < mixEntries.length; index += cardsPerStage) {
+            stages.push(mixEntries.slice(index, index + cardsPerStage));
         }
 
         return stages.length ? stages : [[]];
@@ -809,6 +936,7 @@ if (exploreGallery) {
         `;
     }
 
+    // 只渲染目前 Stage；等待封面載入後再觸發進場，避免動畫在圖片出現前結束。
     function renderExploreStage(direction = "next") {
         const renderId = ++exploreRenderId;
         const currentStageMixes = exploreStages[currentExploreStage];
@@ -858,10 +986,12 @@ if (exploreGallery) {
         });
     }
 
+    // 以取餘數循環 Stage，並用切換鎖避免滾輪或觸控板一次跳過多段。
     function switchExploreStage(direction) {
         if (isExploreStageSwitching || exploreStages.length <= 1) return false;
 
         const nextStage = (currentExploreStage + direction + exploreStages.length) % exploreStages.length;
+        const transitionId = ++exploreTransitionId;
 
         isExploreStageSwitching = true;
         const directionName = direction > 0 ? "next" : "previous";
@@ -873,21 +1003,29 @@ if (exploreGallery) {
         });
 
         window.setTimeout(function () {
+            if (transitionId !== exploreTransitionId) return;
             currentExploreStage = nextStage;
             renderExploreStage(directionName);
         }, 220);
 
         window.setTimeout(function () {
+            if (transitionId !== exploreTransitionId) return;
             isExploreStageSwitching = false;
         }, 900);
 
         return true;
     }
 
+    // 先依 mix.series 篩選，再按目前 Viewport 的卡片數重新分段。
+    // 切換 Genre 一律回到該分類第一段，保留原始 Mix 資料順序。
     function applyExploreFilter(genre, activeButton) {
         if (isExploreStageSwitching) return;
 
         isExploreStageSwitching = true;
+        const transitionId = ++exploreTransitionId;
+        currentExploreEntries = genre === "all"
+            ? exploreMixEntries
+            : exploreMixEntries.filter(function ([, mix]) { return mix.series === genre; });
         const currentCards = exploreGallery.querySelectorAll(".explore-gallery-item");
 
         currentCards.forEach(function (card) {
@@ -902,16 +1040,14 @@ if (exploreGallery) {
         });
 
         window.setTimeout(function () {
-            const filteredEntries = genre === "all"
-                ? exploreMixEntries
-                : exploreMixEntries.filter(function ([, mix]) { return mix.series === genre; });
-
-            exploreStages = createExploreStages(filteredEntries);
+            if (transitionId !== exploreTransitionId) return;
+            exploreStages = createExploreStages(currentExploreEntries, exploreCardsPerStage);
             currentExploreStage = 0;
             renderExploreStage("next");
         }, 220);
 
         window.setTimeout(function () {
+            if (transitionId !== exploreTransitionId) return;
             isExploreStageSwitching = false;
         }, 900);
     }
@@ -967,6 +1103,29 @@ if (exploreGallery) {
         exploreTouchStartY = null;
     }, { passive: true });
 
+    window.addEventListener("resize", function () {
+        window.cancelAnimationFrame(exploreResizeFrame);
+        exploreResizeFrame = window.requestAnimationFrame(function () {
+            const nextCardsPerStage = getExploreCardsPerStage();
+            if (nextCardsPerStage === exploreCardsPerStage) return;
+
+            const currentMixId = exploreStages[currentExploreStage]?.[0]?.[0]
+                || currentExploreEntries[0]?.[0];
+
+            exploreCardsPerStage = nextCardsPerStage;
+            exploreStages = createExploreStages(currentExploreEntries, exploreCardsPerStage);
+            currentExploreStage = Math.max(0, exploreStages.findIndex(function (stage) {
+                return stage.some(function ([mixId]) { return mixId === currentMixId; });
+            }));
+
+            exploreTransitionId += 1;
+            isExploreStageSwitching = false;
+            exploreWheelDelta = 0;
+            exploreTouchStartY = null;
+            renderExploreStage("next");
+        });
+    });
+
     renderExploreStage();
 }
 
@@ -992,13 +1151,15 @@ if (detailPage) {
     document.querySelector("#detail-mix-id").textContent = mixId;
     document.querySelector("#detail-series").textContent = mix.series;
     document.querySelector("#music-detail-title").textContent = mix.title;
-    document.querySelector("#detail-description").textContent = mix.description.trim();
+    const detailDescription = document.querySelector("#detail-description");
+    detailDescription.textContent = (isEnglishInterface() ? mix.description : mix.descriptionZh).trim();
 
     mainVisual.src = mix.cover;
-    mainVisual.alt = `${mix.title} 主視覺`;
+    mainVisual.alt = isEnglishInterface() ? `${mix.title} main visual` : `${mix.title} 主視覺`;
     detailAudio.src = mix.audio;
 
-    // 同一個分頁切換 Mix 時保留播放模式；首次進入預設全部關閉。
+    // Loop 與 Auto Next 使用 sessionStorage 跨 Mix 保留狀態；首次進入預設全部關閉。
+    // 兩者互斥，避免 ended 同時重播目前 Mix 又導向下一首。
     const detailLoopStorageKey = "noirson-detail-loop";
     const detailAutoNextStorageKey = "noirson-detail-auto-next";
     const detailAutoplayStorageKey = "noirson-detail-autoplay";
@@ -1026,9 +1187,13 @@ if (detailPage) {
 
     function updateDetailPlaybackModeControls() {
         detailLoopButton.setAttribute("aria-pressed", String(detailAudio.loop));
-        detailLoopButton.setAttribute("aria-label", detailAudio.loop ? "關閉循環播放" : "開啟循環播放");
+        detailLoopButton.setAttribute("aria-label", isEnglishInterface()
+            ? (detailAudio.loop ? "Disable loop" : "Enable loop")
+            : (detailAudio.loop ? "關閉循環播放" : "開啟循環播放"));
         detailAutoNextButton.setAttribute("aria-pressed", String(detailAutoNextEnabled));
-        detailAutoNextButton.setAttribute("aria-label", detailAutoNextEnabled ? "關閉自動下一首" : "開啟自動下一首");
+        detailAutoNextButton.setAttribute("aria-label", isEnglishInterface()
+            ? (detailAutoNextEnabled ? "Disable auto next" : "Enable auto next")
+            : (detailAutoNextEnabled ? "關閉自動下一首" : "開啟自動下一首"));
     }
 
     detailLoopButton.addEventListener("click", function () {
@@ -1048,32 +1213,7 @@ if (detailPage) {
     saveDetailPlaybackModes();
     updateDetailPlaybackModeControls();
 
-    function updateDetailVolumeControl() {
-        const isMuted = detailAudio.muted;
-        detailVolumeSlider.value = detailAudio.volume;
-        detailVolumeSlider.style.setProperty("--volume", `${detailAudio.volume * 100}%`);
-        detailVolumeSlider.hidden = isMuted;
-        detailVolumeButton.setAttribute("aria-pressed", String(isMuted));
-        detailVolumeButton.setAttribute("aria-label", isMuted ? "解除靜音" : "靜音");
-        detailVolumeButton.title = isMuted ? "解除靜音" : "靜音";
-    }
-
-    detailVolumeSlider.addEventListener("input", function () {
-        detailAudio.volume = Number(detailVolumeSlider.value);
-        if (detailAudio.volume > 0) detailAudio.muted = false;
-    });
-
-    detailVolumeButton.addEventListener("click", function () {
-        if (detailAudio.muted) {
-            detailAudio.muted = false;
-            detailAudio.volume = 0;
-        } else {
-            detailAudio.muted = true;
-        }
-    });
-
-    detailAudio.addEventListener("volumechange", updateDetailVolumeControl);
-    updateDetailVolumeControl();
+    initializeVolumeControl({ audio: detailAudio, button: detailVolumeButton, slider: detailVolumeSlider });
 
     const youtubeLink = document.querySelector("#detail-youtube");
     youtubeLink.href = mix.youtube;
@@ -1119,7 +1259,9 @@ if (detailPage) {
         // hidden 控制面板顯示，aria-expanded 同步提供輔助工具目前狀態。
         playlistPanel.hidden = !isOpen;
         playlistToggle.setAttribute("aria-expanded", String(isOpen));
-        playlistToggle.setAttribute("aria-label", `${isOpen ? "關閉" : "開啟"}播放清單`);
+        playlistToggle.setAttribute("aria-label", isEnglishInterface()
+            ? `${isOpen ? "Close" : "Open"} playlist`
+            : `${isOpen ? "關閉" : "開啟"}播放清單`);
     }
 
     playlistToggle.addEventListener("click", function () {
@@ -1173,7 +1315,8 @@ if (detailPage) {
         });
     }
 
-    // 建立共用 Visual Gallery，縮圖只負責切換左側主視覺。
+    // 建立共用 Visual Gallery：17 張圖片由同一份清單產生，縮圖與箭頭共用選取函式。
+    // Auto 預設開啟；手動操作只重設計時，不改變使用者的 Auto ON / OFF 狀態。
     const detailGallery = document.querySelector(".detail-gallery");
     const detailGalleryAutoButton = document.querySelector(".detail-gallery-auto");
     const gallerySlideshowInterval = 6000;
@@ -1308,7 +1451,9 @@ if (detailPage) {
         detailGalleryAutoButton.setAttribute("aria-pressed", String(isGalleryAutoplayActive));
         detailGalleryAutoButton.setAttribute(
             "aria-label",
-            isGalleryAutoplayActive ? "停止 Visuals 自動輪播" : "開啟 Visuals 自動輪播"
+            isEnglishInterface()
+                ? (isGalleryAutoplayActive ? "Stop visuals autoplay" : "Start visuals autoplay")
+                : (isGalleryAutoplayActive ? "停止影像自動輪播" : "開啟影像自動輪播")
         );
     }
 
@@ -1371,6 +1516,23 @@ if (detailPage) {
     updateGalleryAutoplayControl();
     if (isGalleryAutoplayActive) scheduleGalleryAutoplay();
 
+    function updateDetailLanguage() {
+        detailDescription.textContent = (isEnglishInterface() ? mix.description : mix.descriptionZh).trim();
+        mainVisual.alt = isEnglishInterface() ? `${mix.title} main visual` : `${mix.title} 主視覺`;
+        updateDetailPlaybackModeControls();
+        updateDetailVolumeControl();
+        updateGalleryAutoplayControl();
+        setPlaylistOpen(!playlistPanel.hidden);
+        galleryThumbnails.forEach(function (button, index) {
+            button.setAttribute("aria-label", isEnglishInterface()
+                ? `Show gallery image ${index + 1}`
+                : `顯示第 ${index + 1} 張 Gallery 圖片`);
+            button.querySelector("img").alt = `${mix.title} Gallery ${index + 1}`;
+        });
+    }
+
+    document.addEventListener("noirson:languagechange", updateDetailLanguage);
+
     if (currentGalleryIndex !== -1) {
         requestAnimationFrame(function () {
             scrollGalleryThumbnailIntoView(galleryThumbnails[currentGalleryIndex], "auto");
@@ -1382,7 +1544,7 @@ const aboutBackgroundLayers = document.querySelectorAll(".about-background-layer
 
 // ========================================
 // ABOUT：背景 Crossfade
-// 依 00.png～16.png 固定順序切換，使用兩個 Layer 交替 Active 狀態。
+// 從排除清單以外的圖片隨機選取，使用兩個 Layer 交替 Active 並避免連續重複。
 // ========================================
 if (aboutBackgroundLayers.length === 2) {
     // 排除 00、09、11、16，其餘 13 張圖片保留隨機輪播。

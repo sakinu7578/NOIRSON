@@ -22,6 +22,8 @@ NOIRSON 是音樂內容探索平台（Music Content Discovery Platform）。音�
 - HTML、CSS、JavaScript
 - Responsive Web Design
 - Multi-page frontend
+- Home、Explore、Music Detail 的主要播放與互動功能
+- 繁體中文／英文介面切換
 - Java、Maven
 - Spring Boot initial structure
 - Spring Data JPA initial structure
@@ -63,8 +65,11 @@ AI、第三方 API、複雜推薦系統、聊天室與支付不是目前核心�
 - `login.html`
 - `register.html`
 - `css/`
-- `js/`
+- `js/main.js`：共用互動與各頁功能初始化
+- `js/mix-data.js`：M001～M008 共用 Mix 資料
+- `js/i18n.js`：繁體中文／英文介面切換
 - `images/`
+- `musicDemo/`：可公開的壓縮 Demo 音訊
 
 修改 frontend 時：
 

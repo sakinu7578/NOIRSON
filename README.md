@@ -1,58 +1,49 @@
 # NOIRSON
 
-NOIRSON 是一個音樂內容探索平台（music content discovery platform），以既有的 NOIRSON 音樂內容與品牌為基礎，逐步發展內容探索、站內播放、品牌介紹與會員功能的完整 Web Application。
+NOIRSON 是一個以音樂探索與聆聽體驗為核心的 Web Application。目前版本以原生 HTML、CSS 與 JavaScript 建立多頁式前端，提供沉浸式音樂瀏覽、站內播放與響應式互動介面。
 
-這是全端工程課程的作品集專案，目前正以 HTML、CSS 與 JavaScript 製作前端雛形。
+## Features
 
-## 音樂方向
+- Home 三階段沉浸式場景、背景幻燈片與 Mini Player
+- Explore 曲風分類、響應式卡片分組與循環切換
+- Music Detail 動態內容、播放控制、Playlist 與 Visual Gallery
+- 播放器 Play / Pause、Seek、Volume / Mute、Loop 與 Auto Next
+- Desktop、Tablet 與 Mobile 響應式介面
+- 繁體中文／英文介面切換
+- About 品牌內容與 Login / Register 介面
 
-- Lofi / Jazz / Chillhop
-- Ethereal Trap / Cloud Trap / Midnight Jersey
-- City Pop
+目前 Login、Register、Favorite、Comments 與 Subscription 為前端介面，尚未連接正式會員或資料儲存功能。
 
-## 目前狀態
+## Tech Stack
 
-目前為 **Phase 1B — Multi-page HTML Prototype**，已具備：
+目前已使用：
 
-- Git 與 GitHub 基礎設定
-- HTML / CSS / JavaScript 專案結構
-- Home 初版：Header / Navigation、Hero Carousel、Featured Music
-- Music / Explore HTML 頁面
-- Hero 圖片素材與初步 Responsive CSS
-- 已完成的 5 個 Desktop Wireframe 與 MVP 頁面架構
+- HTML5
+- CSS3、Flexbox、CSS Grid、Responsive Web Design
+- Vanilla JavaScript、Pointer Events、Web Audio API
+- Git / GitHub
 
-## MVP 頁面
+未來規劃中的 React、Spring Boot、REST API 與 MySQL 尚未整合至目前前端版本。
 
-1. Home
-2. Music / Explore
-3. Music Detail
-4. About
-5. Login / Register
+## Development Status
 
-會員階段再加入 My Library。
+目前已完成 Vanilla HTML / CSS / JavaScript 前端介面與主要互動功能，並作為後續 React 元件化與全端整合的功能、視覺基準。
 
-## 核心功能
+## Roadmap
 
-站內 Music Player 是核心 MVP 功能。基礎版本需要 Play、Pause、Progress、Current time、Duration 與從 Tracklist 選擇歌曲。YouTube 與 Spotify 僅保留為外部平台連結。
+1. React 前端元件化
+2. Spring Boot / REST API 整合
+3. MySQL 資料庫與會員功能
+4. 完整前後端測試
+5. 部署與作品集展示
 
-## Wireframe
+以上項目為後續開發方向，不代表目前已完成。
 
-[NOIRSON Figma Wireframe](https://www.figma.com/design/ghOmiLHDDKCUkSW7KjqPsk/NOIRSON-Website) 用於確認 layout、資訊層級與 user flow。實際視覺細節將直接在 HTML / CSS 與 browser preview 中迭代，不另行製作完整 High-fidelity Figma Visual Design。
+## Documentation
 
-## 技術路線
-
-目前：HTML → CSS → JavaScript
-
-後續依課程進度：React → Java Web / Spring Boot → MySQL → REST API 整合 → Deployment
-
-目前不提前導入 React、Spring Boot、資料庫、正式金流、AI 或非必要套件。
-
-## 文件
-
-- [專案定義](docs/project.md)
+- [專案說明](docs/project.md)
 - [設計規範](docs/design.md)
-- [開發進度](docs/progress.md)
-- [協作指引](AGENTS.md)
+- [開發協作規範](AGENTS.md)
 
 ## Repository
 

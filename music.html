@@ -13,24 +13,25 @@
     <header class="site-header">
         <a class="logo" href="index.html" aria-label="NOIRSON 首頁"><img src="images/Logo.png" alt="NOIRSON"></a>
         <nav class="main-nav" aria-label="主要導覽">
-            <a href="index.html">HOME</a>
-            <a href="music.html" aria-current="page">EXPLORE</a>
-            <a href="about.html">ABOUT</a>
-            <a href="login.html">LOGIN</a>
+            <a href="index.html" data-i18n="nav.home">HOME</a>
+            <a href="music.html" aria-current="page" data-i18n="nav.explore">EXPLORE</a>
+            <a href="about.html" data-i18n="nav.about">ABOUT</a>
+            <a href="login.html" data-i18n="nav.login">LOGIN</a>
+            <span class="language-switch" aria-label="Language"><button class="language-option" type="button" data-language="zh" aria-pressed="true">繁中</button><span aria-hidden="true">/</span><button class="language-option" type="button" data-language="en" aria-pressed="false">EN</button></span>
         </nav>
     </header>
     <main class="explore-page">
         <section class="explore-intro" aria-labelledby="explore-title">
-            <p class="section-label">NOIRSON COLLECTION</p>
-            <h1 id="explore-title">Explore Sound.</h1>
-            <p class="explore-description">從慵懶的清晨到城市的深夜，探索適合每個時刻的聲音。</p>
+            <p class="section-label" data-i18n="explore.collection">NOIRSON COLLECTION</p>
+            <h1 id="explore-title" data-i18n="explore.title">Explore Sound.</h1>
+            <p class="explore-description" data-i18n="explore.description">從慵懶的清晨到城市的深夜，探索適合每個時刻的聲音。</p>
         </section>
 
         <section class="explore-catalog" aria-labelledby="catalog-title">
             <div class="explore-catalog-heading">
-                <button class="explore-filter is-active" type="button" data-genre="all" aria-pressed="true" id="catalog-title">ALL MIXES</button>
+                <button class="explore-filter is-active" type="button" data-genre="all" aria-pressed="true" id="catalog-title" data-i18n="explore.all">ALL MIXES</button>
                 <nav class="explore-genres" aria-label="Mix 曲風分類">
-                    <span class="explore-genres-label">GENRE:</span>
+                    <span class="explore-genres-label" data-i18n="explore.genre">GENRE:</span>
                     <button class="explore-filter" type="button" data-genre="Chill / Lofi / Jazz" aria-pressed="false">CHILL / LOFI / JAZZ</button>
                     <button class="explore-filter" type="button" data-genre="Ethereal Trap / Cloud Trap" aria-pressed="false">ETHEREAL TRAP / CLOUD TRAP</button>
                     <button class="explore-filter" type="button" data-genre="Midnight Jersey" aria-pressed="false">MIDNIGHT JERSEY</button>
@@ -46,6 +47,7 @@
     </main>
 
     <script src="js/mix-data.js"></script>
+    <script src="js/i18n.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

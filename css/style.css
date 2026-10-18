@@ -264,7 +264,7 @@ a {
 }
 
 .section-label {
-    margin: 0 0 0.65rem;
+    margin: 12px 0 0.65rem;
     color: var(--color-amber);
     font-size: 0.7rem;
     font-weight: 600;
@@ -486,6 +486,7 @@ html.home-scenes {
     box-shadow: none;
 }
 
+/* Home / Background Slideshow：雙圖片層以 opacity Crossfade，呼吸動畫只控制 transform。 */
 .home-v2 .signature-background {
     position: absolute;
     z-index: 0;
@@ -522,7 +523,7 @@ html.home-scenes {
 .signature-kicker {
     margin: 0 0 0.55rem;
     color: rgba(153, 150, 106, 0.86);
-    font-size: 0.62rem;
+    font-size: 0.8rem;
     font-weight: 500;
     letter-spacing: 0.18em;
 }
@@ -561,7 +562,7 @@ html.home-scenes {
     color: var(--color-cream);
     font-family: "Roboto Slab", serif;
     max-width: 900px;
-    font-size: clamp(28px, 2.6vw, 40px);
+    font-size: clamp(42px, 2.6vw, 40px);
     font-weight: 400;
     line-height: 1.15;
     letter-spacing: -0.015em;
@@ -579,6 +580,7 @@ html.home-scenes {
     letter-spacing: 0.035em;
 }
 
+/* Home / Mini Player：固定於三個 Stage 上方，播放器寬度與定位由此區調整。 */
 .signature-mini-player {
     position: fixed;
     z-index: 15;
@@ -618,7 +620,7 @@ html.home-scenes {
     overflow: hidden;
     color: rgba(228, 224, 214, 0.9);
     font-family: "Roboto Slab", serif;
-    font-size: 0.88rem;
+    font-size: 0.95rem;
     font-weight: 400;
     line-height: 1.25;
     text-overflow: ellipsis;
@@ -786,7 +788,7 @@ html.home-scenes {
     border-bottom: 1px solid transparent;
     padding-bottom: 0.16rem;
     color: var(--color-amber);
-    font-size: 0.58rem;
+    font-size: 0.80rem;
     font-weight: 500;
     letter-spacing: 0.2em;
     transition: border-color 180ms ease, color 180ms ease;
@@ -819,6 +821,7 @@ html.home-scenes {
     opacity: 0.82;
 }
 
+/* Home / Audio Visualizer：Stage 3 的 Canvas 尺寸與視覺透明度。 */
 .signature-visualizer {
     display: block;
     width: 100%;
@@ -872,12 +875,25 @@ html.home-scenes {
 
 .signature-volume {
     display: grid;
-    grid-template-columns: 16px minmax(0, 1fr);
+    grid-template-columns: 24px minmax(0, 1fr);
     align-items: center;
     gap: 0.5rem;
     justify-self: end;
     width: clamp(100px, 8vw, 120px);
     color: rgba(238, 234, 222, 0.72);
+}
+
+.signature-volume-toggle {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    place-items: center;
+    transition: color 180ms ease;
 }
 
 .signature-volume-icon {
@@ -888,6 +904,17 @@ html.home-scenes {
     stroke-width: 1.4;
     stroke-linecap: round;
     stroke-linejoin: round;
+}
+
+.signature-volume-toggle:hover,
+.signature-volume-toggle:focus-visible {
+    color: var(--color-cream);
+    outline: 1px solid rgba(153, 150, 106, 0.55);
+    outline-offset: 1px;
+}
+
+.signature-volume-toggle[aria-pressed="true"] {
+    color: #c8b79b;
 }
 
 .signature-volume-slider {
@@ -925,6 +952,33 @@ html.home-scenes {
 .signature-volume-slider:focus-visible {
     outline: 1px solid rgba(153, 150, 106, 0.72);
     outline-offset: 2px;
+}
+
+@media (min-width: 1101px) {
+    .signature-mini-player {
+        width: clamp(440px, 36vw, 520px);
+        gap: 0.8rem;
+        padding: 1.2rem 1.35rem 1.15rem;
+    }
+
+    .signature-mini-header { gap: 1.2rem; }
+    .signature-mini-copy { gap: 0.25rem; }
+    .signature-mini-copy span { font-size: 0.56rem; }
+    .signature-mini-copy strong { font-size: 1.05rem; }
+
+    .signature-mini-player .signature-play {
+        width: 48px;
+        height: 48px;
+        flex-basis: 48px;
+    }
+
+    .signature-player { gap: 0.5rem; }
+    .signature-mini-footer { gap: 1.25rem; }
+    .signature-time { font-size: 0.56rem; }
+    .signature-secondary-controls { gap: 0.7rem; }
+    .signature-volume { width: clamp(115px, 9vw, 135px); }
+    .signature-volume-icon { width: 18px; height: 18px; }
+    .signature-loop svg { width: 17px; height: 17px; }
 }
 
 /* ========================================
@@ -1192,8 +1246,12 @@ html.home-scenes {
 }
 
 .site-footer--v2 {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    min-height: 62px;
     border-top: 1px solid rgba(238, 234, 222, 0.08);
-    padding: 0.8rem 4vw 0.55rem;
+    padding: 0.65rem 4vw;
 }
 
 .home-v2 .site-footer {
@@ -1222,6 +1280,7 @@ html.home-scenes {
     pointer-events: auto;
 }
 
+/* Home / Stage Layout：三個 100svh Marker 提供原生捲動位置，前景由 data-home-stage 切換。 */
 .home-scroll-stages {
     position: relative;
     width: 1px;
@@ -1236,7 +1295,9 @@ html.home-scenes {
 }
 
 .site-footer--v2 .social-links {
-    gap: clamp(4rem, 12vw, 11rem);
+    grid-column: 2;
+    grid-row: 1;
+    gap: clamp(1.35rem, 3vw, 2.5rem);
     padding: 0;
     background: transparent;
     color: var(--color-heading);
@@ -1246,20 +1307,44 @@ html.home-scenes {
 }
 
 .social-links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
     transition: color 180ms ease;
 }
 
-.social-links a:hover {
+.social-links svg {
+    display: block;
+    width: 15px;
+    height: 15px;
+    flex: 0 0 15px;
+    fill: currentColor;
+}
+
+.social-links a:hover,
+.social-links a:focus-visible {
     color: var(--color-amber);
 }
 
 .footer-meta {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 0.5rem;
+    display: contents;
+}
+
+.footer-meta span {
+    grid-row: 1;
     color: rgba(170, 168, 160, 0.4);
     font-size: 0.52rem;
     letter-spacing: 0.08em;
+}
+
+.footer-meta span:first-child {
+    grid-column: 1;
+    justify-self: start;
+}
+
+.footer-meta span:last-child {
+    grid-column: 3;
+    justify-self: end;
 }
 
 /* ========================================
@@ -1267,6 +1352,8 @@ html.home-scenes {
    Desktop 三欄、圖片導向的 Editorial Grid
 ======================================== */
 .explore-v2 {
+    position: relative;
+    isolation: isolate;
     height: 100dvh;
     overflow: hidden;
     background:
@@ -1274,7 +1361,24 @@ html.home-scenes {
         linear-gradient(145deg, #0d0f0e, #151715 58%, #1a1b18);
 }
 
+/* Explore / Ambient Gradient Glow：固定於內容下方，漂移動畫不得參與頁面排版或攔截操作。 */
+.explore-v2::before {
+    position: fixed;
+    z-index: 0;
+    inset: 0;
+    content: "";
+    background:
+        radial-gradient(circle at 18% 30%, rgba(153, 150, 106, 0.24), transparent 36%),
+        radial-gradient(circle at 82% 68%, rgba(43, 61, 84, 0.26), transparent 40%);
+    opacity: 0.90;
+    transform: translate3d(-2%, -1%, 0) scale(1.04);
+    animation: ambient-glow-drift 30s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
 .explore-page {
+    position: relative;
+    z-index: 1;
     display: flex;
     flex-direction: column;
     height: 100dvh;
@@ -1328,6 +1432,7 @@ html.home-scenes {
     margin-bottom: 0.8rem;
 }
 
+/* Explore / Genre Filter：Active 狀態由 main.js 依 mix.series 更新。 */
 .explore-filter {
     border: 0;
     border-bottom: 1px solid transparent;
@@ -1385,6 +1490,7 @@ html.home-scenes {
     background: var(--color-line);
 }
 
+/* Explore / Stage：此容器只裁切分隔線下方的卡片動畫；RWD 欄數需與 JS 分組一致。 */
 .explore-stage-shell {
     position: relative;
     display: grid;
@@ -1777,10 +1883,6 @@ html.home-scenes {
     appearance: none;
 }
 
-.detail-volume-slider[hidden] {
-    display: none;
-}
-
 .detail-volume-slider::-webkit-slider-thumb {
     width: 8px;
     height: 8px;
@@ -1803,7 +1905,7 @@ html.home-scenes {
     outline-offset: 2px;
 }
 
-.detail-volume-x {
+.volume-x {
     display: none;
 }
 
@@ -1811,11 +1913,13 @@ html.home-scenes {
     color: #c8b79b;
 }
 
-.detail-volume-toggle[aria-pressed="true"] .detail-volume-wave {
+.signature-volume-toggle[aria-pressed="true"] .volume-wave,
+.detail-volume-toggle[aria-pressed="true"] .volume-wave {
     display: none;
 }
 
-.detail-volume-toggle[aria-pressed="true"] .detail-volume-x {
+.signature-volume-toggle[aria-pressed="true"] .volume-x,
+.detail-volume-toggle[aria-pressed="true"] .volume-x {
     display: block;
 }
 
@@ -2053,6 +2157,7 @@ html.home-scenes {
     color: var(--color-amber);
 }
 
+/* Music Detail / Visual Gallery：主圖 Crossfade 與下方可水平捲動縮圖列。 */
 .detail-gallery-section {
     width: 100%;
     margin: 1rem 0 0;
@@ -2264,7 +2369,7 @@ html.home-scenes {
     margin: 0;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: clamp(2.8rem, 5.4vw, 6rem);
+    font-size: clamp(2.2rem, 4.8vw, 4rem);
     font-weight: 400;
     line-height: 1;
     letter-spacing: -0.045em;
@@ -2274,7 +2379,7 @@ html.home-scenes {
     max-width: 540px;
     margin: 1.25rem 0 0;
     color: rgba(228, 224, 214, 0.76);
-    font-size: 0.82rem;
+    font-size: 1rem;
     line-height: 1.85;
 }
 
@@ -2368,7 +2473,7 @@ html.home-scenes {
     margin: 0;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: clamp(2.25rem, 4vw, 4.25rem);
+    font-size: clamp(2.25rem, 3vw, 4.25rem);
     font-weight: 400;
     line-height: 1.08;
     letter-spacing: -0.03em;
@@ -2425,8 +2530,20 @@ html.home-scenes {
 .auth-visual-copy { position: relative; z-index: 3; max-width: 560px; }
 .auth-visual h1 { margin: 0; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(2.1rem, 3.45vw, 3.65rem); font-weight: 400; line-height: 1.08; }
 .auth-visual p:last-child { max-width: 390px; margin: 1.5rem 0 0; color: var(--color-muted); font-size: 0.8rem; line-height: 1.7; }
-.auth-panel { display: grid; min-width: 0; min-height: 0; overflow-y: auto; padding: 2.25rem clamp(2rem, 5vw, 5rem); background-color: var(--color-ink); place-items: center; }
-.auth-panel-inner { width: min(420px, 100%); }
+.auth-panel { position: relative; isolation: isolate; display: grid; min-width: 0; min-height: 0; overflow-y: auto; padding: 2.25rem clamp(2rem, 5vw, 5rem); background-color: var(--color-ink); place-items: center; }
+/* Auth Panel / Ambient Glow：保持靜態並限制於可捲動表單內，避免 transform 擴張捲動範圍。 */
+.auth-panel::before {
+    position: absolute;
+    z-index: 0;
+    inset: 0;
+    content: "";
+    background:
+        radial-gradient(circle at 24% 22%, rgba(153, 150, 106, 0.065), transparent 58%),
+        radial-gradient(circle at 78% 76%, rgba(43, 61, 84, 0.075), transparent 60%);
+    opacity: 0.69;
+    pointer-events: none;
+}
+.auth-panel-inner { position: relative; z-index: 1; width: min(420px, 100%); }
 .auth-panel h2 { margin: 0 0 2rem; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(1.8rem, 2.55vw, 2.6rem); font-weight: 400; }
 .auth-form { display: grid; gap: 1.5rem; }
 .auth-field { display: grid; gap: 0.55rem; }
@@ -2438,9 +2555,29 @@ html.home-scenes {
 .auth-switch { margin: 2rem 0 0; color: var(--color-muted); font-size: 0.64rem; letter-spacing: 0.08em; text-align: center; }
 .auth-switch a { border-bottom: 1px solid var(--color-amber); padding-bottom: 0.2rem; color: var(--color-amber); }
 
+.language-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-left: 0.7rem;
+    color: rgba(255, 255, 255, 0.55);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    white-space: nowrap;
+}
+
+.language-option {
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.language-option.is-active { color: var(--color-amber); }
+
 @media (max-width: 900px) {
-    .explore-v2 { height: auto; overflow-y: auto; }
-    .explore-page { height: auto; min-height: 100dvh; overflow: visible; }
     .hero {
         min-height: 580px;
     }
@@ -2565,6 +2702,15 @@ html.home-scenes {
     .auth-panel { padding: 3.5rem 6vw 4rem; }
 }
 
+@media (min-width: 601px) and (max-width: 1024px) {
+    .explore-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .explore-gallery-item,
+    .explore-gallery[data-count="2"] .explore-gallery-item:first-child,
+    .explore-gallery[data-count="2"] .explore-gallery-item:last-child,
+    .explore-gallery[data-count="1"] .explore-gallery-item { grid-column: auto; }
+    .explore-gallery[data-count="1"] .explore-gallery-item { grid-column: 1 / -1; width: calc((100% - clamp(1rem, 2vw, 2rem)) / 2); justify-self: center; }
+}
+
 /* ========================================
    RWD：Tablet（900px 以下）
    減少欄數與留白，Detail、About 逐步轉為單欄
@@ -2587,6 +2733,7 @@ html.home-scenes {
     .explore-gallery[data-count="2"] .explore-gallery-item:first-child,
     .explore-gallery[data-count="2"] .explore-gallery-item:last-child,
     .explore-gallery[data-count="1"] .explore-gallery-item { grid-column: auto; }
+    .explore-gallery[data-count="1"] .explore-gallery-item { grid-column: 1 / -1; width: calc((100% - clamp(1rem, 2vw, 2rem)) / 2); justify-self: center; }
     .explore-catalog-heading { align-items: flex-start; }
     .explore-genres { flex-wrap: wrap; gap: 0.65rem 1.25rem; }
     .music-detail-page { padding: calc(64px + 2rem) 4vw 4rem; }
@@ -2610,8 +2757,9 @@ html.home-scenes {
 @media (max-width: 600px) {
     .site-header { height: 64px; min-height: 64px; padding: 0 4vw; }
     .logo img { width: 100px; }
-    .main-nav { gap: clamp(0.45rem, 2.3vw, 0.75rem); }
+    .main-nav { align-items: center; gap: clamp(0.35rem, 1.7vw, 0.6rem); }
     .main-nav a { font-size: 0.54rem; letter-spacing: 0.08em; }
+    .language-switch { gap: 0.2rem; margin-left: 0; font-size: 0.52rem; letter-spacing: 0.03em; }
     .signature-mix { height: 100svh; min-height: 100svh; }
     .signature-content {
         top: clamp(13.5rem, 38vh, 16rem);
@@ -2652,10 +2800,23 @@ html.home-scenes {
     .explore-sound-header { width: 90vw; margin-bottom: 1.5rem; }
     .explore-carousel { grid-template-columns: 8vw minmax(0, 1fr) 8vw; }
     .carousel-button { width: 32px; height: 32px; }
-    .site-footer--v2 { padding: 0.75rem 4vw 0.55rem; }
-    .site-footer--v2 .social-links { justify-content: space-between; gap: 0.5rem; }
+    .site-footer--v2 {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        min-height: 0;
+        row-gap: 0.55rem;
+        padding: 0.7rem 4vw 0.6rem;
+    }
+    .site-footer--v2 .social-links {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        justify-content: center;
+        gap: clamp(0.8rem, 4vw, 1.35rem);
+    }
     .site-footer--v2 .social-links a { font-size: 0.55rem; letter-spacing: 0.1em; }
-    .footer-meta { margin-top: 0.45rem; font-size: 0.48rem; }
+    .site-footer--v2 .social-links svg { width: 14px; height: 14px; flex-basis: 14px; }
+    .footer-meta span { grid-row: 2; font-size: 0.48rem; }
+    .footer-meta span:first-child { grid-column: 1; }
+    .footer-meta span:last-child { grid-column: 2; }
     .explore-intro { width: 90vw; }
     .explore-track { gap: 0.75rem; }
     .explore-card {
@@ -2666,8 +2827,21 @@ html.home-scenes {
     .explore-title { font-size: clamp(2.35rem, 12vw, 3.2rem); }
     .explore-description { font-size: 0.9rem; }
     .explore-gallery { grid-template-columns: minmax(0, 1fr); gap: 2rem; }
+    .explore-gallery[data-count="1"] .explore-gallery-item { grid-column: auto; width: 100%; }
     .explore-catalog-heading { display: grid; gap: 0.75rem; }
-    .explore-genres { justify-content: flex-start; text-align: left; }
+    .explore-genres {
+        width: 100%;
+        min-width: 0;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 0.2rem 0 0.45rem;
+        text-align: left;
+        touch-action: pan-x;
+        scrollbar-width: none;
+        overscroll-behavior-inline: contain;
+    }
+    .explore-genres::-webkit-scrollbar { display: none; }
     .explore-stage-shell { padding-top: 1rem; }
     .explore-gallery { width: 100%; }
     .music-detail-page { padding: calc(64px + 1.25rem) 4vw 3rem; }
@@ -2719,13 +2893,24 @@ html.home-scenes {
     .auth-panel { place-items: start center; }
 }
 
-@media (min-width: 901px) and (max-height: 700px) {
+@media (max-height: 700px) {
     .explore-v2 { height: auto; overflow-y: auto; }
     .explore-page { height: auto; min-height: 100dvh; overflow: visible; }
     .explore-gallery { width: 100%; }
 }
 
+@keyframes ambient-glow-drift {
+    0% { transform: translate3d(-2%, -1%, 0) scale(1.04); }
+    50% { transform: translate3d(1.5%, 2%, 0) scale(1.07); }
+    100% { transform: translate3d(2.5%, -1.5%, 0) scale(1.05); }
+}
+
 @media (prefers-reduced-motion: reduce) {
+    .explore-v2::before,
+    .auth-panel::before {
+        animation: none;
+        transform: none;
+    }
     .auth-background-layer { transition: none; }
     .explore-gallery-item {
         opacity: 1;
