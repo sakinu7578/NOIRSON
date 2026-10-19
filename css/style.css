@@ -1662,7 +1662,7 @@ html.home-scenes {
 
 .music-detail-page {
     min-height: 100vh;
-    padding: calc(64px + clamp(1rem, 1.8vw, 1.75rem)) 3vw clamp(4rem, 5vw, 5.5rem);
+    padding: calc(64px + clamp(1rem, 1.0vw, 1.75rem)) 3vw clamp(4rem, 5vw, 5.5rem);
 }
 
 .music-detail-hero {
