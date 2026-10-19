@@ -1582,6 +1582,13 @@ if (aboutBackgroundLayers.length === 2) {
 
 const memberBackgroundLayers = document.querySelectorAll(".auth-background-layer");
 
+// LOGIN / REGISTER：公開展示階段不送出任何會員資料。
+document.querySelectorAll(".auth-form[data-demo-form]").forEach(function (form) {
+    form.addEventListener("submit", function (event) {
+        event.preventDefault();
+    });
+});
+
 // ========================================
 // LOGIN / REGISTER：會員頁背景 Crossfade
 // 兩個背景層交替淡入；圖片載入完成後才開始轉場。
