@@ -1,6 +1,11 @@
 const translations = {
   zh: {
-    'nav.home': '首頁', 'nav.explore': '探索', 'nav.about': '關於', 'nav.login': '登入',
+    'nav.home': '首頁', 'nav.explore': '探索', 'nav.about': '關於', 'nav.login': '登入', 'nav.member': '會員中心',
+    'member.label': '會員', 'member.title': '你的 NOIRSON', 'member.intro': '收藏喜歡的聲音，回到最近停留的片刻。', 'member.demo': '展示資料 · 尚未連接會員服務',
+    'member.profile': '個人資訊', 'member.avatar': '預設會員頭像', 'member.nickname': '暱稱', 'member.email': '電子郵件', 'member.account': '帳號', 'member.edit': '編輯暱稱', 'member.save': '儲存暱稱', 'member.saved': '暱稱已在此頁更新；重新整理後會恢復展示資料。', 'member.localOnly': '僅在此頁暫時更新，重新整理後會恢復。',
+    'member.password': '變更密碼', 'member.oldPassword': '舊密碼', 'member.newPassword': '新密碼', 'member.confirmPassword': '確認新密碼', 'member.changePassword': '變更密碼', 'member.comingSoon': '會員服務尚未開放，此功能目前僅供介面展示。',
+    'member.collection': '收藏', 'member.favorites': '我的收藏', 'member.remove': '取消收藏', 'member.empty': '目前沒有收藏的 Mix。', 'member.activity': '活動', 'member.comments': '我的留言', 'member.recent': '播放紀錄', 'member.logout': '登出',
+    'member.editProfile': '修改會員資料', 'member.content': '會員內容', 'member.unsavedConfirm': '有尚未儲存的資料。確定要離開編輯模式並捨棄輸入內容嗎？',
     'home.kicker': 'NOIRSON — 放鬆音樂電台', 'home.title': '沉浸在聲音裡，讓世界慢下來',
     'home.description1': '在城市與日常之間，探索值得停留的聲音。', 'home.description2': '從深夜節奏到慵懶午後，找到屬於你的聆聽片刻。',
     'home.discover': '探索 NOIRSON', 'home.stay': 'STAY FOR A WHILE.', 'home.explore': '探索音樂', 'home.viewAll': '查看所有 MIX',
@@ -15,7 +20,12 @@ const translations = {
     'a11y.home': 'NOIRSON 首頁', 'a11y.nav': '主要導覽', 'a11y.social': '社群連結', 'a11y.progress': '音樂播放進度', 'a11y.time': '播放時間', 'a11y.volume': '調整音量', 'a11y.carousel': '精選 Mix 輪播', 'a11y.previous': '向左瀏覽 Mix', 'a11y.next': '向右瀏覽 Mix', 'a11y.player': 'Mix 播放器', 'a11y.previousMix': '上一首 Mix', 'a11y.nextMix': '下一首 Mix', 'a11y.closePlaylist': '關閉播放清單', 'a11y.galleryPrevious': '向左瀏覽 Gallery', 'a11y.galleryNext': '向右瀏覽 Gallery',
   },
   en: {
-    'nav.home': 'HOME', 'nav.explore': 'EXPLORE', 'nav.about': 'ABOUT', 'nav.login': 'LOGIN',
+    'nav.home': 'HOME', 'nav.explore': 'EXPLORE', 'nav.about': 'ABOUT', 'nav.login': 'LOGIN', 'nav.member': 'MEMBER',
+    'member.label': 'MEMBER', 'member.title': 'YOUR NOIRSON', 'member.intro': 'Keep the sounds you love and revisit moments you stayed with.', 'member.demo': 'Demo content · Member services are not connected',
+    'member.profile': 'PROFILE', 'member.avatar': 'Default member avatar', 'member.nickname': 'NICKNAME', 'member.email': 'EMAIL', 'member.account': 'ACCOUNT', 'member.edit': 'EDIT NICKNAME', 'member.save': 'SAVE NICKNAME', 'member.saved': 'Nickname updated on this page. Refreshing restores the demo data.', 'member.localOnly': 'This change lasts only until you refresh the page.',
+    'member.password': 'CHANGE PASSWORD', 'member.oldPassword': 'CURRENT PASSWORD', 'member.newPassword': 'NEW PASSWORD', 'member.confirmPassword': 'CONFIRM NEW PASSWORD', 'member.changePassword': 'CHANGE PASSWORD', 'member.comingSoon': 'Member services are not available yet. This interface is for preview only.',
+    'member.collection': 'COLLECTION', 'member.favorites': 'YOUR FAVORITES', 'member.remove': 'REMOVE', 'member.empty': 'No saved mixes right now.', 'member.activity': 'ACTIVITY', 'member.comments': 'YOUR COMMENTS', 'member.recent': 'RECENTLY PLAYED', 'member.logout': 'LOG OUT',
+    'member.editProfile': 'EDIT PROFILE', 'member.content': 'Member content', 'member.unsavedConfirm': 'You have unsaved changes. Leave edit mode and discard your input?',
     'home.kicker': 'NOIRSON — CHILL MUSIC RADIO', 'home.title': 'A slower kind of sound.',
     'home.description1': 'Between the city and everyday life, discover sounds worth staying for.', 'home.description2': 'From late-night rhythms to lazy afternoons, find a moment of listening that feels like yours.',
     'home.discover': 'DISCOVER NOIRSON', 'home.stay': 'STAY FOR A WHILE.', 'home.explore': 'EXPLORE SOUND', 'home.viewAll': 'View all mix',

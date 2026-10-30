@@ -7,6 +7,7 @@ import MusicDetail from './pages/MusicDetail.jsx';
 import About from './pages/About.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
+import Member from './pages/Member.jsx';
 import { useLayoutEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router';
 import './styles/style.css';
@@ -17,13 +18,14 @@ const pageClasses = {
   '/about': 'about-v2',
   '/login': 'auth-v2',
   '/register': 'auth-v2',
+  '/member': 'member-v2',
 };
 
 function App() {
   const { pathname } = useLocation();
   useLayoutEffect(() => {
     const pageClass = pageClasses[pathname] ?? (pathname.startsWith('/music/') ? 'detail-v2' : '');
-    document.body.classList.remove('home-v2', 'explore-v2', 'detail-v2', 'about-v2', 'auth-v2');
+    document.body.classList.remove('home-v2', 'explore-v2', 'detail-v2', 'about-v2', 'auth-v2', 'member-v2');
     if (pageClass) document.body.classList.add(pageClass);
     if (pathname !== '/') {
       const footer = document.querySelector('.site-footer--v2');
@@ -47,6 +49,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/member" element={<Member />} />
       </Routes>
       <Footer />
     </>

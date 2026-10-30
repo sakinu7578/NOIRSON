@@ -40,6 +40,7 @@ function Header() {
                 <NavLink to="/music" onClick={closeMenu}>{t('nav.explore')}</NavLink>
                 <NavLink to="/about" onClick={closeMenu}>{t('nav.about')}</NavLink>
                 <NavLink to="/login" onClick={closeMenu}>{t('nav.login')}</NavLink>
+                <NavLink to="/member" onClick={closeMenu}>{t('nav.member')}</NavLink>
 
                 <span className="language-switch" aria-label="Language">
                     <button className={`language-option ${language === 'zh' ? 'is-active' : ''}`} type="button"

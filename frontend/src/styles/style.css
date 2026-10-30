@@ -84,12 +84,12 @@ a {
 
 .main-nav {
     display: flex;
-    gap: clamp(1.5rem, 3vw, 3rem);
+    gap: clamp(0.8rem, 2vw, 2rem);
 }
 
 .main-nav a {
     color: var(--color-muted);
-    font-size: 0.72rem;
+    font-size: 0.95rem;
     font-weight: 500;
     letter-spacing: 0.16em;
     transition: color 180ms ease;
@@ -3712,6 +3712,119 @@ html.home-scenes {
     .home-v2 .site-footer {
         transition: none;
     }
+}
+
+/* Member：沿用全站色彩，將展示資料排成編輯式內容頁。 */
+.member-page { min-height: 100vh; padding: clamp(7rem, 12vw, 11rem) 4vw 6rem; background: var(--color-ink); }
+.member-shell { max-width: 1280px; margin: 0 auto; }
+.member-intro { padding-bottom: clamp(3rem, 6vw, 6rem); }
+.member-intro .section-label, .member-section-heading > span { color: var(--color-amber); font-size: 0.8rem; letter-spacing: 0.16em; }
+.member-intro h1 { margin: 0.7rem 0 1rem; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(3.2rem, 8vw, 7rem); font-weight: 400; line-height: 1.05; }
+.member-intro > p:not(.section-label) { max-width: 42rem; color: var(--color-muted); font-size: clamp(1rem, 1.5vw, 1.25rem); }
+.member-demo-note { display: inline-block; margin-top: 1.25rem; border-left: 1px solid var(--color-amber); padding-left: 0.8rem; color: var(--color-muted); font-size: 0.85rem; }
+.member-section { display: grid; grid-template-columns: minmax(200px, 30%) minmax(0, 1fr); gap: 2rem; border-top: 1px solid var(--color-line); padding: clamp(2rem, 4vw, 4rem) 0; }
+.member-section-heading h2 { margin: 0.7rem 0 0; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(1.8rem, 2.8vw, 2.8rem); font-weight: 400; }
+.member-profile-content { display: flex; align-items: center; gap: 2rem; }
+.member-avatar { display: grid; width: clamp(100px, 13vw, 160px); aspect-ratio: 1; border: 1px solid var(--color-line); border-radius: 50%; color: var(--color-amber); place-items: center; flex: 0 0 auto; }
+.member-avatar svg { width: 48%; }
+.member-identity { display: grid; gap: 0.25rem; overflow-wrap: anywhere; }
+.member-identity small { margin-top: 0.7rem; color: var(--color-muted); font-size: 0.8rem; letter-spacing: 0.1em; }
+.member-identity strong { font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 400; }
+.member-identity span { font-size: 1rem; }
+.member-settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 5rem); }
+.member-settings .member-section { display: block; }
+.member-settings .member-section-heading { min-height: 8rem; }
+.member-form { display: grid; gap: 0.8rem; max-width: 460px; }
+.member-form label { color: var(--color-muted); font-size: 0.85rem; }
+.member-form input { min-width: 0; width: 100%; border: 0; border-bottom: 1px solid var(--color-line); border-radius: 0; padding: 0.7rem 0; background: transparent; color: var(--color-cream); font: inherit; font-size: 1rem; }
+.member-form input:focus-visible { outline: 1px solid var(--color-amber); outline-offset: 3px; }
+.member-form input:disabled { opacity: 0.45; }
+.member-form button, .member-logout button, .member-remove { width: fit-content; border: 1px solid var(--color-line); padding: 0.75rem 1.1rem; background: transparent; color: var(--color-cream); font: inherit; font-size: 0.85rem; cursor: pointer; }
+.member-form button:not(:disabled):hover, .member-remove:hover { border-color: var(--color-amber); color: var(--color-amber); }
+.member-form button:disabled, .member-logout button:disabled { opacity: 0.5; cursor: not-allowed; }
+.member-form-note { min-height: 1.5rem; margin: 0; color: var(--color-muted); font-size: 0.85rem; }
+.member-list { min-width: 0; }
+.member-mix-row { display: flex; min-width: 0; align-items: center; border-bottom: 1px solid var(--color-line); gap: 1rem; }
+.member-mix-row:first-child { border-top: 1px solid var(--color-line); }
+.member-mix-link { display: flex; min-width: 0; flex: 1; align-items: center; gap: clamp(1rem, 2vw, 2rem); padding: 1rem 0; }
+.member-mix-link img { width: clamp(88px, 12vw, 148px); aspect-ratio: 1.35; object-fit: cover; flex: 0 0 auto; }
+.member-mix-copy { display: grid; min-width: 0; gap: 0.5rem; }
+.member-mix-copy small, .member-comment small { color: var(--color-amber); font-size: 0.78rem; letter-spacing: 0.08em; }
+.member-mix-copy strong { color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(1.05rem, 1.8vw, 1.55rem); font-weight: 400; overflow-wrap: anywhere; }
+.member-arrow { margin-left: auto; color: var(--color-amber); font-size: 1.4rem; }
+.member-remove { white-space: nowrap; }
+.member-comment { border-bottom: 1px solid var(--color-line); padding: 1.5rem 0; }
+.member-comment:first-child { border-top: 1px solid var(--color-line); }
+.member-comment a { display: flex; justify-content: space-between; gap: 1rem; }
+.member-comment p { margin: 1rem 0; font-size: 1.05rem; }
+.member-comment time, .member-empty { color: var(--color-muted); font-size: 0.85rem; }
+@media (max-width: 900px) { .member-section { grid-template-columns: minmax(160px, 28%) minmax(0, 1fr); } .member-settings { gap: 2rem; } }
+@media (min-width: 769px) and (max-width: 1000px) { .main-nav { gap: 0.7rem; } .main-nav a { font-size: 0.8rem; letter-spacing: 0.08em; } .language-switch { margin-left: 0; } }
+@media (max-width: 768px) { .member-section { grid-template-columns: 1fr; gap: 1.5rem; } .member-settings { grid-template-columns: 1fr; gap: 0; } .member-settings .member-section-heading { min-height: 0; margin-bottom: 1.5rem; } }
+@media (max-width: 480px) { .member-page { padding: 6.5rem 5vw 4rem; } .member-profile-content { gap: 1rem; } .member-avatar { width: 90px; } .member-mix-link { gap: 0.75rem; } .member-mix-link img { width: 72px; aspect-ratio: 1; } .member-mix-copy small { font-size: 0.7rem; } .member-mix-copy strong { font-size: 1rem; } .member-arrow { display: none; } .member-remove { max-width: 76px; padding: 0.55rem; white-space: normal; line-height: 1.3; } }
+
+/* 會員頁：桌機在 Header 與 Footer 之間使用獨立的內容捲動區。 */
+.member-v2 #root { display: flex; height: 100dvh; min-height: 0; flex-direction: column; }
+.member-v2 .site-footer { position: relative; z-index: 1; flex: 0 0 auto; background: var(--color-ink); }
+.member-page { position: relative; display: flex; min-height: 0; overflow: hidden; padding: 64px 4vw 0; flex: 1 1 auto; background: var(--color-ink); }
+.member-background { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.member-background-layer, .member-background-overlay { position: absolute; inset: 0; }
+.member-background-layer { background-position: center; background-repeat: no-repeat; background-size: cover; opacity: 0; transition: opacity 2.4s ease; }
+.member-background-layer.is-active { opacity: 0.6; }
+.member-background-overlay {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(9, 11, 10, 0.3),
+            rgba(9, 11, 10, 0.5)
+        ),
+        linear-gradient(
+            90deg,
+            rgba(9, 11, 10, 0.3),
+            rgba(9, 11, 10, 0.15)
+        );
+    }
+.member-shell { position: relative; z-index: 1; display: flex; width: 100%; min-height: 0; flex-direction: column; }
+.member-profile { display: flex; min-height: 0; align-items: center; justify-content: space-between; gap: 2rem; border: 0; padding: clamp(1.5rem, 3vh, 2.5rem) clamp(1rem, 2vw, 1.5rem); flex: 0 0 auto; }
+.member-avatar { width: 100px; background: rgba(13, 15, 14, 0.35); }
+.member-identity { gap: 0.2rem; }
+.member-identity h1 { margin: 0; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(1.8rem, 3vw, 2.8rem); font-weight: 400; }
+.member-identity small { margin-top: 0.2rem; font-size: 0.75rem; letter-spacing: normal; }
+.member-edit-entry { border: 1px solid var(--color-line); padding: 0.75rem 1rem; background: rgba(13, 15, 14, 0.42); color: var(--color-cream); font: inherit; font-size: 0.85rem; cursor: pointer; }
+.member-edit-entry:hover { border-color: var(--color-amber); color: var(--color-amber); }
+.member-content { display: flex; min-height: 0; border-top: 1px solid var(--color-line); flex: 1 1 auto; flex-direction: column; background: rgba(13, 15, 14, 0.32); }
+.member-tabs { display: flex; min-height: 60px; overflow-x: auto; align-items: center; padding-inline: clamp(1rem, 2vw, 1.5rem); border-bottom: 1px solid var(--color-line); flex: 0 0 auto; }
+.member-tabs button { position: relative; min-width: max-content; border: 0; padding: 0.55rem clamp(0.9rem, 2vw, 1.6rem); background: transparent; color: var(--color-muted); font: inherit; font-size: 0.9rem; cursor: pointer; white-space: nowrap; }
+.member-tabs button:first-child { padding-left: 0; }
+.member-tabs button + button::before { position: absolute; top: 0.55rem; bottom: 0.55rem; left: 0; width: 1px; background: var(--color-line); content: ""; }
+.member-tabs button.is-active { color: var(--color-amber); }
+.member-tabs button:hover { color: var(--color-cream); }
+.member-tabs button:focus-visible { outline: 1px solid var(--color-amber); outline-offset: 2px; }
+.member-content-scroll { min-height: 0; overflow-y: auto; padding: 0 clamp(1rem, 2vw, 1.5rem) 1.5rem; flex: 1 1 auto; scrollbar-color: var(--color-amber) transparent; }
+.member-content-scroll > .member-section { display: block; border: 0; padding: 0; }
+.member-mix-row { background: rgba(13, 15, 14, 0.2); }
+.member-settings { padding-bottom: 1rem; }
+.member-settings .member-section { padding: 1.5rem 0 0; }
+.member-settings .member-section-heading { min-height: 0; margin-bottom: 1rem; }
+.member-settings .member-section-heading h2 { margin-top: 0; font-size: clamp(1.4rem, 2vw, 2rem); }
+.member-logout { border-top: 1px solid var(--color-line); padding: 1.5rem 0; }
+.member-logout .member-form-note { margin-top: 0.75rem; }
+.member-empty { padding: 1.5rem 0; }
+@media (max-width: 768px) {
+    .member-v2 #root { height: auto; min-height: 100dvh; }
+    .member-page { display: block; min-height: calc(100dvh - 62px); overflow: visible; padding: 64px 4vw 2rem; }
+    .member-background { position: absolute; }
+    .member-profile { align-items: flex-start; flex-direction: column; gap: 1rem; }
+    .member-content { min-height: 0; }
+    .member-tabs { min-height: 0; }
+    .member-content-scroll { overflow: visible; padding-bottom: 1rem; }
+    .member-settings { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+    .member-page { padding: 64px 5vw 2rem; }
+    .member-profile-content { gap: 1rem; }
+    .member-avatar { width: 84px; }
+    .member-identity h1 { font-size: 1.7rem; }
 }
 
 /* Stage 1 route placeholders; full page layouts will replace these during migration. */
