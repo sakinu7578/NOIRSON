@@ -3717,11 +3717,7 @@ html.home-scenes {
 /* Member：沿用全站色彩，將展示資料排成編輯式內容頁。 */
 .member-page { min-height: 100vh; padding: clamp(7rem, 12vw, 11rem) 4vw 6rem; background: var(--color-ink); }
 .member-shell { max-width: 1280px; margin: 0 auto; }
-.member-intro { padding-bottom: clamp(3rem, 6vw, 6rem); }
-.member-intro .section-label, .member-section-heading > span { color: var(--color-amber); font-size: 0.8rem; letter-spacing: 0.16em; }
-.member-intro h1 { margin: 0.7rem 0 1rem; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(3.2rem, 8vw, 7rem); font-weight: 400; line-height: 1.05; }
-.member-intro > p:not(.section-label) { max-width: 42rem; color: var(--color-muted); font-size: clamp(1rem, 1.5vw, 1.25rem); }
-.member-demo-note { display: inline-block; margin-top: 1.25rem; border-left: 1px solid var(--color-amber); padding-left: 0.8rem; color: var(--color-muted); font-size: 0.85rem; }
+.member-section-heading > span { color: var(--color-amber); font-size: 0.8rem; letter-spacing: 0.16em; }
 .member-section { display: grid; grid-template-columns: minmax(200px, 30%) minmax(0, 1fr); gap: 2rem; border-top: 1px solid var(--color-line); padding: clamp(2rem, 4vw, 4rem) 0; }
 .member-section-heading h2 { margin: 0.7rem 0 0; color: var(--color-heading); font-family: "Roboto Slab", serif; font-size: clamp(1.8rem, 2.8vw, 2.8rem); font-weight: 400; }
 .member-profile-content { display: flex; align-items: center; gap: 2rem; }
@@ -3729,7 +3725,6 @@ html.home-scenes {
 .member-avatar svg { width: 48%; }
 .member-identity { display: grid; gap: 0.25rem; overflow-wrap: anywhere; }
 .member-identity small { margin-top: 0.7rem; color: var(--color-muted); font-size: 0.8rem; letter-spacing: 0.1em; }
-.member-identity strong { font-size: clamp(1.5rem, 3vw, 2.5rem); font-weight: 400; }
 .member-identity span { font-size: 1rem; }
 .member-settings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 5rem); }
 .member-settings .member-section { display: block; }
@@ -3825,23 +3820,5 @@ html.home-scenes {
     .member-profile-content { gap: 1rem; }
     .member-avatar { width: 84px; }
     .member-identity h1 { font-size: 1.7rem; }
-}
-
-/* Stage 1 route placeholders; full page layouts will replace these during migration. */
-.route-placeholder {
-    position: relative;
-    z-index: 1;
-    display: grid;
-    place-items: center;
-    min-height: 100svh;
-    padding: 6rem 1.5rem;
-    color: var(--color-heading);
-    text-align: center;
-}
-
-.route-placeholder h1 {
-    margin: 0;
-    font-size: clamp(2rem, 5vw, 4rem);
-    font-weight: 500;
 }
 
