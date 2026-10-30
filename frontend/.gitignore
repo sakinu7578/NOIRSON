@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Compressed public Mix previews are intentionally versioned.
+!/public/musicDemo/*.mp3
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
