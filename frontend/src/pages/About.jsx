@@ -10,7 +10,7 @@ const aboutImages = Array.from({ length: 17 }, (_, index) => index)
 export default function About() {
   const { t } = useLanguage();
   const [email, setEmail] = useState('');
-  const background = useBackgroundSlideshow({ images: aboutImages, interval: 3500 });
+  const background = useBackgroundSlideshow({ images: aboutImages, interval: 6000 });
 
   useEffect(() => {
     const previousTitle = document.title;

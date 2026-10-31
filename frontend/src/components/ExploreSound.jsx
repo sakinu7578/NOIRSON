@@ -124,11 +124,11 @@ function ExploreSound({ stage }) {
                                 <span
                                     className="explore-card-image"
                                     style={{
-                                        backgroundImage: `url('${assetUrl(mix.cover)}')`
+                                        backgroundImage: stage === 2 ? `url('${assetUrl(mix.cover)}')` : undefined
                                     }}
                                 >
                                     <img
-                                        src={assetUrl(mix.cover)}
+                                        src={stage === 2 ? assetUrl(mix.cover) : undefined}
                                         alt={english ? `${mix.title} cover` : `${mix.title} 音樂封面`}
                                         draggable="false"
                                         onLoad={(event) => {

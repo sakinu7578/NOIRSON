@@ -27,15 +27,21 @@ export default function useBackgroundSlideshow({
       && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducedMotion || images.length < 2) return;
 
-    const preloads = images.map((path) => {
-      const image = new Image();
-      image.src = assetUrl(path);
-      return image;
-    });
     let cancelled = false;
     let slideshowTimer;
     let fadeTimer;
     let requestId = 0;
+    let pendingImage;
+    let pendingLoad;
+    let pendingError;
+
+    function clearPending() {
+      if (pendingImage) {
+        pendingImage.removeEventListener('load', pendingLoad);
+        pendingImage.removeEventListener('error', pendingError);
+        pendingImage = null;
+      }
+    }
 
     function schedule() {
       clearTimeout(slideshowTimer);
@@ -45,11 +51,12 @@ export default function useBackgroundSlideshow({
     function advance() {
       const current = stateRef.current;
       const nextIndex = randomIndex(images.length, current.index);
-      const requestedImage = preloads[nextIndex];
+      const requestedImage = new Image();
       const currentRequest = ++requestId;
 
       function show() {
         if (cancelled || currentRequest !== requestId) return;
+        clearPending();
         const latest = stateRef.current;
         const nextLayer = latest.activeLayer === 0 ? 1 : 0;
         const nextState = {
@@ -75,11 +82,19 @@ export default function useBackgroundSlideshow({
         }
       }
 
-      if (requestedImage.complete && requestedImage.naturalWidth > 0) show();
-      else {
-        requestedImage.addEventListener('load', show, { once: true });
-        requestedImage.addEventListener('error', schedule, { once: true });
+      function onError() {
+        if (cancelled || currentRequest !== requestId) return;
+        clearPending();
+        schedule();
       }
+
+      pendingImage = requestedImage;
+      pendingLoad = show;
+      pendingError = onError;
+      requestedImage.addEventListener('load', show, { once: true });
+      requestedImage.addEventListener('error', onError, { once: true });
+      requestedImage.src = assetUrl(images[nextIndex]);
+      if (requestedImage.complete && requestedImage.naturalWidth > 0) show();
     }
 
     schedule();
@@ -88,6 +103,7 @@ export default function useBackgroundSlideshow({
       requestId += 1;
       clearTimeout(slideshowTimer);
       clearTimeout(fadeTimer);
+      clearPending();
     };
   }, [fadeDuration, images, interval, overlap, respectReducedMotion]);
 

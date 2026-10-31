@@ -9,10 +9,12 @@ export default function useHeroBackground() {
   const [layers, setLayers] = useState([images[0], images[0]]);
 
   useEffect(() => {
-    const preloads = images.map((src) => { const image = new Image(); image.src = src; return image; });
     let cancelled = false;
+    const next = (index + 1) % images.length;
+    const preload = new Image();
+    let onLoad;
+    const onError = () => { if (!cancelled) setIndex(next); };
     const timer = setTimeout(() => {
-      const next = (index + 1) % images.length;
       const show = () => {
         if (cancelled) return;
         const nextLayer = 1 - active;
@@ -20,13 +22,20 @@ export default function useHeroBackground() {
         setActive(nextLayer);
         setIndex(next);
       };
-      if (preloads[next].complete && preloads[next].naturalWidth) show();
+      if (preload.complete && preload.naturalWidth) show();
       else {
-        preloads[next].addEventListener('load', show, { once: true });
-        preloads[next].addEventListener('error', () => { if (!cancelled) setIndex(next); }, { once: true });
+        onLoad = show;
+        preload.addEventListener('load', show, { once: true });
       }
     }, 6000);
-    return () => { cancelled = true; clearTimeout(timer); };
+    preload.addEventListener('error', onError, { once: true });
+    preload.src = images[next];
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      if (onLoad) preload.removeEventListener('load', onLoad);
+      preload.removeEventListener('error', onError);
+    };
   }, [index, active]);
 
   return { active, layers };
