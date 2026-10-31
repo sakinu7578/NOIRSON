@@ -22,17 +22,26 @@ function DetailPage({ mixId, mix }) {
         <h1 id="music-detail-title">{mix.title}</h1>
         <DetailPlayer mixId={mixId} mix={mix} english={english} />
         <p className="music-detail-description">{(english ? mix.description : mix.descriptionZh).trim()}</p>
-        <button className="detail-favorite" type="button">{t('detail.favorite')}</button>
+        <div className="detail-actions">
+          <button className="detail-favorite" type="button">{t('detail.favorite')}</button>
+          {mix.youtube && <div className="detail-youtube-row">
+            <a className="detail-youtube" href={mix.youtube} target="_blank" rel="noreferrer">
+              <span>{t('detail.youtube')}</span> <span aria-hidden="true">↗</span>
+            </a>
+          </div>}
+        </div>
         <section className="detail-comments" aria-labelledby="detail-comments-title">
-          <h2 id="detail-comments-title">{t('detail.comments')}</h2>
+          <div className="detail-comments-heading">
+            <h2 id="detail-comments-title">{t('detail.comments')}</h2>
+            <span className="detail-comments-count">0</span>
+          </div>
           <label className="visually-hidden" htmlFor="detail-comment">{english ? 'Leave a comment' : '留下留言'}</label>
           <textarea id="detail-comment" rows="3" placeholder={t('detail.comment')} disabled />
+          <button className="detail-comment-submit" type="button" disabled>{english ? 'Post comment' : '送出留言'}</button>
+          <div className="detail-comment-list" aria-live="polite">
+            <p className="detail-comments-empty">{english ? 'No comments yet.' : '尚無留言'}</p>
+          </div>
         </section>
-        {mix.youtube && <div className="detail-youtube-row">
-          <a className="detail-youtube" href={mix.youtube} target="_blank" rel="noreferrer">
-            <span>{t('detail.youtube')}</span> <span aria-hidden="true">↗</span>
-          </a>
-        </div>}
       </div>
     </section>
   </main>;
