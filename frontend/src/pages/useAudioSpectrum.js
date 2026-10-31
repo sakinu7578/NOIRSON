@@ -11,12 +11,41 @@ export function releaseAudioSpectrum(audio) {
   graphs.delete(audio);
 }
 
+export function ensureAudioSpectrum(audio) {
+  const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+  if (!audio || !AudioContextClass || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  try {
+    if (!graphs.has(audio)) {
+      const context = new AudioContextClass();
+      try {
+        const analyser = context.createAnalyser();
+        analyser.fftSize = 1024;
+        analyser.smoothingTimeConstant = 0.88;
+        const source = context.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(context.destination);
+        graphs.set(audio, { context, source, analyser, frequency: new Uint8Array(analyser.frequencyBinCount) });
+      } catch {
+        context.close().catch(() => {});
+        return;
+      }
+    }
+    const graph = graphs.get(audio);
+    if (graph.context.state === 'suspended') {
+      graph.context.resume().catch(() => {});
+    }
+  } catch {
+    // Playback remains available if Web Audio is unsupported or denied.
+  }
+}
+
 export default function useAudioSpectrum(audioRef, canvasRef, isPlaying) {
   useEffect(() => {
     const audio = audioRef.current;
     const canvas = canvasRef.current;
     const context2d = canvas?.getContext('2d');
     if (!audio || !canvas || !context2d) return;
+    if (!audio.paused) ensureAudioSpectrum(audio);
 
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
     let animationFrame = 0;
@@ -111,34 +140,5 @@ export default function useAudioSpectrum(audioRef, canvasRef, isPlaying) {
     };
   }, [audioRef, canvasRef, isPlaying]);
 
-  function ensureSpectrum() {
-    const audio = audioRef.current;
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    if (!audio || !AudioContextClass || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    try {
-      if (!graphs.has(audio)) {
-        const context = new AudioContextClass();
-        try {
-          const analyser = context.createAnalyser();
-          analyser.fftSize = 1024;
-          analyser.smoothingTimeConstant = 0.88;
-          const source = context.createMediaElementSource(audio);
-          source.connect(analyser);
-          analyser.connect(context.destination);
-          graphs.set(audio, { context, source, analyser, frequency: new Uint8Array(analyser.frequencyBinCount) });
-        } catch {
-          context.close().catch(() => {});
-          return;
-        }
-      }
-      const graph = graphs.get(audio);
-      if (graph.context.state === 'suspended') {
-        graph.context.resume().catch(() => {});
-      }
-    } catch {
-      // Playback remains available if Web Audio is unsupported or denied.
-    }
-  }
-
-  return ensureSpectrum;
+  return () => ensureAudioSpectrum(audioRef.current);
 }

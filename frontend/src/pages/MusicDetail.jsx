@@ -1,13 +1,18 @@
 import { useEffect } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import DetailGallery from '../components/DetailGallery.jsx';
 import DetailPlayer from '../components/DetailPlayer.jsx';
 import mixes from '../data/mixData.js';
 import useLanguage from '../hooks/useLanguage.js';
 
+const mixIds = Object.keys(mixes);
+
 function DetailPage({ pageMixId, mix }) {
   const { language, t } = useLanguage();
   const english = language === 'en';
+  const currentIndex = mixIds.indexOf(pageMixId);
+  const previousId = mixIds[(currentIndex - 1 + mixIds.length) % mixIds.length];
+  const nextId = mixIds[(currentIndex + 1) % mixIds.length];
   useEffect(() => {
     const previousTitle = document.title;
     document.title = `${mix.title} | NOIRSON`;
@@ -19,8 +24,20 @@ function DetailPage({ pageMixId, mix }) {
       <DetailGallery mix={mix} english={english} />
       <div className="music-detail-info">
         <p className="music-detail-eyebrow"><span>{pageMixId}</span><span>{mix.series}</span></p>
-        <h1 id="music-detail-title">{mix.title}</h1>
-        <DetailPlayer pageMixId={pageMixId} mix={mix} english={english} />
+        <div className="music-detail-title-row">
+          <h1 id="music-detail-title">{mix.title}</h1>
+          <DetailPlayer pageMixId={pageMixId} mix={mix} english={english} />
+        </div>
+        <nav className="music-detail-neighbors" aria-label={english ? 'Mix detail pages' : '歌曲介紹頁面導覽'}>
+          <Link className="music-detail-neighbor" to={`/music/${previousId}`}>
+            <span aria-hidden="true">←</span>
+            <span><small>{english ? 'Previous song details' : '上一首歌曲介紹'}</small><strong>{previousId} · {mixes[previousId].title}</strong></span>
+          </Link>
+          <Link className="music-detail-neighbor music-detail-neighbor-next" to={`/music/${nextId}`}>
+            <span><small>{english ? 'Next song details' : '下一首歌曲介紹'}</small><strong>{nextId} · {mixes[nextId].title}</strong></span>
+            <span aria-hidden="true">→</span>
+          </Link>
+        </nav>
         <p className="music-detail-description">{(english ? mix.description : mix.descriptionZh).trim()}</p>
         <div className="detail-actions">
           <button className="detail-favorite" type="button">{t('detail.favorite')}</button>

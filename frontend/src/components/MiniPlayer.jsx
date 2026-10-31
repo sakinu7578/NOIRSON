@@ -1,25 +1,27 @@
 import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router';
 import useLanguage from '../hooks/useLanguage.js';
 import useMusicPlayer from '../hooks/useMusicPlayer.js';
+import { ensureAudioSpectrum } from '../pages/useAudioSpectrum.js';
 import { assetUrl } from '../utils/assetUrl.js';
-
-const miniPlayerPages = new Set(['/music', '/about', '/login', '/register', '/member']);
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds)) return '00:00';
   return `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 }
 
-export default function MiniPlayer({ pathname }) {
+export default function MiniPlayer() {
+  const { pathname } = useLocation();
+  const isHome = pathname === '/';
   const { language, t } = useLanguage();
   const english = language === 'en';
-  const { hasPlayed, currentMixId, isPlaying, currentTime, duration, volume, isMuted,
+  const { hasPlayed, currentMixId, isPlaying, currentTime, duration, volume, isMuted, audioRef,
     isLooping, autoNext, playlist, togglePlay, skipPrevious, skipNext, seek,
     setVolume, toggleMute, toggleLoop, toggleAutoNext, playMix } = useMusicPlayer();
   const [playlistOpen, setPlaylistOpen] = useState(false);
   const panelRef = useRef(null);
   const toggleRef = useRef(null);
-  const visible = hasPlayed && miniPlayerPages.has(pathname);
+  const visible = isHome || hasPlayed;
   const currentMix = playlist.find(({ id }) => id === currentMixId);
 
   useEffect(() => {
@@ -40,6 +42,22 @@ export default function MiniPlayer({ pathname }) {
     };
   }, [visible, playlistOpen]);
 
+  function handlePlay() {
+    togglePlay();
+    if (isHome && !isPlaying) ensureAudioSpectrum(audioRef.current);
+  }
+
+  function handleSkip(skip) {
+    skip();
+    if (isHome) ensureAudioSpectrum(audioRef.current);
+  }
+
+  function handleSelect(id) {
+    playMix(id);
+    if (isHome) ensureAudioSpectrum(audioRef.current);
+    setPlaylistOpen(false);
+  }
+
   if (!visible) return null;
 
   return <aside className="global-mini-player" aria-label={english ? 'Music mini player' : '音樂迷你播放器'}>
@@ -50,12 +68,12 @@ export default function MiniPlayer({ pathname }) {
         <strong>{currentMix.title}</strong>
       </div>
       <div className="global-mini-transport">
-        <button className="global-mini-control" type="button" onClick={skipPrevious}
+        <button className="global-mini-control" type="button" onClick={() => handleSkip(skipPrevious)}
           aria-label={english ? 'Previous Mix' : '上一首 Mix'} title={english ? 'Previous Mix' : '上一首 Mix'}>←</button>
         <button className={`signature-play global-mini-play ${isPlaying ? 'is-playing' : ''}`} type="button"
           aria-label={isPlaying ? (english ? 'Pause music' : '暫停音樂') : (english ? 'Play music' : '播放音樂')}
-          aria-pressed={isPlaying} onClick={togglePlay}><span className="play-icon" aria-hidden="true" /></button>
-        <button className="global-mini-control" type="button" onClick={skipNext}
+          aria-pressed={isPlaying} onClick={handlePlay}><span className="play-icon" aria-hidden="true" /></button>
+        <button className="global-mini-control" type="button" onClick={() => handleSkip(skipNext)}
           aria-label={english ? 'Next Mix' : '下一首 Mix'} title={english ? 'Next Mix' : '下一首 Mix'}>→</button>
       </div>
     </div>
@@ -105,11 +123,11 @@ export default function MiniPlayer({ pathname }) {
         <button className="detail-playlist-close" type="button" aria-label={english ? 'Close playlist' : '關閉播放清單'}
           onClick={() => setPlaylistOpen(false)}>×</button>
       </div>
-      <div className="detail-playlist-list global-mini-playlist-list">
+      <div className="detail-playlist-list global-mini-playlist-list" data-home-playlist-scroll>
         {playlist.map(({ id, title, series, cover }) => <button key={id} type="button"
           className={`detail-playlist-item global-mini-playlist-item ${id === currentMixId ? 'is-active' : ''}`}
           aria-current={id === currentMixId ? 'true' : undefined}
-          onClick={() => { playMix(id); setPlaylistOpen(false); }}>
+          onClick={() => handleSelect(id)}>
           <img src={assetUrl(cover)} alt="" />
           <span className="detail-playlist-item-copy"><strong>{id} · {title}</strong><small>{series}</small></span>
         </button>)}

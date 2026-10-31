@@ -50,7 +50,7 @@ a {
       z-index 必須高於 Hero、About 背景與一般內容。
     */
     position: fixed;
-    z-index: 20;
+    z-index: 21;
     top: 0;
     left: 0;
     display: flex;
@@ -1806,26 +1806,67 @@ html.home-scenes {
     /* white-space: nowrap; */
 }
 
-.detail-player {
-    /* relative 是浮動 Playlist 的定位基準，因此面板不會推擠原有內容。 */
-    position: relative;
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 1.25rem;
-    margin-top: clamp(1.35rem, 2vw, 2rem);
-    border-top: 1px solid var(--color-line);
-    border-bottom: 1px solid var(--color-line);
-    padding: 1rem 0;
-}
-
-.detail-player-controls {
+.music-detail-title-row {
     display: flex;
     align-items: center;
-    gap: 0.55rem;
+    gap: 1rem;
+    min-width: 0;
 }
 
-.detail-skip,
+.music-detail-title-row h1 {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.music-detail-title-row .detail-play {
+    flex: 0 0 50px;
+}
+
+.music-detail-neighbors {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    margin-top: 1.35rem;
+    border-top: 1px solid var(--color-line);
+    border-bottom: 1px solid var(--color-line);
+    padding: 0.85rem 0;
+}
+
+.music-detail-neighbor {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    color: var(--color-muted);
+}
+
+.music-detail-neighbor > span:nth-child(2),
+.music-detail-neighbor-next > span:first-child {
+    display: grid;
+    min-width: 0;
+    gap: 0.25rem;
+}
+
+.music-detail-neighbor small {
+    color: var(--color-amber);
+    font-size: 0.58rem;
+    letter-spacing: 0.07em;
+}
+
+.music-detail-neighbor strong {
+    overflow: hidden;
+    color: var(--color-heading);
+    font-size: 0.72rem;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.music-detail-neighbor-next { justify-content: flex-end; text-align: right; }
+.music-detail-neighbor:hover strong,
+.music-detail-neighbor:focus-visible strong { color: var(--color-amber); }
+.music-detail-neighbor:focus-visible { outline: 1px solid var(--color-amber); outline-offset: 3px; }
+
 .detail-playlist-toggle,
 .detail-playlist-close {
     border: 0;
@@ -1837,15 +1878,6 @@ html.home-scenes {
     transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
 }
 
-.detail-skip {
-    display: grid;
-    width: 30px;
-    height: 38px;
-    font-size: 0.95rem;
-    place-items: center;
-}
-
-.detail-skip:hover,
 .detail-playlist-toggle:hover,
 .detail-playlist-close:hover {
     color: var(--color-amber);
@@ -1855,21 +1887,6 @@ html.home-scenes {
     width: 50px;
     height: 50px;
     flex-basis: 50px;
-}
-
-.detail-player-timeline {
-    min-width: 0;
-}
-
-.detail-player-secondary {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(1rem, 2vw, 1.6rem);
-    width: min(100%, 300px);
-    margin-inline: auto;
-    min-width: 0;
 }
 
 .detail-auto-next,
@@ -2225,35 +2242,36 @@ html.home-scenes {
     bottom: max(1.25rem, env(safe-area-inset-bottom));
     display: grid;
     gap: 0.55rem;
-    width: min(360px, calc(100vw - 2rem));
+    width: min(430px, calc(100vw - 2rem));
     border: 1px solid rgba(228, 224, 214, 0.14);
-    padding: 0.8rem;
-    background: rgba(15, 17, 15, 0.9);
+    padding: 1rem;
+    background: rgba(12, 14, 13, 0.45);
     box-shadow: 0 18px 45px rgba(0, 0, 0, 0.36);
-    backdrop-filter: blur(18px);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
 }
 
 .global-mini-main {
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr) auto;
+    grid-template-columns: 56px minmax(0, 1fr) auto;
     align-items: center;
     gap: 0.65rem;
 }
 
 .global-mini-cover {
     display: block;
-    width: 48px;
+    width: 56px;
     aspect-ratio: 1;
     object-fit: cover;
 }
 
 .global-mini-copy { display: grid; min-width: 0; gap: 0.2rem; }
-.global-mini-copy span { color: var(--color-amber); font-size: 0.52rem; letter-spacing: 0.12em; }
+.global-mini-copy span { color: var(--color-amber); font-size: 0.58rem; letter-spacing: 0.12em; }
 .global-mini-copy strong {
     overflow: hidden;
     color: var(--color-heading);
     font-family: "Roboto Slab", serif;
-    font-size: 0.78rem;
+    font-size: 0.86rem;
     font-weight: 400;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -2263,14 +2281,14 @@ html.home-scenes {
 .global-mini-modes,
 .global-mini-volume { display: flex; align-items: center; gap: 0.25rem; }
 
-.global-mini-play { width: 34px; height: 34px; flex-basis: 34px; }
+.global-mini-play { width: 40px; height: 40px; flex-basis: 40px; }
 .global-mini-play .play-icon { transform: scale(0.75); }
 
 .global-mini-control {
     display: grid;
-    width: 24px;
-    height: 24px;
-    flex: 0 0 24px;
+    width: 28px;
+    height: 28px;
+    flex: 0 0 28px;
     border: 0;
     padding: 0;
     background: transparent;
@@ -2281,8 +2299,8 @@ html.home-scenes {
 }
 
 .global-mini-control svg {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.5;
@@ -2297,15 +2315,19 @@ html.home-scenes {
     outline-offset: 1px;
 }
 
-.global-mini-control[aria-pressed="true"],
-.global-mini-control[aria-expanded="true"] { color: var(--color-amber); }
+.global-mini-modes .global-mini-control[aria-pressed="true"],
+.global-mini-modes .global-mini-control[aria-expanded="true"] {
+    border-radius: 3px;
+    background: rgba(153, 119, 61, 0.25);
+    color: #d2b77d;
+}
 
 .global-mini-progress { display: grid; gap: 0.1rem; }
 .global-mini-times {
     display: flex;
     justify-content: space-between;
     color: var(--color-muted);
-    font-size: 0.52rem;
+    font-size: 0.58rem;
     font-variant-numeric: tabular-nums;
 }
 
@@ -2318,8 +2340,9 @@ html.home-scenes {
     top: auto;
     right: 0;
     bottom: calc(100% + 0.75rem);
-    width: min(390px, calc(100vw - 2rem));
+    width: min(430px, calc(100vw - 2rem));
     max-height: min(420px, calc(100svh - 260px));
+    background: rgba(12, 14, 13, 0.9);
 }
 
 .global-mini-playlist-list {
@@ -2330,6 +2353,8 @@ html.home-scenes {
 
 .global-mini-playlist-item {
     width: 100%;
+    border: 0;
+    border-bottom: 1px solid rgba(115, 119, 114, 0.18);
     background: transparent;
     color: inherit;
     font: inherit;
@@ -2337,18 +2362,49 @@ html.home-scenes {
     cursor: pointer;
 }
 
+.global-mini-playlist-item:hover {
+    background: rgba(99, 103, 98, 0.2);
+}
+
+.global-mini-playlist-item.is-active {
+    background: rgba(80, 84, 80, 0.36);
+    box-shadow: none;
+}
+
+.global-mini-playlist-item.is-active:hover {
+    background: rgba(99, 103, 98, 0.3);
+}
+
 .global-mini-playlist-item:focus-visible {
     outline: 1px solid var(--color-amber);
     outline-offset: -2px;
 }
 
+.home-v2 .global-mini-player {
+    top: var(--home-stage-top);
+    right: var(--home-stage-inline);
+    bottom: auto;
+}
+
+.home-v2 .global-mini-player .global-mini-playlist-panel {
+    top: calc(100% + 0.75rem);
+    bottom: auto;
+    max-height: min(420px, calc(100svh - 275px));
+}
+
+.home-v2 .global-mini-playlist-list {
+    max-height: min(350px, calc(100svh - 350px));
+}
+
 @media (max-width: 600px) {
     .global-mini-player { right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); }
-    .global-mini-main { grid-template-columns: 42px minmax(0, 1fr) auto; gap: 0.4rem; }
-    .global-mini-cover { width: 42px; }
+    .global-mini-main { grid-template-columns: 46px minmax(0, 1fr) auto; gap: 0.4rem; }
+    .global-mini-cover { width: 46px; }
     .global-mini-transport { gap: 0; }
-    .global-mini-play { width: 32px; height: 32px; flex-basis: 32px; }
+    .global-mini-play { width: 34px; height: 34px; flex-basis: 34px; }
+    .global-mini-control { width: 24px; height: 24px; flex-basis: 24px; }
     .global-mini-volume { width: 105px; }
+    .music-detail-title-row .detail-play { flex-basis: 44px; }
 }
 
 @media (max-height: 500px) {
@@ -2361,6 +2417,15 @@ html.home-scenes {
     }
 
     .global-mini-playlist-list { max-height: calc(100svh - 155px); }
+
+    .home-v2 .global-mini-player .global-mini-playlist-panel {
+        position: fixed;
+        top: 72px;
+        bottom: auto;
+        max-height: calc(100svh - 88px);
+    }
+
+    .home-v2 .global-mini-playlist-list { max-height: calc(100svh - 155px); }
 }
 
 .detail-loop {

@@ -52,7 +52,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/member" element={<Member />} />
       </Routes>
-      <MiniPlayer pathname={pathname} />
+      <MiniPlayer />
       <Footer />
     </>
   );

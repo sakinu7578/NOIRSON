@@ -1,5 +1,6 @@
-import MusicPlayer from '../components/MusicPlayer.jsx';
 import ExploreSound from '../components/ExploreSound.jsx';
+import useAudioSpectrum from './useAudioSpectrum.js';
+import useMusicPlayer from '../hooks/useMusicPlayer.js';
 import useHomeStage from './useHomeStage.js';
 import useHeroBackground from './useHeroBackground.js';
 import { useEffect, useRef } from 'react';
@@ -9,6 +10,8 @@ import useLanguage from '../hooks/useLanguage.js';
 function Home() {
     const { t } = useLanguage();
     const visualizerRef = useRef(null);
+    const { audioRef, isPlaying } = useMusicPlayer();
+    useAudioSpectrum(audioRef, visualizerRef, isPlaying);
     const { stage, markersRef } = useHomeStage();
     const { active, layers } = useHeroBackground();
     useEffect(() => {
@@ -78,8 +81,6 @@ function Home() {
                     </div>
                 </div>
             </section>
-            {/* 播放器元件 */}
-            <MusicPlayer visualizerRef={visualizerRef} />
             {/* MIX卡片元件 */}
             <ExploreSound stage={stage} />
             <div className="home-scroll-stages" aria-hidden="true" ref={markersRef}>
