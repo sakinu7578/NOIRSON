@@ -8,6 +8,7 @@ import About from './pages/About.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Member from './pages/Member.jsx';
+import MiniPlayer from './components/MiniPlayer.jsx';
 import { useLayoutEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router';
 import './styles/style.css';
@@ -51,6 +52,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/member" element={<Member />} />
       </Routes>
+      <MiniPlayer pathname={pathname} />
       <Footer />
     </>
   );

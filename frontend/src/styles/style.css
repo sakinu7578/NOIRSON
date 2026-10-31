@@ -2217,6 +2217,152 @@ html.home-scenes {
     letter-spacing: 0.08em;
 }
 
+/* 全站固定式 Mini Player：與頁面內容分離，清單向上浮出。 */
+.global-mini-player {
+    position: fixed;
+    z-index: 20;
+    right: max(1.25rem, env(safe-area-inset-right));
+    bottom: max(1.25rem, env(safe-area-inset-bottom));
+    display: grid;
+    gap: 0.55rem;
+    width: min(360px, calc(100vw - 2rem));
+    border: 1px solid rgba(228, 224, 214, 0.14);
+    padding: 0.8rem;
+    background: rgba(15, 17, 15, 0.9);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.36);
+    backdrop-filter: blur(18px);
+}
+
+.global-mini-main {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.global-mini-cover {
+    display: block;
+    width: 48px;
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.global-mini-copy { display: grid; min-width: 0; gap: 0.2rem; }
+.global-mini-copy span { color: var(--color-amber); font-size: 0.52rem; letter-spacing: 0.12em; }
+.global-mini-copy strong {
+    overflow: hidden;
+    color: var(--color-heading);
+    font-family: "Roboto Slab", serif;
+    font-size: 0.78rem;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.global-mini-transport,
+.global-mini-modes,
+.global-mini-volume { display: flex; align-items: center; gap: 0.25rem; }
+
+.global-mini-play { width: 34px; height: 34px; flex-basis: 34px; }
+.global-mini-play .play-icon { transform: scale(0.75); }
+
+.global-mini-control {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: rgba(228, 224, 214, 0.65);
+    font: inherit;
+    cursor: pointer;
+    place-items: center;
+}
+
+.global-mini-control svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.global-mini-control:hover,
+.global-mini-control:focus-visible {
+    color: var(--color-cream);
+    outline: 1px solid rgba(153, 150, 106, 0.55);
+    outline-offset: 1px;
+}
+
+.global-mini-control[aria-pressed="true"],
+.global-mini-control[aria-expanded="true"] { color: var(--color-amber); }
+
+.global-mini-progress { display: grid; gap: 0.1rem; }
+.global-mini-times {
+    display: flex;
+    justify-content: space-between;
+    color: var(--color-muted);
+    font-size: 0.52rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.global-mini-secondary { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.global-mini-volume { width: 115px; }
+.global-mini-volume .signature-volume-slider { min-width: 0; }
+
+.global-mini-player .global-mini-playlist-panel {
+    position: absolute;
+    top: auto;
+    right: 0;
+    bottom: calc(100% + 0.75rem);
+    width: min(390px, calc(100vw - 2rem));
+    max-height: min(420px, calc(100svh - 260px));
+}
+
+.global-mini-playlist-list {
+    max-height: min(350px, calc(100svh - 330px));
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
+
+.global-mini-playlist-item {
+    width: 100%;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.global-mini-playlist-item:focus-visible {
+    outline: 1px solid var(--color-amber);
+    outline-offset: -2px;
+}
+
+@media (max-width: 600px) {
+    .global-mini-player { right: 1rem; bottom: max(1rem, env(safe-area-inset-bottom)); }
+    .global-mini-main { grid-template-columns: 42px minmax(0, 1fr) auto; gap: 0.4rem; }
+    .global-mini-cover { width: 42px; }
+    .global-mini-transport { gap: 0; }
+    .global-mini-play { width: 32px; height: 32px; flex-basis: 32px; }
+    .global-mini-volume { width: 105px; }
+}
+
+@media (max-height: 500px) {
+    .global-mini-player .global-mini-playlist-panel {
+        position: fixed;
+        top: 72px;
+        bottom: auto;
+        right: 1rem;
+        max-height: calc(100svh - 88px);
+    }
+
+    .global-mini-playlist-list { max-height: calc(100svh - 155px); }
+}
+
 .detail-loop {
     width: 32px;
     height: 32px;

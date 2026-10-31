@@ -20,6 +20,7 @@ export function MusicPlayerProvider({ children }) {
   const mutedRef = useRef(false);
   const [currentMixId, setCurrentMixId] = useState('M001');
   const [isPlaying, setIsPlaying] = useState(false);
+  const [hasPlayed, setHasPlayed] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [volume, setVolumeState] = useState(1);
@@ -52,7 +53,10 @@ export function MusicPlayerProvider({ children }) {
       audio.muted = mutedRef.current;
       audioRef.current = audio;
 
-      const onPlay = () => setIsPlaying(true);
+      const onPlay = () => {
+        setIsPlaying(true);
+        setHasPlayed(true);
+      };
       const onPause = () => setIsPlaying(false);
       const onTimeUpdate = () => setCurrentTime(audio.currentTime);
       const onLoadedMetadata = () => setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
@@ -188,11 +192,11 @@ export function MusicPlayerProvider({ children }) {
     audioRef.current = null;
   }, []);
 
-  const value = useMemo(() => ({ currentMixId, isPlaying, currentTime, duration, volume,
+  const value = useMemo(() => ({ currentMixId, isPlaying, hasPlayed, currentTime, duration, volume,
     isMuted, isLooping, autoNext, error, playlist, audioRef, playMix, togglePlay, pause,
     seek, setVolume, toggleMute, toggleLoop, toggleAutoNext, skipNext, skipPrevious,
     subscribeAutoNext }),
-  [currentMixId, isPlaying, currentTime, duration, volume, isMuted, isLooping, autoNext,
+  [currentMixId, isPlaying, hasPlayed, currentTime, duration, volume, isMuted, isLooping, autoNext,
     error, playMix, togglePlay, pause, seek, setVolume, toggleMute, toggleLoop,
     toggleAutoNext, skipNext, skipPrevious, subscribeAutoNext]);
 
