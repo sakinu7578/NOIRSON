@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { assetUrl } from '../utils/assetUrl.js';
 
-const galleryImages = Array.from({ length: 17 }, (_, index) => `images/${String(index).padStart(2, '0')}.png`);
+const galleryImages = Array.from({ length: 17 }, (_, index) => `images/${String(index).padStart(2, '0')}.webp`);
 const autoplayKey = 'noirson-detail-gallery-auto';
 
 function initialAutoplay() {

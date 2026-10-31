@@ -5,16 +5,16 @@ const mixes = {
     M001: {
         title: "Somewhere far from everyone",
         series: "Main Album / Chill Vibe",
-        cover: "images/00.png",
+        cover: "images/00.webp",
         audio: "musicDemo/01-preview.mp3",
         gallery: [
-            "images/01.png",
-            "images/02.png",
-            "images/03.png",
-            "images/07.png",
-            "images/08.png",
-            "images/10.png",
-            "images/14.png"
+            "images/01.webp",
+            "images/02.webp",
+            "images/03.webp",
+            "images/07.webp",
+            "images/08.webp",
+            "images/10.webp",
+            "images/14.webp"
         ],
         description:
             `Drifting in the evening sea breeze, where thoughts intertwine with the rhythm of the waves and music.
@@ -28,17 +28,17 @@ const mixes = {
     M002: {
         title: "Train to Nowhere",
         series: "Chill / Lofi / Jazz",
-        cover: "images/16.png",
+        cover: "images/16.webp",
         audio: "musicDemo/02-preview.mp3",
         gallery: [
-            "images/01.png",
-            "images/03.png",
-            "images/04.png",
-            "images/05.png",
-            "images/10.png",
-            "images/12.png",
-            "images/13.png",
-            "images/15.png"
+            "images/01.webp",
+            "images/03.webp",
+            "images/04.webp",
+            "images/05.webp",
+            "images/10.webp",
+            "images/12.webp",
+            "images/13.webp",
+            "images/15.webp"
         ],
         description:
             `A calm Chill Jazz Hop mix for early mornings — a quiet train moving toward nowhere,
@@ -54,17 +54,17 @@ const mixes = {
     M003: {
         title: "Still Awake Above the City",
         series: "Chill / Lofi / Jazz",
-        cover: "images/10.png",
+        cover: "images/10.webp",
         audio: "musicDemo/03-preview.mp3",
         gallery: [
-            "images/01.png",
-            "images/03.png",
-            "images/04.png",
-            "images/05.png",
-            "images/12.png",
-            "images/13.png",
-            "images/15.png",
-            "images/16.png"
+            "images/01.webp",
+            "images/03.webp",
+            "images/04.webp",
+            "images/05.webp",
+            "images/12.webp",
+            "images/13.webp",
+            "images/15.webp",
+            "images/16.webp"
         ],
         description:
             `Somewhere above the city, still raining. Lights flicker through the mist, windows still glowing, streets quietly alive below. 
@@ -78,18 +78,18 @@ const mixes = {
     M004: {
         title: "Quieter thoughts",
         series: "Chill / Lofi / Jazz",
-        cover: "images/01.png",
+        cover: "images/01.webp",
         audio: "musicDemo/04-preview.mp3",
         gallery: [
-            "images/01.png",
-            "images/03.png",
-            "images/04.png",
-            "images/05.png",
-            "images/10.png",
-            "images/12.png",
-            "images/13.png",
-            "images/15.png",
-            "images/16.png"
+            "images/01.webp",
+            "images/03.webp",
+            "images/04.webp",
+            "images/05.webp",
+            "images/10.webp",
+            "images/12.webp",
+            "images/13.webp",
+            "images/15.webp",
+            "images/16.webp"
         ],
         description:
             `A late-night journey through groove, warmth, and silence. This mix starts with smooth jazzy grooves and head-nodding rhythms, 
@@ -103,10 +103,10 @@ const mixes = {
     M005: {
         title: "Don't know which way to go",
         series: "Midnight Jersey",
-        cover: "images/07.png",
+        cover: "images/07.webp",
         audio: "musicDemo/05-preview.mp3",
         gallery: [
-            "images/06.png"
+            "images/06.webp"
         ],
         description:
             `NOIRSON RADIO presents a chill mix 🌃 blending midnight jersey, urban rain lounge,
@@ -120,12 +120,12 @@ const mixes = {
     M006: {
         title: "After the Rain",
         series: "Ethereal Trap / Cloud Trap",
-        cover: "images/08.png",
+        cover: "images/08.webp",
         audio: "musicDemo/06-preview.mp3",
         gallery: [
-            "images/02.png",
-            "images/11.png",
-            "images/14.png"
+            "images/02.webp",
+            "images/11.webp",
+            "images/14.webp"
         ],
         description:
             `No sleep. Just vibes.
@@ -141,12 +141,12 @@ const mixes = {
     M007: {
         title: "Stay Floating",
         series: "Ethereal Trap / Cloud Trap",
-        cover: "images/11.png",
+        cover: "images/11.webp",
         audio: "musicDemo/07-preview.mp3",
         gallery: [
-            "images/02.png",
-            "images/08.png",
-            "images/14.png"
+            "images/02.webp",
+            "images/08.webp",
+            "images/14.webp"
         ],
         description:
             `A quiet journey above the clouds. Soft cloud-trap rhythms, dreamy melodies, warm pads, and floating energy.
@@ -162,11 +162,11 @@ const mixes = {
     M008: {
         title: "Tokyo Slow Nights",
         series: "City Pop",
-        cover: "images/09.png",
+        cover: "images/09.webp",
         audio: "musicDemo/08-preview.mp3",
         gallery: [
-            "images/04.png",
-            "images/12.png"
+            "images/04.webp",
+            "images/12.webp"
         ],
         description:
             `Tokyo Slow Nights marks a new chapter — crafted while staying in the quiet winter streets of Tokyo.

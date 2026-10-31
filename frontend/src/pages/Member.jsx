@@ -8,7 +8,7 @@ import { assetUrl } from '../utils/assetUrl.js';
 
 const memberImages = Array.from({ length: 17 }, (_, index) => index)
   .filter((index) => ![0, 9, 11, 16].includes(index))
-  .map((index) => `images/${String(index).padStart(2, '0')}.png`);
+  .map((index) => `images/${String(index).padStart(2, '0')}.webp`);
 
 function MixRow({ id, action }) {
   const mix = mixes[id];

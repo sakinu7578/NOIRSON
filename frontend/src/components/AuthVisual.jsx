@@ -1,10 +1,10 @@
 import useBackgroundSlideshow from '../hooks/useBackgroundSlideshow.js';
 
 const memberImages = [
-  'images/05.png',
-  'images/06.png',
-  'images/10.png',
-  'images/12.png',
+  'images/05.webp',
+  'images/06.webp',
+  'images/10.webp',
+  'images/12.webp',
 ];
 
 export default function AuthVisual({ headingId, title, intro, membersLabel }) {

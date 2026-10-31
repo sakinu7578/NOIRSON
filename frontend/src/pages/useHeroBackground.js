@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { assetUrl } from '../utils/assetUrl.js';
 
-const images = ['00', '01', '05', '04', '13', '14'].map((name) => assetUrl(`images/${name}.png`));
+const images = ['00', '01', '05', '04', '13', '14'].map((name) => assetUrl(`images/${name}.webp`));
 
 export default function useHeroBackground() {
   const [index, setIndex] = useState(0);

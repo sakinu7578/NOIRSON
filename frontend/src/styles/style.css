@@ -2385,7 +2385,7 @@ html.home-scenes {
 }
 
 .about-background-layer:first-child {
-    background-image: url("/images/00.png");
+    background-image: url("/images/00.webp");
 }
 
 .about-background-layer.is-active {
@@ -2623,7 +2623,7 @@ html.home-scenes {
 }
 
 .auth-background-layer {
-    background: #101216 url("/images/05.png") center / cover no-repeat;
+    background: #101216 url("/images/05.webp") center / cover no-repeat;
     opacity: 0;
     transition: opacity 2s ease-in-out;
 }
