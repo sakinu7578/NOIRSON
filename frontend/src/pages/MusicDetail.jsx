@@ -5,7 +5,7 @@ import DetailPlayer from '../components/DetailPlayer.jsx';
 import mixes from '../data/mixData.js';
 import useLanguage from '../hooks/useLanguage.js';
 
-function DetailPage({ mixId, mix }) {
+function DetailPage({ pageMixId, mix }) {
   const { language, t } = useLanguage();
   const english = language === 'en';
   useEffect(() => {
@@ -18,9 +18,9 @@ function DetailPage({ mixId, mix }) {
     <section className="music-detail-hero" aria-labelledby="music-detail-title">
       <DetailGallery mix={mix} english={english} />
       <div className="music-detail-info">
-        <p className="music-detail-eyebrow"><span>{mixId}</span><span>{mix.series}</span></p>
+        <p className="music-detail-eyebrow"><span>{pageMixId}</span><span>{mix.series}</span></p>
         <h1 id="music-detail-title">{mix.title}</h1>
-        <DetailPlayer mixId={mixId} mix={mix} english={english} />
+        <DetailPlayer pageMixId={pageMixId} mix={mix} english={english} />
         <p className="music-detail-description">{(english ? mix.description : mix.descriptionZh).trim()}</p>
         <div className="detail-actions">
           <button className="detail-favorite" type="button">{t('detail.favorite')}</button>
@@ -49,6 +49,6 @@ function DetailPage({ mixId, mix }) {
 
 export default function MusicDetail() {
   const { id } = useParams();
-  const mixId = Object.hasOwn(mixes, id) ? id : 'M001';
-  return <DetailPage key={mixId} mixId={mixId} mix={mixes[mixId]} />;
+  const pageMixId = Object.hasOwn(mixes, id) ? id : 'M001';
+  return <DetailPage key={pageMixId} pageMixId={pageMixId} mix={mixes[pageMixId]} />;
 }

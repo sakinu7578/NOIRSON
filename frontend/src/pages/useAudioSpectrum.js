@@ -1,12 +1,18 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
-export default function useAudioSpectrum(audioRef, canvasRef) {
-  const graphRef = useRef(null);
-  const effectGeneration = useRef(0);
+const graphs = new WeakMap();
 
+export function releaseAudioSpectrum(audio) {
+  const graph = graphs.get(audio);
+  if (!graph) return;
+  graph.source.disconnect();
+  graph.analyser.disconnect();
+  graph.context.close().catch(() => {});
+  graphs.delete(audio);
+}
+
+export default function useAudioSpectrum(audioRef, canvasRef, isPlaying) {
   useEffect(() => {
-    const generation = ++effectGeneration.current;
-    const isLatestEffect = () => effectGeneration.current === generation;
     const audio = audioRef.current;
     const canvas = canvasRef.current;
     const context2d = canvas?.getContext('2d');
@@ -20,7 +26,7 @@ export default function useAudioSpectrum(audioRef, canvasRef) {
     let disposed = false;
 
     function draw(forceStatic = false) {
-      const graph = graphRef.current;
+      const graph = graphs.get(audio);
       const analyser = graph?.analyser;
       const frequency = graph?.frequency;
       const barCount = Math.min(512, Math.max(64, Math.round(width / 12)));
@@ -101,23 +107,16 @@ export default function useAudioSpectrum(audioRef, canvasRef) {
       audio.removeEventListener('ended', start);
       audio.removeEventListener('volumechange', start);
       reducedMotion.removeEventListener('change', resize);
-      // StrictMode re-runs effects with the same audio element. Keep its one source node.
-      const graph = graphRef.current;
-      queueMicrotask(() => {
-        if (isLatestEffect() && graph === graphRef.current) {
-          graph?.context.close().catch(() => {});
-          graphRef.current = null;
-        }
-      });
+      // Keep the source node while HOME unmounts; Provider releases it with the audio.
     };
-  }, [audioRef, canvasRef]);
+  }, [audioRef, canvasRef, isPlaying]);
 
   function ensureSpectrum() {
     const audio = audioRef.current;
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     if (!audio || !AudioContextClass || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     try {
-      if (!graphRef.current) {
+      if (!graphs.has(audio)) {
         const context = new AudioContextClass();
         try {
           const analyser = context.createAnalyser();
@@ -126,14 +125,15 @@ export default function useAudioSpectrum(audioRef, canvasRef) {
           const source = context.createMediaElementSource(audio);
           source.connect(analyser);
           analyser.connect(context.destination);
-          graphRef.current = { context, analyser, frequency: new Uint8Array(analyser.frequencyBinCount) };
+          graphs.set(audio, { context, source, analyser, frequency: new Uint8Array(analyser.frequencyBinCount) });
         } catch {
           context.close().catch(() => {});
           return;
         }
       }
-      if (graphRef.current.context.state === 'suspended') {
-        graphRef.current.context.resume().catch(() => {});
+      const graph = graphs.get(audio);
+      if (graph.context.state === 'suspended') {
+        graph.context.resume().catch(() => {});
       }
     } catch {
       // Playback remains available if Web Audio is unsupported or denied.

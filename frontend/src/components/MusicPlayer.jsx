@@ -1,8 +1,7 @@
 
-import { useRef, useState } from 'react';
-import { assetUrl } from '../utils/assetUrl.js';
 import useAudioSpectrum from '../pages/useAudioSpectrum.js';
 import useLanguage from '../hooks/useLanguage.js';
+import useMusicPlayer from '../hooks/useMusicPlayer.js';
 
 function formatTime(seconds) {
     if (!Number.isFinite(seconds)) return '00:00';
@@ -16,87 +15,35 @@ function formatTime(seconds) {
 function MusicPlayer({ visualizerRef }) {
     const { language, t } = useLanguage();
     const english = language === 'en';
-    const audioRef = useRef(null);
-    const ensureSpectrum = useAudioSpectrum(audioRef, visualizerRef);
+    const { currentMixId, playlist, audioRef, isPlaying, currentTime, duration,
+        isLooping, volume, isMuted, togglePlay, seek, setVolume, toggleMute, toggleLoop } = useMusicPlayer();
+    const currentMix = playlist.find(({ id }) => id === currentMixId);
+    const ensureSpectrum = useAudioSpectrum(audioRef, visualizerRef, isPlaying);
 
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const [isLooping, setIsLooping] = useState(false);
-    const [volume, setVolume] = useState(1);
-    const [isMuted, setIsMuted] = useState(false);
-
-    function togglePlay() {
-        const audio = audioRef.current;
-
-        if (!audio) return;
-
-        if (audio.paused) {
+    function handlePlay() {
+        if (!isPlaying) {
+            togglePlay();
             ensureSpectrum();
-            audio.play().catch(() => setIsPlaying(false));
         } else {
-            audio.pause();
+            togglePlay();
         }
     }
 
     function changeProgress(event) {
-        const audio = audioRef.current;
-        if (!audio || !Number.isFinite(audio.duration)) return;
-
-        const time = Number(event.target.value);
-        audio.currentTime = time;
-        setCurrentTime(time);
+        seek(Number(event.target.value));
     }
 
     function changeVolume(event) {
-        const value = Number(event.target.value);
-        const audio = audioRef.current;
-
-        setVolume(value);
-
-        if (audio) {
-            audio.volume = value;
-            audio.muted = false;
-        }
-
-        setIsMuted(false);
-    }
-
-    function toggleMute() {
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        audio.muted = !audio.muted;
-        setIsMuted(audio.muted);
-    }
-
-    function toggleLoop() {
-        setIsLooping((previous) => !previous);
+        setVolume(Number(event.target.value));
     }
 
     return (
-        <div className="signature-mini-player" aria-label="M001 Mini Player">
-            <audio
-                ref={audioRef}
-                src={assetUrl('musicDemo/01-preview.mp3')}
-                preload="metadata"
-                loop={isLooping}
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-                onEnded={() => setIsPlaying(false)}
-                onLoadedMetadata={(event) => {
-                    setDuration(event.currentTarget.duration);
-                }}
-                onTimeUpdate={(event) => {
-                    setCurrentTime(event.currentTarget.currentTime);
-                }}
-            />
-
+        <div className="signature-mini-player" aria-label={`${currentMixId} Mini Player`}>
             <div className="signature-mini-header">
                 <div className="signature-mini-copy">
-                    <span id="signature-mini-kicker">NOW PLAYING · M001</span>
+                    <span id="signature-mini-kicker">NOW PLAYING · {currentMixId}</span>
                     <strong id="signature-mini-title">
-                        Somewhere far from everyone
+                        {currentMix?.title}
                     </strong>
                 </div>
 
@@ -105,7 +52,7 @@ function MusicPlayer({ visualizerRef }) {
                     type="button"
                     aria-label={isPlaying ? (english ? 'Pause music' : '暫停音樂') : (english ? 'Play music' : '播放音樂')}
                     aria-pressed={isPlaying}
-                    onClick={togglePlay}
+                    onClick={handlePlay}
                 >
                     <span className="play-icon" aria-hidden="true" />
                 </button>
