@@ -2346,11 +2346,18 @@ html.home-scenes {
     background: var(--color-ink);
 }
 
+.about-v2 #root {
+    display: flex;
+    min-height: 100svh;
+    flex-direction: column;
+}
+
 .about-page {
     position: relative;
-    min-height: 100vh;
+    flex: 1 0 auto;
     overflow: hidden;
     padding-top: 64px;
+    padding-bottom: clamp(1.5rem, 3vh, 2.5rem);
 }
 
 .about-background {
@@ -2409,14 +2416,11 @@ html.home-scenes {
 }
 
 .about-world {
-    display: flex;
-    align-items: center;
-    min-height: calc(82svh - 64px);
-    padding: 3.5rem 0;
+    padding: clamp(1.5rem, 3vh, 2.5rem) 0;
 }
 
 .about-world-copy {
-    max-width: 1120px;
+    max-width: 760px;
 }
 
 .about-world h1 {
@@ -2430,8 +2434,8 @@ html.home-scenes {
 }
 
 .about-world-copy>p:not(.section-label) {
-    max-width: 540px;
-    margin: 1.25rem 0 0;
+    max-width: 680px;
+    margin: 0.7rem 0 0;
     color: rgba(228, 224, 214, 0.76);
     font-size: 1rem;
     line-height: 1.85;
@@ -2439,14 +2443,14 @@ html.home-scenes {
 
 .about-sound {
     border-top: 1px solid rgba(228, 224, 214, 0.16);
-    padding: clamp(3rem, 4.8vw, 4.75rem) 0 clamp(3.75rem, 5.5vw, 5.5rem);
+    padding: clamp(2.75rem, 5vh, 4rem) 0;
 }
 
 .about-section-heading {
     display: flex;
     align-items: end;
     justify-content: space-between;
-    margin-bottom: 1.75rem;
+    margin-bottom: 1.25rem;
 }
 
 .about-section-heading .section-label {
@@ -2464,16 +2468,14 @@ html.home-scenes {
 .about-people {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: clamp(2rem, 5vw, 6rem);
-    max-width: 1100px;
-    margin-left: auto;
+    gap: clamp(1.5rem, 4vw, 4rem);
 }
 
 .about-person {
     display: grid;
-    grid-template-columns: minmax(180px, 1.15fr) minmax(160px, 0.85fr);
-    align-items: end;
-    gap: 1.5rem;
+    grid-template-columns: clamp(130px, 11vw, 175px) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(1rem, 2vw, 1.75rem);
 }
 
 .about-person-image {
@@ -2516,11 +2518,11 @@ html.home-scenes {
 
 .about-subscribe {
     display: grid;
-    grid-template-columns: 1fr minmax(420px, 0.8fr);
-    align-items: end;
-    gap: 5rem;
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
+    align-items: center;
+    gap: clamp(2rem, 5vw, 5rem);
     border-top: 1px solid rgba(228, 224, 214, 0.16);
-    padding: clamp(3rem, 4.8vw, 4.75rem) 0;
+    padding: clamp(1.25rem, 2.5vh, 2rem) 0 0;
 }
 
 .about-subscribe h2 {
@@ -3141,11 +3143,12 @@ html.home-scenes {
     .about-people {
         grid-template-columns: minmax(0, 1fr);
         max-width: 650px;
+        margin-left: 0;
     }
 
     .about-subscribe {
         grid-template-columns: minmax(0, 1fr);
-        gap: 2.5rem;
+        gap: 1rem;
     }
 
     .auth-page {
@@ -3463,8 +3466,7 @@ html.home-scenes {
     }
 
     .about-world {
-        min-height: calc(100svh - 64px);
-        padding-block: calc(64px + 2.5rem) 2.5rem;
+        padding-block: 2rem;
     }
 
     .about-world h1 {
@@ -3473,15 +3475,15 @@ html.home-scenes {
 
     .about-sound,
     .about-subscribe {
-        padding-block: 3.5rem;
+        padding-block: 2rem;
     }
 
     .about-person {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns: minmax(105px, 34%) minmax(0, 1fr);
     }
 
-    .about-person img {
-        width: min(100%, 300px);
+    .about-person-image img {
+        width: 100%;
     }
 
     .subscribe-form {
