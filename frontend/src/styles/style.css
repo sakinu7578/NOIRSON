@@ -2111,6 +2111,102 @@ html.home-scenes {
     white-space: nowrap;
 }
 
+/* HOME 播放控制沿用原播放器，清單浮於其下方。 */
+.signature-transport {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+}
+
+.signature-skip,
+.signature-extra-control {
+    display: grid;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+    color: rgba(170, 168, 160, 0.65);
+    font: inherit;
+    cursor: pointer;
+    place-items: center;
+    transition: color 180ms ease;
+}
+
+.signature-skip { font-size: 1rem; }
+
+.signature-extra-control svg {
+    width: 17px;
+    height: 17px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.signature-skip:hover,
+.signature-skip:focus-visible,
+.signature-extra-control:hover,
+.signature-extra-control:focus-visible {
+    color: var(--color-cream);
+    outline: 1px solid rgba(153, 150, 106, 0.55);
+    outline-offset: 1px;
+}
+
+.signature-extra-control[aria-pressed="true"],
+.signature-playlist-toggle[aria-expanded="true"] { color: #c8b79b; }
+
+.signature-mini-player .signature-playlist-panel {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    width: min(390px, calc(100vw - 2rem));
+    max-height: min(440px, calc(100svh - 245px));
+}
+
+.signature-playlist-panel .detail-playlist-list {
+    max-height: min(370px, calc(100svh - 315px));
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+}
+
+.signature-playlist-item {
+    width: 100%;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.signature-playlist-item:focus-visible {
+    outline: 1px solid var(--color-amber);
+    outline-offset: -2px;
+}
+
+@media (max-width: 600px) {
+    .signature-mini-header { gap: 0.4rem; }
+    .signature-transport { gap: 0; }
+    .signature-skip { width: 20px; flex-basis: 20px; }
+    .signature-mini-player .signature-secondary-controls { gap: 0.2rem; }
+    .signature-extra-control,
+    .signature-loop { width: 20px; flex-basis: 20px; }
+    .signature-mini-player .signature-volume { width: min(92px, 28vw); gap: 0.2rem; }
+    .signature-mini-player .signature-playlist-panel { right: 0; width: min(390px, calc(100vw - 2rem)); }
+}
+
+@media (max-height: 500px) {
+    .signature-mini-player .signature-playlist-panel {
+        position: fixed;
+        top: 72px;
+        right: 1rem;
+        max-height: calc(100svh - 88px);
+    }
+
+    .signature-playlist-panel .detail-playlist-list { max-height: calc(100svh - 155px); }
+}
+
 .detail-player-times {
     display: flex;
     align-items: center;

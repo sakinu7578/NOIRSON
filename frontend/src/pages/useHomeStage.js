@@ -57,7 +57,7 @@ export default function useHomeStage() {
     };
     const finePointer = matchMedia('(hover: hover) and (pointer: fine)');
     const onWheel = (event) => {
-      if (!finePointer.matches || event.ctrlKey || (event.target instanceof Element && event.target.closest('input[type="range"]'))) return;
+      if (!finePointer.matches || event.ctrlKey || (event.target instanceof Element && event.target.closest('input[type="range"], [data-home-playlist-scroll]'))) return;
       event.preventDefault();
       const delta = event.deltaMode === 1 ? event.deltaY * 16 : event.deltaY;
       if (animating || Math.abs(delta) < 1) return;
@@ -78,7 +78,7 @@ export default function useHomeStage() {
       if (!touchStart || !event.changedTouches.length || animating) return;
       const dx = event.changedTouches[0].clientX - touchStart.x;
       const dy = event.changedTouches[0].clientY - touchStart.y;
-      const control = touchStart.target.closest('a, button, input, textarea, select');
+      const control = touchStart.target.closest('a, button, input, textarea, select, [data-home-playlist-scroll]');
       touchStart = null;
       if (control || Math.abs(dy) < 60 || Math.abs(dy) <= Math.abs(dx)) return;
       if (stageRef.current === 3 && dy < 0) goTo(1, 1);
