@@ -17,23 +17,9 @@ NOIRSON 是音樂內容探索平台（Music Content Discovery Platform）。音�
 
 ## 2. Current Development Strategy
 
-專案採分階段開發。目前已有：
+目前以 `frontend/` 的 React SPA 為主要前端開發架構，具備 RWD、中英文切換、Home／Explore／Music Detail 互動與跨路由持續播放的 Global Player。根目錄的 Vanilla HTML／CSS／JavaScript 多頁版本仍保留作為 Frontend V1 歷史參考；沒有明確要求時不要大規模重構或改變架構。
 
-- HTML、CSS、JavaScript
-- Responsive Web Design
-- Multi-page frontend
-- Home、Explore、Music Detail 的主要播放與互動功能
-- 繁體中文／英文介面切換
-- Java、Maven
-- Spring Boot initial structure
-- Spring Data JPA initial structure
-- MySQL connection structure
-
-目前 Vanilla HTML／CSS／JavaScript 版本視為穩定的 Frontend V1。沒有明確要求時，不要大規模重構現有 frontend、自動轉成 React，或自行改變網站架構。
-
-React 是下一階段 Frontend V2 的方向。重要目標之一是將目前 Multi-Page 架構轉成 SPA，並讓 Global Music Player 在頁面或 Route 切換時維持播放狀態。
-
-Backend 依序逐步使用：Java → Maven → Spring Boot → Spring Data JPA → MySQL → REST API。不要一次實作全部功能。
+`backend/` 已有 Java／Maven／Spring Boot、Spring Data JPA、MySQL 連線設定與初步 Mix 查詢 API。前端仍讀本地資料，資料庫內容、會員功能與前後端串接尚未完成；後端應逐步擴充。
 
 ## 3. MVP Priority
 
@@ -56,20 +42,15 @@ AI、第三方 API、複雜推薦系統、聊天室與支付不是目前核心�
 
 ## 4. Frontend Rules
 
-目前 frontend 主要檔案與目錄：
+目前主要前端檔案與責任：
 
-- `index.html`
-- `music.html`
-- `music-detail.html`
-- `about.html`
-- `login.html`
-- `register.html`
-- `css/`
-- `js/main.js`：共用互動與各頁功能初始化
-- `js/mix-data.js`：M001～M008 共用 Mix 資料
-- `js/i18n.js`：繁體中文／英文介面切換
-- `images/`
-- `musicDemo/`：可公開的壓縮 Demo 音訊
+- `frontend/src/main.jsx`、`App.jsx`：Provider、HashRouter、共用布局與路由。
+- `frontend/src/pages/`、`components/`：頁面與共用 UI；`MiniPlayer.jsx` 是全站播放器介面。
+- `frontend/src/context/MusicPlayerContext.jsx`、`hooks/useMusicPlayer.js`：單一音訊與跨路由播放狀態。
+- `frontend/src/context/LanguageContext.jsx`、`data/translations.js`：語言切換。
+- `frontend/src/data/mixData.js`、`memberMock.js`：目前使用的本地資料。
+- `frontend/src/styles/style.css`、`frontend/public/`：樣式、圖片及公開 Demo 音訊。
+- 根目錄的 HTML、`css/`、`js/`：舊版前端參考，不是目前 React 入口。
 
 修改 frontend 時：
 
@@ -80,9 +61,11 @@ AI、第三方 API、複雜推薦系統、聊天室與支付不是目前核心�
 - 不任意刪除目前可運作的功能。
 - 有多種解法時，選擇符合目前專案程度、容易理解與維護的方式。
 
+主要開發工具為 VS Code，不強制使用其他 IDE。重要函式、複雜狀態、資料流及特殊設計應在相應程式碼附近保留精簡的繁體中文註解；修改功能時同步更新註解，避免逐行翻譯語法。
+
 ## 5. Backend Rules
 
-`backend/` 是 Java／Spring Boot 後端，目前仍在逐步學習與建立階段。
+`backend/` 已有 `Main`、`Mix` Entity、`MixRepository`、`MixService`、`MixController` 與 `HomeController`。`GET /api/mixes` 目前只固定查詢主鍵 1 的單筆 Mix。資料庫資料、正式 API 範圍、會員驗證與前端串接仍待完成。
 
 沒有明確要求時，不要：
 
@@ -156,11 +139,12 @@ Codex 的主要角色：
 
 ## 9. Documentation
 
-公開作品文件主要為：
+本專案維護的 Markdown 文件為：
 
 - `README.md`：讓第一次進入 repository 的人快速理解專案。
 - `docs/project.md`：說明專案定位、功能範圍、架構與技術規劃。
 - `docs/design.md`：說明 UI、RWD、視覺與設計規則。
+- `AGENTS.md`：Agent 協作、安全與修改規範。
 
 `AGENTS.md` 是開發協作規範，不應用來記錄每日進度。不要重新建立 `docs/progress.md`。
 

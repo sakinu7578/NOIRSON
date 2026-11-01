@@ -24,6 +24,7 @@ function clampPosition(x, y, player) {
   };
 }
 
+// App 將此介面放在 Routes 外；各路由共用 Context 的播放狀態。
 export default function MiniPlayer() {
   const { pathname } = useLocation();
   const isHome = pathname === '/';
@@ -84,6 +85,7 @@ export default function MiniPlayer() {
     }
   }, [pathname, isPhone]);
 
+  // 拖曳或收合後將播放器限制在視窗內，避免擋住 Header 或移出畫面。
   useLayoutEffect(() => {
     if (!canDrag || !position || !playerRef.current) return;
     if (anchorRef.current) {
@@ -106,6 +108,7 @@ export default function MiniPlayer() {
     return () => window.removeEventListener('resize', correctPosition);
   }, [canDrag, collapsed, pathname, position]);
 
+  // 播放清單依上下可用空間決定展開方向與高度。
   useLayoutEffect(() => {
     if (!playlistOpen || !playerRef.current || !panelRef.current) return;
     const update = () => {

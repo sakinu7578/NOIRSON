@@ -1,50 +1,23 @@
 # NOIRSON
 
-NOIRSON 是一個以音樂探索與聆聽體驗為核心的 Web Application。目前版本以原生 HTML、CSS 與 JavaScript 建立多頁式前端，提供沉浸式音樂瀏覽、站內播放與響應式互動介面。
+NOIRSON 是持續開發中的音樂內容探索平台。你可以依曲風瀏覽 Mix、查看介紹，並在站內試聽公開的短版音訊。
 
-## Features
+## 目前可使用
 
-- Home 三階段沉浸式場景、背景幻燈片與 Mini Player
-- Explore 曲風分類、響應式卡片分組與循環切換
-- Music Detail 動態內容、播放控制、Playlist 與 Visual Gallery
-- 播放器 Play / Pause、Seek、Volume / Mute、Loop 與 Auto Next
-- Desktop、Tablet 與 Mobile 響應式介面
-- 繁體中文／英文介面切換
-- About 品牌內容與 Login / Register 介面
+- 首頁沉浸式場景、音樂卡片輪播與音訊頻譜。
+- Explore 曲風篩選、Mix 詳細頁與圖片展示。
+- 全站播放器：切換頁面仍可繼續播放，支援播放／暫停、進度、音量、循環、下一首及播放清單。
+- 繁體中文／英文切換，以及桌機、平板與手機介面。
+- About、登入、註冊與會員中心的展示介面。會員中心的暱稱及收藏操作只在目前頁面暫時生效。
 
-目前 Login、Register、Favorite、Comments 與 Subscription 為前端介面，尚未連接正式會員或資料儲存功能。
+## 開發狀態
 
-## Tech Stack
+主要前端使用 React、JavaScript、CSS、Vite 與 React Router。舊版原生 HTML／CSS／JavaScript 頁面保留作為歷史參考。後端已建立 Java、Spring Boot、Spring Data JPA、MySQL 連線設定，以及初步的 Mix 查詢 API。
 
-目前已使用：
+目前前端仍使用本地 Mix 與會員展示資料，**尚未串接後端 API**。登入、註冊、收藏、留言、播放紀錄與訂閱尚無正式帳號或資料儲存功能；完整前後端整合與測試仍在規劃中。
 
-- HTML
-- CSS
-- JavaScript
-- RWD（響應式網頁設計）
-- Git / GitHub
+## 連結
 
-未來規劃中的 React、Spring Boot、REST API 與 MySQL 尚未整合至目前前端版本。
-
-## Development Status
-
-目前已完成 Vanilla HTML / CSS / JavaScript 前端介面與主要互動功能，並作為後續 React 元件化與全端整合的功能、視覺基準。
-
-## Roadmap
-
-1. React 前端元件化
-2. Spring Boot / REST API 整合
-3. MySQL 資料庫與會員功能
-4. 完整前後端測試
-5. 部署與作品集展示
-
-以上項目為後續開發方向，不代表目前已完成。
-
-## Documentation
-
-- [專案說明](docs/project.md)
-- [設計規範](docs/design.md)
-
-## Repository
-
-GitHub：[`sakinu7578/NOIRSON`](https://github.com/sakinu7578/NOIRSON)
+- [前端展示版（舊版）](https://sakinu7578.github.io/NOIRSON/)
+- [GitHub 專案](https://github.com/sakinu7578/NOIRSON)
+- [專案架構](docs/project.md) · [設計規範](docs/design.md)

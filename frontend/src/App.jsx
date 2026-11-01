@@ -13,6 +13,7 @@ import { useLayoutEffect } from 'react';
 import { Route, Routes, useLocation } from 'react-router';
 import './styles/style.css';
 
+// 路由共用 Header、Footer 與 MiniPlayer；body class 只控制各頁版面樣式。
 const pageClasses = {
   '/': 'home-v2',
   '/music': 'explore-v2',

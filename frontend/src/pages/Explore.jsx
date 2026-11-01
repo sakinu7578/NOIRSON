@@ -12,6 +12,7 @@ const genres = [
   ['City Pop', 'CITY POP'],
 ];
 
+// 卡片分組數需與 CSS 的桌機、平板、手機欄數一致。
 function cardsPerStage() {
   if (window.innerWidth <= 600) return 1;
   if (window.innerWidth <= 1024) return 2;
@@ -84,7 +85,7 @@ export default function Explore() {
     queueTimer(() => { switchingRef.current = false; }, 900);
   }
 
-  // Wait for the new covers before running the original two-frame entrance transition.
+  // 等新封面載入後再啟動進場動畫，避免切換曲風時卡片閃爍。
   useEffect(() => {
     let cancelled = false;
     let firstFrame = 0;

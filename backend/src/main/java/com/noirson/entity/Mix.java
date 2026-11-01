@@ -24,8 +24,6 @@ public class Mix {
     public Mix() {
     }
 
-    //"alt+insert"呼叫Generate
-//  建立Constructor(建立一個Mix物件)
     public Mix(Long id, String title, String genre) {
         this.id = id;
         this.title = title;

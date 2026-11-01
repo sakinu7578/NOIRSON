@@ -1479,7 +1479,7 @@ html.home-scenes {
     margin-bottom: 0.8rem;
 }
 
-/* Explore / Genre Filter：Active 狀態由 main.js 依 mix.series 更新。 */
+/* Explore / Genre Filter：Active 狀態由 Explore.jsx 依 mix.series 更新。 */
 .explore-filter {
     border: 0;
     border-bottom: 1px solid transparent;
@@ -2128,7 +2128,7 @@ html.home-scenes {
     white-space: nowrap;
 }
 
-/* HOME 播放控制沿用原播放器，清單浮於其下方。 */
+/* 全站 Mini Player 沿用 Home 的控制視覺，播放清單依可用空間向上或向下展開。 */
 .signature-transport {
     display: flex;
     align-items: center;
@@ -2234,7 +2234,7 @@ html.home-scenes {
     letter-spacing: 0.08em;
 }
 
-/* 全站固定式 Mini Player：與頁面內容分離，清單向上浮出。 */
+/* 全站固定式 Mini Player：與頁面內容分離；窄螢幕可收合或貼附側邊。 */
 .global-mini-player {
     position: fixed;
     z-index: 20;

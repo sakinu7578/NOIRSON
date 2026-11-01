@@ -1,44 +1,23 @@
 # NOIRSON 專案說明
 
-## 專案定位
+## 定位與現況
 
-NOIRSON 是持續開發中的音樂內容探索平台，聚焦於 Mix 瀏覽、分類探索、站內播放與沉浸式聆聽體驗。現有 Vanilla 前端是後續 React 轉換與全端整合的功能、視覺基準。
+NOIRSON 是音樂內容探索平台。目前主要前端為 `frontend/` 的 React SPA；根目錄的原生 HTML、`css/`、`js/` 為舊版 Frontend V1，保留供視覺與功能對照。React 介面已可瀏覽、篩選及播放本地 Mix，會員相關頁面仍是展示資料。
 
-## 目前版本
+## 主要檔案與關係
 
-目前為 Multi-page HTML / CSS / JavaScript 前端，包含：
+- `frontend/src/main.jsx`：以 LanguageProvider、HashRouter、MusicPlayerProvider 包住 App。
+- `frontend/src/App.jsx`：配置 Header、Footer、全站 MiniPlayer 與 Home、Explore、Music Detail、About、Login、Register、Member 路由。
+- `frontend/src/pages/`：各頁及首頁場景、背景、音訊頻譜 hooks。Explore 依曲風與視窗寬度分組；Music Detail 依 `/music/:id` 取本地資料。
+- `frontend/src/components/`：共用介面。ExploreSound 是首頁輪播；DetailGallery、DetailPlayer 是詳細頁視覺與播放入口；MiniPlayer 是全站播放器介面。`MusicPlayer.jsx` 仍存在，但目前未由路由頁面引用。
+- `frontend/src/context/MusicPlayerContext.jsx`、`hooks/useMusicPlayer.js`：管理單一 Audio、播放狀態、事件與清理；Provider 位於路由頁面外，切頁不會重建音訊。循環與自動下一首互斥。
+- `frontend/src/context/LanguageContext.jsx`、`hooks/useLanguage.js`、`data/translations.js`：中英文介面文字。`data/mixData.js` 與 `data/memberMock.js` 是目前前端資料來源；`utils/assetUrl.js` 處理部署路徑；`styles/style.css` 包含共用與各頁 RWD 樣式。靜態圖片、短版音訊位於 `frontend/public/`。
+- `backend/src/main/java/com/noirson/`：Main 啟動應用；controller/ 包含根路徑狀態回應及 `GET /api/mixes`；MixService 經 MixRepository 查詢 Mix Entity。`backend/pom.xml` 與 `src/main/resources/application.properties` 定義依賴及本機資料庫設定；敏感的 `application-local.properties` 不應納入版本控制。
 
-- **Home**：三階段沉浸式場景、固定背景幻燈片、Mini Player、真實音訊頻譜與 Explore Carousel。
-- **Explore**：由 `js/mix-data.js` 動態建立 Mix 卡片，支援 Genre Filter、依 Viewport 分組及循環切換。
-- **Music Detail**：依 `?id=Mxxx` 載入 Mix，包含播放器、Playlist、上一首／下一首、Loop、Auto Next 與 Visual Gallery。
-- **About**：品牌內容、人物介紹、背景 Crossfade 與 Subscription UI。
-- **Login / Register**：響應式會員表單與背景幻燈片，目前尚未串接 Authentication。
-- **Internationalization**：透過 `js/i18n.js` 提供繁體中文與英文介面切換。
+## 資料流與下一步
 
-全站沿用共用 Header、Footer、色彩與排版系統，並支援 Desktop、Tablet 與 Mobile。
+目前瀏覽與播放：`mixData.js` → React 頁面／播放器 Context → `frontend/public/` 的圖片與短版音訊。會員中心：`memberMock.js` → React 本地狀態，變更不會儲存。前端目前沒有呼叫後端 API。
 
-## 已完成的核心互動
+後端現有範例流程：`GET /api/mixes` → MixController → MixService → `MixRepository.findById(1L)` → Mix；資料不存在時回傳 null。這是固定查詢單筆資料的初步 API，並非完整 Mix 清單或已串接的功能。下一步先確認資料庫與 API 回應，再逐步讓前端讀取 API；會員驗證、收藏、留言、播放紀錄與持久化仍待實作。
 
-- Mix 資料集中於 `js/mix-data.js`，供 Home、Explore 與 Music Detail 共用。
-- 音訊支援 Play / Pause、Seek、時間同步、Volume / Mute 與 Loop。
-- Music Detail 支援上一首／下一首、Playlist、Auto Next 與自動 Visual Gallery。
-- Home Explore Carousel 支援 Pointer Drag、Snap、Arrow 與 Infinite Loop。
-- Explore 支援 Genre Filter、響應式 Stage 分組及滑鼠／觸控切換。
-- 主要頁面具備 Responsive Web Design 與 Reduced Motion 處理。
-
-## 尚未完成
-
-- Authentication、會員資料與 User Center。
-- Favorite、Comments、Subscription 與 Play History 的資料儲存。
-- 後端 REST API 與前後端資料串接。
-- MySQL 資料庫、完整測試、正式部署與 SEO 強化。
-
-## 後續方向
-
-1. 以 React 拆分 Header、Footer、Player、Mix Card 等共用元件。
-2. 以 Spring Boot 建立 REST API。
-3. 使用 Spring Data JPA 與 MySQL 管理 Mix、會員及互動資料。
-4. 完成 Authentication、核心 CRUD 與前後端測試。
-5. 部署並整理為完整全端作品集。
-
-開發優先順序維持：**MVP → 核心功能 → 前後端串接 → Deployment → 額外功能**。
+開發優先順序：MVP → 核心功能 → 前後端串接 → 部署 → 額外功能。

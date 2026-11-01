@@ -23,6 +23,7 @@ function MixRow({ id, action }) {
   </article>;
 }
 
+// 會員資料目前是展示用 mock；暱稱與收藏只存在本次頁面狀態。
 export default function Member() {
   const { language, t } = useLanguage();
   const [nickname, setNickname] = useState(memberMock.nickname);

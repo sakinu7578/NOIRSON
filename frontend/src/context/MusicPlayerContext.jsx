@@ -4,6 +4,7 @@ import { assetUrl } from '../utils/assetUrl.js';
 import MusicPlayerContext from './musicPlayerContext.js';
 import { releaseAudioSpectrum } from '../pages/useAudioSpectrum.js';
 
+// 目前播放清單來自本地 Mix 資料，與後端 API 尚未串接。
 const playlist = Object.entries(mixes).map(([id, mix]) => ({ id, ...mix }));
 const mixIds = playlist.map(({ id }) => id);
 
@@ -29,6 +30,7 @@ export function MusicPlayerProvider({ children }) {
   const [autoNext, setAutoNext] = useState(false);
   const [error, setError] = useState(null);
 
+  // 序號讓較早的非同步播放結果不會覆蓋後來的操作狀態。
   const playAudio = useCallback(async (audio) => {
     const request = ++playRequestRef.current;
     try {
@@ -43,6 +45,7 @@ export function MusicPlayerProvider({ children }) {
     }
   }, []);
 
+  // 延遲建立單一 Audio，所有頁面透過 Context 操作同一個實例。
   const playMix = useCallback((id) => {
     if (!Object.hasOwn(mixes, id)) return Promise.resolve(false);
     let audio = audioRef.current;
@@ -72,6 +75,7 @@ export function MusicPlayerProvider({ children }) {
         setIsPlaying(false);
         setError(audio.error ?? new Error('Audio playback failed'));
       };
+      // 曲終時以最新模式判斷下一首；單曲循環交由 Audio.loop 處理。
       const onEnded = () => {
         if (!audio.ended) return;
         setIsPlaying(false);
@@ -156,6 +160,7 @@ export function MusicPlayerProvider({ children }) {
     }
   }, [isMuted, volume, setVolume]);
 
+  // 單曲循環與自動下一首互斥，避免曲終時產生兩種跳轉行為。
   const toggleLoop = useCallback(() => {
     const next = !modesRef.current.isLooping;
     modesRef.current = { isLooping: next, autoNext: next ? false : modesRef.current.autoNext };
@@ -179,6 +184,7 @@ export function MusicPlayerProvider({ children }) {
   const skipNext = useCallback(() => skip(1), [skip]);
   const skipPrevious = useCallback(() => skip(-1), [skip]);
 
+  // Provider 卸載時移除事件、音訊來源與頻譜連線，避免殘留播放資源。
   useEffect(() => () => {
     ++playRequestRef.current;
     const audio = audioRef.current;

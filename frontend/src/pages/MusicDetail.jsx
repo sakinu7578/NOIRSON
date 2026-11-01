@@ -64,6 +64,7 @@ function DetailPage({ pageMixId, mix }) {
   </main>;
 }
 
+// 路由 id 對應本地 Mix；詳細頁播放按鈕透過 Context 控制全站音訊。
 export default function MusicDetail() {
   const { id } = useParams();
   const pageMixId = Object.hasOwn(mixes, id) ? id : 'M001';

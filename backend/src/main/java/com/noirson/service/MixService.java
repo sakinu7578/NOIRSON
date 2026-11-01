@@ -1,6 +1,4 @@
-//負責處理：商業邏輯
-//判斷
-//使用者是否存在? Mix存在? 是否已收藏?
+// Mix 資料查詢層；目前僅提供固定主鍵的示範查詢。
 package com.noirson.service;
 
 import com.noirson.entity.Mix;
