@@ -1,8 +1,12 @@
-// Mix 資料查詢層；目前僅提供固定主鍵的示範查詢。
+// Mix 資料查詢層。
 package com.noirson.service;
+
+import java.util.List;
+import java.util.Optional;
 
 import com.noirson.entity.Mix;
 import com.noirson.repository.MixRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -17,8 +21,11 @@ public class MixService {
         this.mixRepository = mixRepository;
     }
 
-    public Mix getMix() {
-        //去 mix table 找 Primary Key id=1 的資料，找不到回傳null
-        return mixRepository.findById(1L).orElse(null);
+    public List<Mix> getMixes() {
+        return mixRepository.findAll(Sort.by("code").ascending());
+    }
+
+    public Optional<Mix> getMixByCode(String code) {
+        return mixRepository.findByCode(code);
     }
 }

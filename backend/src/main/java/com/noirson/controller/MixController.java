@@ -1,8 +1,12 @@
 package com.noirson.controller;
 
+import java.util.List;
+
 import com.noirson.entity.Mix;
 import com.noirson.service.MixService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -16,8 +20,14 @@ public class MixController {
     }
 
     @GetMapping("/api/mixes")
-    public Mix getMix() {
-        // 目前 API 固定回傳主鍵 1 的單筆 Mix。
-        return mixService.getMix();
+    public List<Mix> getMixes() {
+        return mixService.getMixes();
+    }
+
+    @GetMapping("/api/mixes/{code}")
+    public ResponseEntity<Mix> getMixByCode(@PathVariable String code) {
+        return mixService.getMixByCode(code)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
