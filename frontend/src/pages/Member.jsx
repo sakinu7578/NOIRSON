@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, Navigate, useNavigate } from 'react-router';
 import mixes from '../data/mixData.js';
 import memberMock from '../data/memberMock.js';
 import useLanguage from '../hooks/useLanguage.js';
+import useAuth from '../hooks/useAuth.js';
 import useBackgroundSlideshow from '../hooks/useBackgroundSlideshow.js';
 import { assetUrl } from '../utils/assetUrl.js';
 
@@ -23,13 +24,29 @@ function MixRow({ id, action }) {
   </article>;
 }
 
-// 會員資料目前是展示用 mock；暱稱與收藏只存在本次頁面狀態。
+// 先等 Session 查詢完成，避免重整會員頁時誤判為未登入。
 export default function Member() {
+  const { currentUser, isAuthLoading, authError, refreshCurrentUser } = useAuth();
+  const { t } = useLanguage();
+  if (isAuthLoading) return <main className="member-page" aria-busy="true" />;
+  if (authError) return <main className="member-page"><div className="member-shell">
+    <p role="alert">{t('auth.checkFailed')} <button type="button" onClick={refreshCurrentUser}>{t('auth.retry')}</button></p>
+  </div></main>;
+  if (!currentUser) return <Navigate to="/login" replace />;
+  return <MemberContent currentUser={currentUser} />;
+}
+
+// 個人資訊來自登入 Session；收藏、留言等內容仍為展示資料。
+function MemberContent({ currentUser }) {
   const { language, t } = useLanguage();
-  const [nickname, setNickname] = useState(memberMock.nickname);
-  const [draft, setDraft] = useState(memberMock.nickname);
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [nickname, setNickname] = useState(currentUser.username);
+  const [draft, setDraft] = useState(currentUser.username);
   const [favorites, setFavorites] = useState(memberMock.favorites);
   const [notice, setNotice] = useState('');
+  const [logoutError, setLogoutError] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [activeView, setActiveView] = useState('favorites');
   const [passwordDraft, setPasswordDraft] = useState({ old: '', next: '', confirm: '' });
   const background = useBackgroundSlideshow({ images: memberImages, interval: 6000 });
@@ -63,6 +80,21 @@ export default function Member() {
     setActiveView(view);
   }
 
+  async function handleLogout() {
+    if (isLoggingOut) return;
+    setIsLoggingOut(true);
+    setLogoutError(false);
+    try {
+      const result = await logout();
+      if (result === true) navigate('/');
+      else if (result === false) setLogoutError(true);
+    } catch {
+      setLogoutError(true);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  }
+
   return <main className="member-page">
     <div className="member-background" aria-hidden="true">
       {background.layers.map((image, layer) => <div key={layer}
@@ -74,7 +106,7 @@ export default function Member() {
       <section className="member-section member-profile" aria-labelledby="member-profile-title">
         <div className="member-profile-content">
           <div className="member-avatar" role="img" aria-label={t('member.avatar')}><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="23" r="10" stroke="currentColor" strokeWidth="2"/><path d="M13 55c0-11 8-18 19-18s19 7 19 18" stroke="currentColor" strokeWidth="2"/></svg></div>
-          <div className="member-identity"><h1 id="member-profile-title">{nickname}</h1><span>{memberMock.email}</span><small>{t('member.demo')}</small></div>
+          <div className="member-identity"><h1 id="member-profile-title">{nickname}</h1><span>{currentUser.email}</span><small>{t('member.demo')}</small></div>
         </div>
         <button className="member-edit-entry" type="button" onClick={() => setActiveView('edit')}>{t('member.editProfile')} <span aria-hidden="true">↗</span></button>
       </section>
@@ -108,7 +140,7 @@ export default function Member() {
           </div>
         </section>
       </div>
-          <div className="member-logout"><button type="button" disabled>{t('member.logout')}</button><p className="member-form-note">{t('member.comingSoon')}</p></div>
+          <div className="member-logout"><button type="button" onClick={handleLogout} disabled={isLoggingOut}>{t('member.logout')}</button>{logoutError && <p className="member-form-note" role="alert">{t('auth.logoutError')}</p>}</div>
       </>}
 
       {activeView === 'favorites' && <section className="member-section" aria-labelledby="member-favorites-title">

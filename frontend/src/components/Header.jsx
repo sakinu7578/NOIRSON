@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Link, NavLink } from 'react-router';
+import { Link, NavLink, useNavigate } from 'react-router';
 import { assetUrl } from '../utils/assetUrl.js';
 import useLanguage from '../hooks/useLanguage.js';
+import useAuth from '../hooks/useAuth.js';
 
 function Header() {
     const { language, setLanguage, t } = useLanguage();
+    const { currentUser, isAuthLoading, authError, logout } = useAuth();
+    const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [logoutError, setLogoutError] = useState(false);
 
     useEffect(() => {
         if (!menuOpen) return;
@@ -20,6 +25,24 @@ function Header() {
     const changeLanguage = (nextLanguage) => {
         setLanguage(nextLanguage);
         closeMenu();
+    };
+    const handleLogout = async () => {
+        if (isLoggingOut) return;
+        setIsLoggingOut(true);
+        setLogoutError(false);
+        try {
+            const result = await logout();
+            if (result === true) {
+                closeMenu();
+                navigate('/');
+            } else if (result === false) {
+                setLogoutError(true);
+            }
+        } catch {
+            setLogoutError(true);
+        } finally {
+            setIsLoggingOut(false);
+        }
     };
 
     return (
@@ -39,8 +62,11 @@ function Header() {
                 <NavLink to="/" end onClick={closeMenu}>{t('nav.home')}</NavLink>
                 <NavLink to="/music" onClick={closeMenu}>{t('nav.explore')}</NavLink>
                 <NavLink to="/about" onClick={closeMenu}>{t('nav.about')}</NavLink>
-                <NavLink to="/login" onClick={closeMenu}>{t('nav.login')}</NavLink>
-                <NavLink to="/member" onClick={closeMenu}>{t('nav.member')}</NavLink>
+                {currentUser && !isAuthLoading && !authError ? <>
+                    <NavLink to="/member" onClick={closeMenu}>{t('nav.member')}</NavLink>
+                    <button className="nav-action" type="button" onClick={handleLogout} disabled={isLoggingOut}>{t('member.logout')}</button>
+                </> : <NavLink to="/login" onClick={closeMenu}>{t('nav.login')}</NavLink>}
+                {logoutError && <span role="alert">{t('auth.logoutError')}</span>}
 
                 <span className="language-switch" aria-label="Language">
                     <button className={`language-option ${language === 'zh' ? 'is-active' : ''}`} type="button"

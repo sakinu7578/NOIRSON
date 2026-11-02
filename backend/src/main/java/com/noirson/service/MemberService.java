@@ -1,6 +1,7 @@
 package com.noirson.service;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import com.noirson.entity.Member;
@@ -51,6 +52,24 @@ public class MemberService {
 
         // 4. 儲存到 MySQL
         return memberRepository.save(member);
+    }
+
+    // 僅驗證帳密；不建立登入狀態，也不回傳密碼雜湊。
+    public Optional<Member> login(String email, String password) {
+        String trimmedEmail = email == null ? "" : email.trim();
+        if (trimmedEmail.length() > 254 || !EMAIL_PATTERN.matcher(trimmedEmail).matches()) {
+            throw new IllegalArgumentException("Email 格式不正確");
+        }
+        if (password == null || password.isBlank()) {
+            throw new IllegalArgumentException("密碼不可為空白");
+        }
+
+        return memberRepository.findByEmail(trimmedEmail)
+                .filter(member -> passwordEncoder.matches(password, member.getPasswordHash()));
+    }
+
+    public Optional<Member> findById(Long id) {
+        return memberRepository.findById(id);
     }
 
     public static class DuplicateEmailException extends RuntimeException {

@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import AuthVisual from '../components/AuthVisual.jsx';
 import useLanguage from '../hooks/useLanguage.js';
+import useAuth from '../hooks/useAuth.js';
 
 export default function Login() {
   const { t } = useLanguage();
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorKey, setErrorKey] = useState(null);
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -16,6 +21,42 @@ export default function Login() {
   function updateField(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
+    setErrorKey(null);
+  }
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (isSubmitting) return;
+    const email = form.email.trim();
+    if (!email || !form.password) {
+      setErrorKey('auth.loginRequired');
+      return;
+    }
+    if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setErrorKey('auth.emailInvalid');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorKey(null);
+    try {
+      const status = await login(email, form.password);
+      if (status === null) return;
+      if (status === 200) {
+        setForm({ email: '', password: '' });
+        navigate('/member');
+      } else if (status === 401) {
+        setErrorKey('auth.loginInvalid');
+      } else if (status === 400) {
+        setErrorKey('auth.loginBadRequest');
+      } else {
+        setErrorKey('auth.serverError');
+      }
+    } catch {
+      setErrorKey('auth.networkError');
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return <main className="auth-page">
@@ -28,7 +69,7 @@ export default function Login() {
       <div className="auth-panel-inner">
         <p className="section-label">{t('auth.access')}</p>
         <h2 id="login-title">{t('auth.login')}</h2>
-        <form className="auth-form" onSubmit={(event) => event.preventDefault()}>
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <div className="auth-field">
             <label htmlFor="login-email">{t('auth.email')}</label>
             <input id="login-email" name="email" type="email" autoComplete="email" required
@@ -39,7 +80,10 @@ export default function Login() {
             <input id="login-password" name="password" type="password" autoComplete="current-password" required
               value={form.password} onChange={updateField} />
           </div>
-          <button className="auth-submit" type="submit">{t('auth.login')}</button>
+          {errorKey && <p role="alert">{t(errorKey)}</p>}
+          <button className="auth-submit" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? t('auth.loggingIn') : t('auth.login')}
+          </button>
         </form>
         <p className="auth-switch"><span>{t('auth.new')}</span>{' '}
           <Link to="/register">{t('auth.register')}</Link></p>
