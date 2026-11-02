@@ -1,3 +1,5 @@
+// 使用React Hooks管理表單、提交狀態及提示訊息
+// useState 管理狀態，useEffect 管理副作用
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
 import AuthVisual from '../components/AuthVisual.jsx';
@@ -6,6 +8,8 @@ import useLanguage from '../hooks/useLanguage.js';
 export default function Register() {
   const { t } = useLanguage();
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
+  const [status, setStatus] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const previousTitle = document.title;
@@ -16,6 +20,76 @@ export default function Register() {
   function updateField(event) {
     const { name, value } = event.target;
     setForm((current) => ({ ...current, [name]: value }));
+    setStatus(null);
+  }
+  // 處理表單送出、前端驗證及 API 請求
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (isSubmitting) return;
+
+    const { password, confirmPassword } = form;
+    const username = form.username.trim();
+    const email = form.email.trim();
+    if (!username || !email || !password || !confirmPassword) {
+      setStatus({ type: 'error', key: 'auth.required' });
+      return;
+    }
+    if (username.length < 2 || username.length > 20) {
+      setStatus({ type: 'error', key: 'auth.usernameLength' });
+      return;
+    }
+    // 與 MemberService 的基本 Email 格式及長度限制一致。
+    if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setStatus({ type: 'error', key: 'auth.emailInvalid' });
+      return;
+    }
+    if (password.length < 8) {
+      setStatus({ type: 'error', key: 'auth.passwordLength' });
+      return;
+    }
+    if (!password.trim()) {
+      setStatus({ type: 'error', key: 'auth.passwordBlank' });
+      return;
+    }
+    // BCrypt 只處理前 72 UTF-8 bytes；僅計算長度，不修改密碼。
+    if (new TextEncoder().encode(password).length > 72) {
+      setStatus({ type: 'error', key: 'auth.passwordBytes' });
+      return;
+    }
+    if (password !== confirmPassword) {
+      setStatus({ type: 'error', key: 'auth.passwordMismatch' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    setStatus(null);
+    try {
+      // 開發時由 Vite 代理 /api；部署時需由同源主機轉送至後端。
+      // 向後端發送 HTTP 請求
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // 將 JavaScript 物件轉為 JSON 字串
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      // 根據 HTTP 回應狀態碼，顯示對應結果
+      if (response.status === 201) {
+        setStatus({ type: 'success', key: 'auth.registerSuccess' });
+        setForm({ username: '', email: '', password: '', confirmPassword: '' });
+      } else {
+        const key = response.status === 400 ? 'auth.badRequest'
+          : response.status === 409 ? 'auth.emailConflict'
+            : 'auth.serverError';
+        setStatus({ type: 'error', key });
+      }
+    } catch {
+      // 請求過程發生錯誤
+      setStatus({ type: 'error', key: 'auth.networkError' });
+    } finally {
+      // 不論成功或失敗都執行
+      setIsSubmitting(false);
+    }
   }
 
   return <main className="auth-page">
@@ -28,7 +102,7 @@ export default function Register() {
       <div className="auth-panel-inner">
         <p className="section-label">{t('auth.create')}</p>
         <h2 id="register-title">{t('auth.register')}</h2>
-        <form className="auth-form" onSubmit={(event) => event.preventDefault()}>
+        <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <div className="auth-field">
             <label htmlFor="register-username">{t('auth.username')}</label>
             <input id="register-username" name="username" type="text" autoComplete="username" required
@@ -49,7 +123,10 @@ export default function Register() {
             <input id="register-confirm-password" name="confirmPassword" type="password" autoComplete="new-password" required
               value={form.confirmPassword} onChange={updateField} />
           </div>
-          <button className="auth-submit" type="submit">{t('auth.register')}</button>
+          {status && <p role={status.type === 'error' ? 'alert' : 'status'}>{t(status.key)}</p>}
+          <button className="auth-submit" type="submit" disabled={isSubmitting}>
+            {isSubmitting ? t('auth.submitting') : t('auth.register')}
+          </button>
         </form>
         <p className="auth-switch"><span>{t('auth.existing')}</span>{' '}
           <Link to="/login">{t('auth.login')}</Link></p>

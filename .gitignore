@@ -27,3 +27,6 @@ application-local.properties
 !musicDemo/
 !musicDemo/*.mp3
 !musicDemo/**/*.mp3
+
+# Local backend logs
+backend/*.log
