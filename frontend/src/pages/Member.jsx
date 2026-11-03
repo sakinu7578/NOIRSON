@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { FavoritesApiError, getFavorites, removeFavorite } from '../api/favorites.js';
+import { getPlayHistory, PlayHistoryApiError } from '../api/playHistory.js';
 import mixes from '../data/mixData.js';
 import memberMock from '../data/memberMock.js';
 import useLanguage from '../hooks/useLanguage.js';
 import useAuth from '../hooks/useAuth.js';
+import useMusicPlayer from '../hooks/useMusicPlayer.js';
 import useBackgroundSlideshow from '../hooks/useBackgroundSlideshow.js';
 import { assetUrl } from '../utils/assetUrl.js';
 
@@ -37,10 +39,11 @@ export default function Member() {
   return <MemberContent key={currentUser.id} currentUser={currentUser} />;
 }
 
-// 個人資訊與收藏來自後端；留言、播放紀錄等仍為展示資料。
+// 個人資訊、收藏與播放紀錄來自後端；留言仍為展示資料。
 function MemberContent({ currentUser }) {
   const { language, t } = useLanguage();
   const { logout, refreshCurrentUser } = useAuth();
+  const { historyVersion } = useMusicPlayer();
   const navigate = useNavigate();
   const [nickname, setNickname] = useState(currentUser.username);
   const [draft, setDraft] = useState(currentUser.username);
@@ -48,6 +51,10 @@ function MemberContent({ currentUser }) {
   const [favoritesLoading, setFavoritesLoading] = useState(true);
   const [favoritesError, setFavoritesError] = useState(null);
   const [favoritesReload, setFavoritesReload] = useState(0);
+  const [recentPlays, setRecentPlays] = useState([]);
+  const [recentLoading, setRecentLoading] = useState(true);
+  const [recentError, setRecentError] = useState(null);
+  const [recentReload, setRecentReload] = useState(0);
   const [removingId, setRemovingId] = useState(null);
   const removingRef = useRef(false);
   const [notice, setNotice] = useState('');
@@ -77,6 +84,25 @@ function MemberContent({ currentUser }) {
       .finally(() => { if (!controller.signal.aborted) setFavoritesLoading(false); });
     return () => controller.abort();
   }, [currentUser.id, favoritesReload, refreshCurrentUser]);
+
+  useEffect(() => {
+    if (activeView !== 'recent') return;
+    const controller = new AbortController();
+    getPlayHistory(controller.signal)
+      .then((codes) => {
+        if (controller.signal.aborted) return;
+        setRecentPlays(codes);
+        setRecentError(null);
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        setRecentError(error instanceof PlayHistoryApiError && error.status === 401
+          ? 'history.sessionExpired' : 'history.loadError');
+        if (error instanceof PlayHistoryApiError && error.status === 401) refreshCurrentUser();
+      })
+      .finally(() => { if (!controller.signal.aborted) setRecentLoading(false); });
+    return () => controller.abort();
+  }, [activeView, currentUser.id, historyVersion, recentReload, refreshCurrentUser]);
 
   async function handleRemove(id) {
     if (removingRef.current) return;
@@ -214,7 +240,18 @@ function MemberContent({ currentUser }) {
 
       {activeView === 'recent' && <section className="member-section" aria-labelledby="member-recent-title">
         <h2 className="visually-hidden" id="member-recent-title">{t('member.recent')}</h2>
-        <div className="member-list">{memberMock.recentPlays.map((id) => <MixRow key={id} id={id} />)}</div>
+        <div className="member-list">
+          {recentLoading ? <p className="member-empty" role="status">{t('history.loading')}</p>
+            : recentError
+              ? <p className="member-empty" role="alert">{t(recentError)}{' '}
+                <button type="button" onClick={() => {
+                  setRecentLoading(true);
+                  setRecentError(null);
+                  setRecentReload((value) => value + 1);
+                }}>{t('auth.retry')}</button></p>
+              : recentPlays.length ? recentPlays.map((id) => <MixRow key={id} id={id} />)
+                : <p className="member-empty">{t('history.empty')}</p>}
+        </div>
       </section>}
 
         </div>

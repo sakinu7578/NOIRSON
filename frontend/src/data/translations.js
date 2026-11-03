@@ -1,7 +1,7 @@
 const translations = {
   zh: {
     'nav.home': '首頁', 'nav.explore': '探索', 'nav.about': '關於', 'nav.login': '登入', 'nav.member': '會員中心',
-    'member.label': '會員', 'member.title': '你的 NOIRSON', 'member.intro': '收藏喜歡的聲音，回到最近停留的片刻。', 'member.demo': '暱稱、留言與播放紀錄仍為展示內容',
+    'member.label': '會員', 'member.title': '你的 NOIRSON', 'member.intro': '收藏喜歡的聲音，回到最近停留的片刻。', 'member.demo': '暱稱與留言仍為展示內容',
     'member.profile': '個人資訊', 'member.avatar': '預設會員頭像', 'member.nickname': '暱稱', 'member.email': '電子郵件', 'member.account': '帳號', 'member.edit': '編輯暱稱', 'member.save': '儲存暱稱', 'member.saved': '暱稱已在此頁更新；重新整理後會恢復展示資料。', 'member.localOnly': '僅在此頁暫時更新，重新整理後會恢復。',
     'member.password': '變更密碼', 'member.oldPassword': '舊密碼', 'member.newPassword': '新密碼', 'member.confirmPassword': '確認新密碼', 'member.changePassword': '變更密碼', 'member.comingSoon': '變更密碼尚未開放，此介面目前僅供展示。',
     'member.collection': '收藏', 'member.favorites': '我的收藏', 'member.remove': '取消收藏', 'member.empty': '目前沒有收藏的 Mix。', 'member.activity': '活動', 'member.comments': '我的留言', 'member.recent': '播放紀錄', 'member.logout': '登出',
@@ -12,6 +12,7 @@ const translations = {
     'explore.collection': 'NOIRSON 音樂選集', 'explore.title': '探索音樂', 'explore.description': '從慵懶的清晨到城市的深夜，探索適合每個時刻的聲音。', 'explore.all': '所有 MIX', 'explore.genre': '曲風：',
     'detail.visuals': '影像', 'detail.fromMix': '此 MIX 影像', 'detail.playlist': '播放清單', 'detail.favorite': '+ 加入收藏', 'detail.removeFavorite': '取消收藏', 'detail.comments': '留言', 'detail.comment': '留下留言……', 'detail.youtube': '前往 YouTube 收聽',
     'favorites.loading': '正在讀取收藏…', 'favorites.loadError': '無法載入收藏，請重試。', 'favorites.saveError': '收藏操作失敗，請重試。', 'favorites.sessionExpired': '登入狀態已失效，請重新登入。',
+    'history.loading': '正在讀取播放紀錄…', 'history.empty': '目前沒有播放紀錄。', 'history.loadError': '無法載入播放紀錄，請重試。', 'history.sessionExpired': '登入狀態已失效，請重新登入。',
     'about.label': '關於', 'about.title': 'NOIRSON 的世界', 'about.p1': 'NOIRSON 是一個以氛圍、節奏與日夜交界的安靜時刻為核心，精心策劃的音樂體驗。', 'about.p2': '從 Lofi、Jazz 到 Cloud Trap 與 City Pop，每一部 Mix 都為同一個世界打開不同的窗口。',
     'about.people': '製作團隊', 'about.behind': '聲音背後', 'about.role1': '製作人 / 特邀音樂人', 'about.role2': '音樂製作人 / 編曲',
     'about.stay': '掌握最新消息', 'about.subscribeTitle': '不錯過每一部新 Mix。', 'about.subscribeText': '訂閱 NOIRSON 最新動態，獲取新 Mix 上架與活動消息。', 'about.email': '輸入你的 Email', 'about.subscribe': '訂閱',
@@ -25,7 +26,7 @@ const translations = {
   },
   en: {
     'nav.home': 'HOME', 'nav.explore': 'EXPLORE', 'nav.about': 'ABOUT', 'nav.login': 'LOGIN', 'nav.member': 'MEMBER',
-    'member.label': 'MEMBER', 'member.title': 'YOUR NOIRSON', 'member.intro': 'Keep the sounds you love and revisit moments you stayed with.', 'member.demo': 'Nickname, comments, and recent plays are still demo content',
+    'member.label': 'MEMBER', 'member.title': 'YOUR NOIRSON', 'member.intro': 'Keep the sounds you love and revisit moments you stayed with.', 'member.demo': 'Nickname and comments are still demo content',
     'member.profile': 'PROFILE', 'member.avatar': 'Default member avatar', 'member.nickname': 'NICKNAME', 'member.email': 'EMAIL', 'member.account': 'ACCOUNT', 'member.edit': 'EDIT NICKNAME', 'member.save': 'SAVE NICKNAME', 'member.saved': 'Nickname updated on this page. Refreshing restores the demo data.', 'member.localOnly': 'This change lasts only until you refresh the page.',
     'member.password': 'CHANGE PASSWORD', 'member.oldPassword': 'CURRENT PASSWORD', 'member.newPassword': 'NEW PASSWORD', 'member.confirmPassword': 'CONFIRM NEW PASSWORD', 'member.changePassword': 'CHANGE PASSWORD', 'member.comingSoon': 'Password changes are not available yet. This interface is for preview only.',
     'member.collection': 'COLLECTION', 'member.favorites': 'YOUR FAVORITES', 'member.remove': 'REMOVE', 'member.empty': 'No saved mixes right now.', 'member.activity': 'ACTIVITY', 'member.comments': 'YOUR COMMENTS', 'member.recent': 'RECENTLY PLAYED', 'member.logout': 'LOG OUT',
@@ -36,6 +37,7 @@ const translations = {
     'explore.collection': 'NOIRSON COLLECTION', 'explore.title': 'Explore Sound.', 'explore.description': 'From slow mornings to late nights in the city, explore sounds for every moment.', 'explore.all': 'ALL MIXES', 'explore.genre': 'GENRE:',
     'detail.visuals': 'VISUALS', 'detail.fromMix': 'FROM THIS MIX', 'detail.playlist': 'PLAYLIST', 'detail.favorite': '+ Add to Favorite', 'detail.removeFavorite': 'Remove Favorite', 'detail.comments': 'COMMENTS', 'detail.comment': 'Leave a comment...', 'detail.youtube': 'Listen on YouTube',
     'favorites.loading': 'Loading favorites…', 'favorites.loadError': 'Could not load favorites. Please retry.', 'favorites.saveError': 'Favorite action failed. Please retry.', 'favorites.sessionExpired': 'Your session has expired. Please log in again.',
+    'history.loading': 'Loading recent plays…', 'history.empty': 'No recent plays yet.', 'history.loadError': 'Could not load recent plays. Please retry.', 'history.sessionExpired': 'Your session has expired. Please log in again.',
     'about.label': 'ABOUT', 'about.title': 'THE WORLD OF NOIRSON', 'about.p1': 'NOIRSON is a curated music experience shaped around atmosphere, rhythm and the quiet hours between one day and the next.', 'about.p2': 'From lofi and jazz to cloud trap and city pop, every mix opens a different window into the same world.',
     'about.people': 'PEOPLE', 'about.behind': 'BEHIND THE SOUND', 'about.role1': 'Producer / Featured Artist', 'about.role2': 'Music Producer / Arranger',
     'about.stay': 'STAY IN THE LOOP', 'about.subscribeTitle': 'Never miss a new mix.', 'about.subscribeText': 'Subscribe for new NOIRSON mixes, releases and event updates.', 'about.email': 'Your email', 'about.subscribe': 'SUBSCRIBE',

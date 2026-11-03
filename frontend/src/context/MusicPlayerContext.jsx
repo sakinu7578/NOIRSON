@@ -3,12 +3,15 @@ import mixes from '../data/mixData.js';
 import { assetUrl } from '../utils/assetUrl.js';
 import MusicPlayerContext from './musicPlayerContext.js';
 import { releaseAudioSpectrum } from '../pages/useAudioSpectrum.js';
+import { recordPlayHistory } from '../api/playHistory.js';
+import useAuth from '../hooks/useAuth.js';
 
 // 目前播放清單來自本地 Mix 資料，與後端 API 尚未串接。
 const playlist = Object.entries(mixes).map(([id, mix]) => ({ id, ...mix }));
 const mixIds = playlist.map(({ id }) => id);
 
 export function MusicPlayerProvider({ children }) {
+  const { currentUser, isAuthLoading, authError } = useAuth();
   const audioRef = useRef(null);
   const listenersRef = useRef(null);
   const playMixRef = useRef(null);
@@ -16,6 +19,11 @@ export function MusicPlayerProvider({ children }) {
   const mixIdRef = useRef('M001');
   const modesRef = useRef({ isLooping: false, autoNext: false });
   const playRequestRef = useRef(0);
+  const sourceTokenRef = useRef(0);
+  const handledSourceRef = useRef(null);
+  const recordedMixRef = useRef(null);
+  const authRef = useRef({ userId: null, generation: 0 });
+  const historyQueueRef = useRef(Promise.resolve());
   const lastAudibleRef = useRef(1);
   const volumeRef = useRef(1);
   const mutedRef = useRef(false);
@@ -29,6 +37,15 @@ export function MusicPlayerProvider({ children }) {
   const [isLooping, setIsLooping] = useState(false);
   const [autoNext, setAutoNext] = useState(false);
   const [error, setError] = useState(null);
+  const [historyVersion, setHistoryVersion] = useState(0);
+
+  useEffect(() => {
+    const userId = !isAuthLoading && !authError ? currentUser?.id ?? null : null;
+    if (authRef.current.userId !== userId) {
+      authRef.current = { userId, generation: authRef.current.generation + 1 };
+      recordedMixRef.current = null;
+    }
+  }, [currentUser, isAuthLoading, authError]);
 
   // 序號讓較早的非同步播放結果不會覆蓋後來的操作狀態。
   const playAudio = useCallback(async (audio) => {
@@ -60,6 +77,30 @@ export function MusicPlayerProvider({ children }) {
         setIsPlaying(true);
         setHasPlayed(true);
       };
+      const onPlaying = () => {
+        // 舊來源的排隊事件、恢復播放與原生 Loop 都不建立新紀錄。
+        if (audio.paused || !audio.currentSrc || audio.currentSrc !== audio.src
+          || audio.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return;
+        const token = sourceTokenRef.current;
+        if (handledSourceRef.current === token || recordedMixRef.current === mixIdRef.current) return;
+        handledSourceRef.current = token;
+        const code = mixIdRef.current;
+        const { userId, generation } = authRef.current;
+        if (userId === null) return;
+        recordedMixRef.current = code;
+        // 同一播放區段先標記再排隊；待送事件若已換會員便丟棄。
+        historyQueueRef.current = historyQueueRef.current.then(async () => {
+          if (authRef.current.userId !== userId || authRef.current.generation !== generation) return;
+          try {
+            await recordPlayHistory(code);
+            if (authRef.current.userId === userId && authRef.current.generation === generation) {
+              setHistoryVersion((version) => version + 1);
+            }
+          } catch {
+            // 紀錄失敗不重試，也不阻斷音樂或下一筆播放事件。
+          }
+        });
+      };
       const onPause = () => setIsPlaying(false);
       const onTimeUpdate = () => setCurrentTime(audio.currentTime);
       const onLoadedMetadata = () => setDuration(Number.isFinite(audio.duration) ? audio.duration : 0);
@@ -86,7 +127,7 @@ export function MusicPlayerProvider({ children }) {
           autoNextListenersRef.current.forEach((listener) => listener(nextId));
         }
       };
-      const listeners = { play: onPlay, pause: onPause, timeupdate: onTimeUpdate,
+      const listeners = { play: onPlay, playing: onPlaying, pause: onPause, timeupdate: onTimeUpdate,
         loadedmetadata: onLoadedMetadata, durationchange: onDurationChange,
         volumechange: onVolumeChange, error: onError, ended: onEnded };
       Object.entries(listeners).forEach(([event, handler]) => audio.addEventListener(event, handler));
@@ -97,6 +138,8 @@ export function MusicPlayerProvider({ children }) {
       ++playRequestRef.current;
       audio.pause();
       mixIdRef.current = id;
+      ++sourceTokenRef.current;
+      recordedMixRef.current = null;
       setCurrentMixId(id);
       setCurrentTime(0);
       setDuration(0);
@@ -201,10 +244,10 @@ export function MusicPlayerProvider({ children }) {
   const value = useMemo(() => ({ currentMixId, isPlaying, hasPlayed, currentTime, duration, volume,
     isMuted, isLooping, autoNext, error, playlist, audioRef, playMix, togglePlay, pause,
     seek, setVolume, toggleMute, toggleLoop, toggleAutoNext, skipNext, skipPrevious,
-    subscribeAutoNext }),
+    subscribeAutoNext, historyVersion }),
   [currentMixId, isPlaying, hasPlayed, currentTime, duration, volume, isMuted, isLooping, autoNext,
     error, playMix, togglePlay, pause, seek, setVolume, toggleMute, toggleLoop,
-    toggleAutoNext, skipNext, skipPrevious, subscribeAutoNext]);
+    toggleAutoNext, skipNext, skipPrevious, subscribeAutoNext, historyVersion]);
 
   return <MusicPlayerContext.Provider value={value}>{children}</MusicPlayerContext.Provider>;
 }
