@@ -2577,6 +2577,10 @@ html.home-scenes {
     color: var(--color-amber);
 }
 
+.detail-favorite:disabled, .member-remove:disabled { opacity: 0.5; cursor: not-allowed; }
+.detail-favorite:disabled:hover { border-color: rgba(228, 224, 214, 0.25); background: transparent; color: var(--color-heading); }
+.member-empty button, .detail-actions .member-form-note button { border: 0; padding: 0; background: transparent; color: var(--color-amber); font: inherit; cursor: pointer; }
+
 .detail-comments {
     margin-top: 1.25rem;
     min-width: 0;

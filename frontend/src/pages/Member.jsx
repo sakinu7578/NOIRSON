@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
+import { FavoritesApiError, getFavorites, removeFavorite } from '../api/favorites.js';
 import mixes from '../data/mixData.js';
 import memberMock from '../data/memberMock.js';
 import useLanguage from '../hooks/useLanguage.js';
@@ -33,17 +34,22 @@ export default function Member() {
     <p role="alert">{t('auth.checkFailed')} <button type="button" onClick={refreshCurrentUser}>{t('auth.retry')}</button></p>
   </div></main>;
   if (!currentUser) return <Navigate to="/login" replace />;
-  return <MemberContent currentUser={currentUser} />;
+  return <MemberContent key={currentUser.id} currentUser={currentUser} />;
 }
 
-// 個人資訊來自登入 Session；收藏、留言等內容仍為展示資料。
+// 個人資訊與收藏來自後端；留言、播放紀錄等仍為展示資料。
 function MemberContent({ currentUser }) {
   const { language, t } = useLanguage();
-  const { logout } = useAuth();
+  const { logout, refreshCurrentUser } = useAuth();
   const navigate = useNavigate();
   const [nickname, setNickname] = useState(currentUser.username);
   const [draft, setDraft] = useState(currentUser.username);
-  const [favorites, setFavorites] = useState(memberMock.favorites);
+  const [favorites, setFavorites] = useState([]);
+  const [favoritesLoading, setFavoritesLoading] = useState(true);
+  const [favoritesError, setFavoritesError] = useState(null);
+  const [favoritesReload, setFavoritesReload] = useState(0);
+  const [removingId, setRemovingId] = useState(null);
+  const removingRef = useRef(false);
   const [notice, setNotice] = useState('');
   const [logoutError, setLogoutError] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -56,6 +62,42 @@ function MemberContent({ currentUser }) {
     document.title = `${t('member.title')} | NOIRSON`;
     return () => { document.title = previousTitle; };
   }, [t]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    // 登入會員改變或重新進入頁面時，重新取得後端排序的收藏清單。
+    getFavorites(controller.signal)
+      .then(setFavorites)
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        setFavoritesError(error instanceof FavoritesApiError && error.status === 401
+          ? 'favorites.sessionExpired' : 'favorites.loadError');
+        if (error instanceof FavoritesApiError && error.status === 401) refreshCurrentUser();
+      })
+      .finally(() => { if (!controller.signal.aborted) setFavoritesLoading(false); });
+    return () => controller.abort();
+  }, [currentUser.id, favoritesReload, refreshCurrentUser]);
+
+  async function handleRemove(id) {
+    if (removingRef.current) return;
+    removingRef.current = true;
+    setRemovingId(id);
+    setFavoritesError(null);
+    try {
+      await removeFavorite(id);
+      setFavorites((current) => current.filter((item) => item !== id));
+    } catch (error) {
+      if (error instanceof FavoritesApiError && error.status === 401) {
+        await refreshCurrentUser();
+        navigate('/login');
+      } else {
+        setFavoritesError('favorites.saveError');
+      }
+    } finally {
+      removingRef.current = false;
+      setRemovingId(null);
+    }
+  }
 
   function saveNickname(event) {
     event.preventDefault();
@@ -145,7 +187,21 @@ function MemberContent({ currentUser }) {
 
       {activeView === 'favorites' && <section className="member-section" aria-labelledby="member-favorites-title">
         <h2 className="visually-hidden" id="member-favorites-title">{t('member.favorites')}</h2>
-        <div className="member-list">{favorites.length ? favorites.map((id) => <MixRow key={id} id={id} action={<button className="member-remove" type="button" onClick={() => setFavorites((current) => current.filter((item) => item !== id))} aria-label={`${t('member.remove')} ${mixes[id]?.title ?? id}`}>{t('member.remove')}</button>} />) : <p className="member-empty">{t('member.empty')}</p>}</div>
+        <div className="member-list">
+          {favoritesLoading ? <p className="member-empty" role="status">{t('favorites.loading')}</p>
+            : favoritesError === 'favorites.loadError' || favoritesError === 'favorites.sessionExpired'
+              ? <p className="member-empty" role="alert">{t(favoritesError)}{' '}
+                <button type="button" onClick={() => {
+                  setFavoritesLoading(true);
+                  setFavoritesError(null);
+                  setFavoritesReload((value) => value + 1);
+                }}>{t('auth.retry')}</button></p>
+              : favorites.length ? favorites.map((id) => <MixRow key={id} id={id} action={<button className="member-remove" type="button"
+                onClick={() => handleRemove(id)} disabled={removingId !== null}
+                aria-label={`${t('member.remove')} ${mixes[id]?.title ?? id}`}>{t('member.remove')}</button>} />)
+                : <p className="member-empty">{t('member.empty')}</p>}
+          {favoritesError === 'favorites.saveError' && <p className="member-form-note" role="alert">{t(favoritesError)}</p>}
+        </div>
       </section>}
 
       {activeView === 'comments' && <section className="member-section" aria-labelledby="member-comments-title">
