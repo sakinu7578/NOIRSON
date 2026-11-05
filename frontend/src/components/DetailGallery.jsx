@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { assetUrl } from '../utils/assetUrl.js';
 
 const galleryImages = Array.from({ length: 17 }, (_, index) => `images/${String(index).padStart(2, '0')}.webp`);
@@ -11,12 +11,42 @@ function initialAutoplay() {
 export default function DetailGallery({ mix, english }) {
   const galleryRef = useRef(null);
   const activeLayerRef = useRef(0);
+  const closeTimerRef = useRef(null);
+  const pointerInsideRef = useRef(false);
+  const focusInsideRef = useRef(false);
   const initialIndex = Math.max(0, galleryImages.indexOf(mix.cover));
   const [selectedIndex, setSelectedIndex] = useState(initialIndex);
   const [activeLayer, setActiveLayer] = useState(0);
   const [layers, setLayers] = useState([mix.cover, mix.cover]);
   const [auto, setAuto] = useState(initialAutoplay);
   const [timerVersion, setTimerVersion] = useState(0);
+  const [galleryOpen, setGalleryOpen] = useState(false);
+
+  const clearCloseTimer = useCallback(() => {
+    clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = null;
+  }, []);
+
+  const restartCloseTimer = useCallback(() => {
+    clearCloseTimer();
+    if (galleryOpen && !pointerInsideRef.current && !focusInsideRef.current) {
+      closeTimerRef.current = setTimeout(() => setGalleryOpen(false), 5000);
+    }
+  }, [clearCloseTimer, galleryOpen]);
+
+  useEffect(() => {
+    restartCloseTimer();
+    return clearCloseTimer;
+  }, [restartCloseTimer, clearCloseTimer]);
+
+  function toggleGallery() {
+    if (galleryOpen) {
+      clearCloseTimer();
+      pointerInsideRef.current = false;
+      focusInsideRef.current = false;
+    }
+    setGalleryOpen((open) => !open);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -70,6 +100,7 @@ export default function DetailGallery({ mix, english }) {
   function select(index) {
     setSelectedIndex((index + galleryImages.length) % galleryImages.length);
     setTimerVersion((version) => version + 1);
+    restartCloseTimer();
   }
 
   function toggleAuto() {
@@ -84,38 +115,66 @@ export default function DetailGallery({ mix, english }) {
     ? `${mix.title} ${english ? 'main visual' : '主視覺'}` : `${mix.title} Gallery ${galleryImages.indexOf(path) + 1}`;
 
   return <div className="music-detail-media">
-    <div className="music-detail-visual">
-      {layers.map((path, layer) => <div key={layer}
-        className={`detail-main-visual-layer ${layer === activeLayer ? 'is-active' : ''}`}
-        style={{ zIndex: layer === activeLayer ? 1 : 0 }} aria-hidden={layer !== activeLayer}>
-        <img src={assetUrl(path)} alt={layer === activeLayer ? altText(path) : ''} />
-      </div>)}
+    <div className="music-detail-visual-shell">
+      <div className="music-detail-visual">
+        {layers.map((path, layer) => <div key={layer}
+          className={`detail-main-visual-layer ${layer === activeLayer ? 'is-active' : ''}`}
+          style={{ zIndex: layer === activeLayer ? 1 : 0 }} aria-hidden={layer !== activeLayer}>
+          <img src={assetUrl(path)} alt={layer === activeLayer ? altText(path) : ''} />
+        </div>)}
+      </div>
+      <div id="detail-gallery-panel" className="detail-gallery-panel" hidden={!galleryOpen}
+        role="region" aria-label={english ? 'Visual thumbnails' : '影像縮圖'}
+        onPointerEnter={() => { pointerInsideRef.current = true; clearCloseTimer(); }}
+        onPointerLeave={() => { pointerInsideRef.current = false; restartCloseTimer(); }}
+        onFocusCapture={(event) => {
+          // 滑鼠點擊縮圖也會取得焦點；只有鍵盤焦點需要暫停自動收合。
+          if (event.target.matches(':focus-visible')) {
+            focusInsideRef.current = true;
+            clearCloseTimer();
+          }
+        }}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) {
+            focusInsideRef.current = false;
+            restartCloseTimer();
+          }
+        }}
+        onPointerDownCapture={restartCloseTimer}
+        onKeyDownCapture={() => { focusInsideRef.current = true; clearCloseTimer(); }}>
+        <div className="detail-gallery-controls">
+          <button className="detail-gallery-arrow detail-gallery-previous" type="button"
+            aria-label={english ? 'Browse gallery left' : '向左瀏覽 Gallery'} onClick={() => select(selectedIndex - 1)}>←</button>
+          <div className="detail-gallery" ref={galleryRef}>
+            {galleryImages.map((path, index) => <button key={path}
+              className={`detail-gallery-thumb ${index === selectedIndex ? 'is-active' : ''}`}
+              type="button" aria-label={english ? `Show gallery image ${index + 1}` : `顯示第 ${index + 1} 張 Gallery 圖片`}
+              aria-pressed={index === selectedIndex} onClick={() => select(index)}>
+              <img src={assetUrl(path)} alt={`${mix.title} Gallery ${index + 1}`} loading="lazy" />
+            </button>)}
+          </div>
+          <button className="detail-gallery-arrow detail-gallery-next" type="button"
+            aria-label={english ? 'Browse gallery right' : '向右瀏覽 Gallery'} onClick={() => select(selectedIndex + 1)}>→</button>
+        </div>
+      </div>
     </div>
     <section className="detail-gallery-section" aria-labelledby="detail-gallery-title">
       <div className="detail-gallery-heading">
         <p className="section-label">{english ? 'VISUALS' : '影像'}</p>
-        <div className="detail-gallery-title-row">
-          <h2 id="detail-gallery-title">{english ? 'FROM THIS MIX' : '此 MIX 影像'}</h2>
+        <h2 className="visually-hidden" id="detail-gallery-title">{english ? 'Visual gallery' : '影像輪播'}</h2>
+        <button className="detail-gallery-toggle" type="button" aria-controls="detail-gallery-panel"
+          aria-expanded={galleryOpen} aria-label={galleryOpen
+            ? (english ? 'Collapse visual thumbnails' : '收合影像縮圖')
+            : (english ? 'Expand visual thumbnails' : '展開影像縮圖')}
+          onClick={toggleGallery}>
+          {galleryOpen ? (english ? 'COLLAPSE' : '收合') : (english ? 'EXPAND' : '展開')}
+        </button>
           <button className="detail-gallery-auto" type="button" aria-pressed={auto}
             aria-label={auto ? (english ? 'Stop visuals autoplay' : '停止影像自動輪播') : (english ? 'Start visuals autoplay' : '開啟影像自動輪播')}
             title={english ? 'Visuals autoplay' : '自動輪播'} onClick={toggleAuto}>
             <span className="detail-gallery-auto-icon" aria-hidden="true" />
+            <span>{auto ? (english ? 'PAUSE AUTO' : '暫停輪播') : (english ? 'AUTO PLAY' : '自動輪播')}</span>
           </button>
-        </div>
-      </div>
-      <div className="detail-gallery-controls">
-        <button className="detail-gallery-arrow detail-gallery-previous" type="button"
-          aria-label={english ? 'Browse gallery left' : '向左瀏覽 Gallery'} onClick={() => select(selectedIndex - 1)}>←</button>
-        <div className="detail-gallery" ref={galleryRef}>
-          {galleryImages.map((path, index) => <button key={path}
-            className={`detail-gallery-thumb ${index === selectedIndex ? 'is-active' : ''}`}
-            type="button" aria-label={english ? `Show gallery image ${index + 1}` : `顯示第 ${index + 1} 張 Gallery 圖片`}
-            aria-pressed={index === selectedIndex} onClick={() => select(index)}>
-            <img src={assetUrl(path)} alt={`${mix.title} Gallery ${index + 1}`} loading="lazy" />
-          </button>)}
-        </div>
-        <button className="detail-gallery-arrow detail-gallery-next" type="button"
-          aria-label={english ? 'Browse gallery right' : '向右瀏覽 Gallery'} onClick={() => select(selectedIndex + 1)}>→</button>
       </div>
     </section>
   </div>;

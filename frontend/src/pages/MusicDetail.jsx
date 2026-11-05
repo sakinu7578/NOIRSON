@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router';
 import { FavoritesApiError, addFavorite, getFavorites, removeFavorite } from '../api/favorites.js';
 import DetailGallery from '../components/DetailGallery.jsx';
 import DetailPlayer from '../components/DetailPlayer.jsx';
+import CommentSection from '../components/CommentSection.jsx';
 import mixes from '../data/mixData.js';
 import useLanguage from '../hooks/useLanguage.js';
 import useAuth from '../hooks/useAuth.js';
@@ -19,7 +20,9 @@ function DetailPage({ pageMixId, mix }) {
   const [favoriteSaving, setFavoriteSaving] = useState(false);
   const [favoriteError, setFavoriteError] = useState(null);
   const [favoriteReload, setFavoriteReload] = useState(0);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   const savingRef = useRef(false);
+  const infoRef = useRef(null);
   const english = language === 'en';
   const currentIndex = mixIds.indexOf(pageMixId);
   const previousId = mixIds[(currentIndex - 1 + mixIds.length) % mixIds.length];
@@ -74,7 +77,8 @@ function DetailPage({ pageMixId, mix }) {
   return <main className="music-detail-page">
     <section className="music-detail-hero" aria-labelledby="music-detail-title">
       <DetailGallery mix={mix} english={english} />
-      <div className="music-detail-info">
+      <div className="music-detail-info" ref={infoRef}
+        onScroll={(event) => setShowBackToTop(event.currentTarget.scrollTop > 240)}>
         <p className="music-detail-eyebrow"><span>{pageMixId}</span><span>{mix.series}</span></p>
         <div className="music-detail-title-row">
           <h1 id="music-detail-title">{mix.title}</h1>
@@ -110,19 +114,12 @@ function DetailPage({ pageMixId, mix }) {
             </a>
           </div>}
         </div>
-        <section className="detail-comments" aria-labelledby="detail-comments-title">
-          <div className="detail-comments-heading">
-            <h2 id="detail-comments-title">{t('detail.comments')}</h2>
-            <span className="detail-comments-count">0</span>
-          </div>
-          <label className="visually-hidden" htmlFor="detail-comment">{english ? 'Leave a comment' : '留下留言'}</label>
-          <textarea id="detail-comment" rows="3" placeholder={t('detail.comment')} disabled />
-          <button className="detail-comment-submit" type="button" disabled>{english ? 'Post comment' : '送出留言'}</button>
-          <div className="detail-comment-list" aria-live="polite">
-            <p className="detail-comments-empty">{english ? 'No comments yet.' : '尚無留言'}</p>
-          </div>
-        </section>
+        <CommentSection pageMixId={pageMixId} />
       </div>
+      {showBackToTop && <button className="detail-back-to-top" type="button"
+        onClick={() => infoRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}>
+        {t('detail.backToTop')} ↑
+      </button>}
     </section>
   </main>;
 }

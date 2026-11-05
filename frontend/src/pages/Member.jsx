@@ -2,13 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router';
 import { FavoritesApiError, getFavorites, removeFavorite } from '../api/favorites.js';
 import { getPlayHistory, PlayHistoryApiError } from '../api/playHistory.js';
+import { CommentsApiError, getMyComments } from '../api/comments.js';
 import mixes from '../data/mixData.js';
-import memberMock from '../data/memberMock.js';
 import useLanguage from '../hooks/useLanguage.js';
 import useAuth from '../hooks/useAuth.js';
 import useMusicPlayer from '../hooks/useMusicPlayer.js';
 import useBackgroundSlideshow from '../hooks/useBackgroundSlideshow.js';
 import { assetUrl } from '../utils/assetUrl.js';
+import { formatCommentDate } from '../utils/formatCommentDate.js';
 
 const memberImages = Array.from({ length: 17 }, (_, index) => index)
   .filter((index) => ![0, 9, 11, 16].includes(index))
@@ -39,9 +40,9 @@ export default function Member() {
   return <MemberContent key={currentUser.id} currentUser={currentUser} />;
 }
 
-// 個人資訊、收藏與播放紀錄來自後端；留言仍為展示資料。
+// 個人資訊、收藏、播放紀錄與留言來自後端。
 function MemberContent({ currentUser }) {
-  const { language, t } = useLanguage();
+  const { t } = useLanguage();
   const { logout, refreshCurrentUser } = useAuth();
   const { historyVersion } = useMusicPlayer();
   const navigate = useNavigate();
@@ -55,6 +56,14 @@ function MemberContent({ currentUser }) {
   const [recentLoading, setRecentLoading] = useState(true);
   const [recentError, setRecentError] = useState(null);
   const [recentReload, setRecentReload] = useState(0);
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(true);
+  const [commentsMoreLoading, setCommentsMoreLoading] = useState(false);
+  const [commentsError, setCommentsError] = useState(null);
+  const [commentsHasMore, setCommentsHasMore] = useState(false);
+  const [commentsPage, setCommentsPage] = useState(1);
+  const [commentsReload, setCommentsReload] = useState(0);
+  const commentsMoreRequest = useRef(null);
   const [removingId, setRemovingId] = useState(null);
   const removingRef = useRef(false);
   const [notice, setNotice] = useState('');
@@ -104,6 +113,63 @@ function MemberContent({ currentUser }) {
     return () => controller.abort();
   }, [activeView, currentUser.id, historyVersion, recentReload, refreshCurrentUser]);
 
+  useEffect(() => {
+    if (activeView !== 'comments') return;
+    const controller = new AbortController();
+    // 頁籤重新開啟及同頁評論寫入時都重新讀第一頁。
+    getMyComments(0, controller.signal)
+      .then((result) => {
+        if (controller.signal.aborted) return;
+        setComments(result.items);
+        setCommentsHasMore(result.hasMore);
+        setCommentsPage(1);
+      })
+      .catch((error) => {
+        if (controller.signal.aborted) return;
+        setCommentsError(error instanceof CommentsApiError && error.status === 401
+          ? 'comments.sessionExpired' : 'comments.loadError');
+        if (error instanceof CommentsApiError && error.status === 401) refreshCurrentUser();
+      })
+      .finally(() => { if (!controller.signal.aborted) setCommentsLoading(false); });
+    return () => { controller.abort(); commentsMoreRequest.current?.abort(); };
+  }, [activeView, currentUser.id, commentsReload, refreshCurrentUser]);
+
+  useEffect(() => {
+    if (activeView !== 'comments') return;
+    const reload = () => {
+      setCommentsLoading(true);
+      setCommentsError(null);
+      setCommentsReload((value) => value + 1);
+    };
+    window.addEventListener('noirson:comments-changed', reload);
+    return () => window.removeEventListener('noirson:comments-changed', reload);
+  }, [activeView]);
+
+  async function loadMoreComments() {
+    if (commentsLoading || commentsMoreLoading || !commentsHasMore) return;
+    const controller = new AbortController();
+    commentsMoreRequest.current = controller;
+    setCommentsMoreLoading(true);
+    setCommentsError(null);
+    try {
+      const result = await getMyComments(commentsPage, controller.signal);
+      if (controller.signal.aborted) return;
+      setComments((current) => {
+        const seen = new Set(current.map((item) => item.id));
+        return [...current, ...result.items.filter((item) => !seen.has(item.id))];
+      });
+      setCommentsHasMore(result.hasMore);
+      setCommentsPage((page) => page + 1);
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      setCommentsError(error instanceof CommentsApiError && error.status === 401
+        ? 'comments.sessionExpired' : 'comments.loadError');
+      if (error instanceof CommentsApiError && error.status === 401) refreshCurrentUser();
+    } finally {
+      if (!controller.signal.aborted) setCommentsMoreLoading(false);
+    }
+  }
+
   async function handleRemove(id) {
     if (removingRef.current) return;
     removingRef.current = true;
@@ -144,6 +210,11 @@ function MemberContent({ currentUser }) {
       setDraft(nickname);
       setPasswordDraft({ old: '', next: '', confirm: '' });
       setNotice('');
+    }
+    if (view === 'comments') {
+      setCommentsLoading(true);
+      setCommentsMoreLoading(false);
+      setCommentsError(null);
     }
     setActiveView(view);
   }
@@ -232,10 +303,23 @@ function MemberContent({ currentUser }) {
 
       {activeView === 'comments' && <section className="member-section" aria-labelledby="member-comments-title">
         <h2 className="visually-hidden" id="member-comments-title">{t('member.comments')}</h2>
-        <div className="member-list">{memberMock.comments.map((comment) => <article className="member-comment" key={comment.id}>
-          <Link to={`/music/${comment.mixId}`}><small>{comment.mixId} / {mixes[comment.mixId]?.title}</small><span aria-hidden="true">↗</span></Link>
-          <p>{language === 'en' ? comment.textEn : comment.textZh}</p><time dateTime={comment.date}>{comment.date}</time>
-        </article>)}</div>
+        <div className="member-list">
+          {commentsLoading ? <p className="member-empty" role="status">{t('comments.loading')}</p>
+            : commentsError && comments.length === 0 ? <p className="member-empty" role="alert">{t(commentsError)}{' '}
+              <button type="button" onClick={() => {
+                setCommentsLoading(true);
+                setCommentsError(null);
+                setCommentsReload((value) => value + 1);
+              }}>{t('auth.retry')}</button></p>
+              : comments.length ? comments.map((comment) => <article className="member-comment" key={comment.id}>
+                <Link to={`/music/${comment.mixCode}`}><small>{comment.mixCode} / {mixes[comment.mixCode]?.title ?? comment.mixCode}</small><span aria-hidden="true">↗</span></Link>
+                <p>{comment.content}</p><time dateTime={comment.createdAt}>{formatCommentDate(comment.createdAt)}</time>
+              </article>) : <p className="member-empty">{t('comments.myEmpty')}</p>}
+          {commentsError && comments.length > 0 && <p className="member-empty" role="alert">{t(commentsError)}{' '}
+            <button type="button" onClick={loadMoreComments}>{t('auth.retry')}</button></p>}
+          {commentsHasMore && !commentsLoading && !commentsError && <button className="member-comments-more" type="button"
+            onClick={loadMoreComments} disabled={commentsMoreLoading}>{commentsMoreLoading ? t('comments.loading') : t('comments.loadMore')}</button>}
+        </div>
       </section>}
 
       {activeView === 'recent' && <section className="member-section" aria-labelledby="member-recent-title">

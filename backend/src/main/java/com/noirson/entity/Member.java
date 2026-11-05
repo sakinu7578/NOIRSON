@@ -29,6 +29,10 @@ public class Member {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    // 權限由資料庫提供；註冊時使用資料庫的 USER 預設值。
+    @Column(name = "role", nullable = false, length = 10, insertable = false, updatable = false)
+    private String role;
+
     // JPA 需要無參數建構子
     public Member() {
     }
