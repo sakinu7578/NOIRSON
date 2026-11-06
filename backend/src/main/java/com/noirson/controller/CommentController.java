@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,10 +32,17 @@ public class CommentController {
         throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
     }
 
+    private static Long optionalMemberId(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Object id = session == null ? null : session.getAttribute("memberId");
+        return id instanceof Long memberId ? memberId : null;
+    }
+
     @GetMapping("/api/mixes/{code}/comments")
     public CommentPageResponse listMix(@PathVariable String code,
-            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        return comments.listMix(code, page, size);
+            @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
+            HttpServletRequest request) {
+        return comments.listMix(code, page, size, optionalMemberId(request));
     }
 
     @PostMapping("/api/mixes/{code}/comments")
@@ -60,5 +68,17 @@ public class CommentController {
     public CommentPageResponse listMine(@RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size, HttpServletRequest request) {
         return comments.listMine(memberId(request), page, size);
+    }
+
+    @PutMapping("/api/comments/{id}/like")
+    public ResponseEntity<Void> like(@PathVariable Long id, HttpServletRequest request) {
+        comments.like(memberId(request), id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/api/comments/{id}/like")
+    public ResponseEntity<Void> unlike(@PathVariable Long id, HttpServletRequest request) {
+        comments.unlike(memberId(request), id);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router';
-import { addComment, CommentsApiError, deleteComment, getMixComments, updateComment } from '../api/comments.js';
+import { addComment, CommentsApiError, deleteComment, getMixComments, likeComment, unlikeComment, updateComment } from '../api/comments.js';
 import useAuth from '../hooks/useAuth.js';
 import useLanguage from '../hooks/useLanguage.js';
 import { formatCommentDate } from '../utils/formatCommentDate.js';
@@ -26,6 +26,8 @@ export default function CommentSection({ pageMixId }) {
   const [moreLoading, setMoreLoading] = useState(false);
   const [loadError, setLoadError] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [likeErrors, setLikeErrors] = useState({});
+  const [likingIds, setLikingIds] = useState(new Set());
   const [draft, setDraft] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editDraft, setEditDraft] = useState('');
@@ -34,10 +36,17 @@ export default function CommentSection({ pageMixId }) {
   const mounted = useRef(true);
   const request = useRef(null);
   const savingRef = useRef(false);
+  const likeRequests = useRef(new Map());
 
   useEffect(() => {
     mounted.current = true;
-    return () => { mounted.current = false; request.current?.abort(); };
+    const pendingLikes = likeRequests.current;
+    return () => {
+      mounted.current = false;
+      request.current?.abort();
+      pendingLikes.forEach((controller) => controller.abort());
+      pendingLikes.clear();
+    };
   }, []);
 
   const loadFirst = useCallback(() => {
@@ -135,6 +144,40 @@ export default function CommentSection({ pageMixId }) {
     }
   }
 
+  async function toggleLike(comment) {
+    if (!currentUser || isAuthLoading || likeRequests.current.has(comment.id)) return;
+    const controller = new AbortController();
+    likeRequests.current.set(comment.id, controller);
+    setLikingIds((current) => new Set(current).add(comment.id));
+    setLikeErrors((current) => ({ ...current, [comment.id]: null }));
+    try {
+      if (comment.likedByMe) await unlikeComment(comment.id, controller.signal);
+      else await likeComment(comment.id, controller.signal);
+      if (!mounted.current || controller.signal.aborted) return;
+      // 載入更多的舊回應不可蓋掉剛完成的單則按讚狀態。
+      request.current?.abort();
+      setMoreLoading(false);
+      setItems((current) => current.map((item) => item.id === comment.id
+        ? { ...item, likedByMe: !comment.likedByMe,
+          likeCount: Math.max(0, item.likeCount + (comment.likedByMe ? -1 : 1)) }
+        : item));
+    } catch (error) {
+      if (!mounted.current || controller.signal.aborted) return;
+      if (error instanceof CommentsApiError && error.status === 401) refreshCurrentUser();
+      if (error instanceof CommentsApiError && error.status === 404) loadFirst();
+      setLikeErrors((current) => ({ ...current, [comment.id]: error instanceof CommentsApiError && error.status === 401
+        ? 'comments.sessionExpired' : error instanceof CommentsApiError && error.status === 404
+          ? 'comments.notFound' : 'comments.likeError' }));
+    } finally {
+      likeRequests.current.delete(comment.id);
+      if (mounted.current) setLikingIds((current) => {
+        const next = new Set(current);
+        next.delete(comment.id);
+        return next;
+      });
+    }
+  }
+
   return <section className="detail-comments" aria-labelledby="detail-comments-title">
     <div className="detail-comments-heading"><h2 id="detail-comments-title">{t('detail.comments')}</h2></div>
     {currentUser ? <div className="detail-comment-compose">
@@ -160,7 +203,8 @@ export default function CommentSection({ pageMixId }) {
                   <button type="button" onClick={() => remove(comment.id)} disabled={saving}>{t('comments.delete')}</button>
                 </div>}
               </div>
-              {editingId === comment.id ? <>
+              <div className="detail-comment-body">
+                <div className="detail-comment-content">{editingId === comment.id ? <>
                 <label className="visually-hidden" htmlFor={`edit-comment-${comment.id}`}>{t('comments.edit')}</label>
                 <textarea className="detail-comment-edit" id={`edit-comment-${comment.id}`} value={editDraft} rows="1"
                   ref={fitTextarea} onChange={(event) => { setEditDraft(event.target.value); fitTextarea(event.target); }} disabled={saving} />
@@ -168,9 +212,23 @@ export default function CommentSection({ pageMixId }) {
                   <button type="button" onClick={() => save('edit')} disabled={saving || !editDraft.trim()}>{t('comments.save')}</button>
                   <button type="button" onClick={() => { setEditingId(null); setEditDraft(''); }} disabled={saving}>{t('comments.cancel')}</button>
                 </div>
-              </> : <p>{comment.content}</p>}
+                </> : <p>{comment.content}</p>}</div>
+                <div className="detail-comment-likes">
+                {currentUser ? <button type="button" aria-pressed={comment.likedByMe}
+                  aria-label={t(comment.likedByMe ? 'comments.unlike' : 'comments.like')}
+                  onClick={() => toggleLike(comment)} disabled={isAuthLoading || likingIds.has(comment.id)}>
+                  <span aria-hidden="true">♥</span><span>{comment.likeCount}</span>
+                </button> : <span className="detail-comment-likes-count" aria-label={`${t('comments.likes')}: ${comment.likeCount}`}>
+                  <span aria-hidden="true">♥</span>{comment.likeCount}
+                </span>}
+                {likeErrors[comment.id] && <span role="alert" className="detail-comment-like-error">{t(likeErrors[comment.id])}</span>}
+                </div>
+              </div>
             </article>)}
     </div>
+    {!currentUser && !loading && items.length > 0 && <p className="detail-comment-like-hint">
+      <Link to="/login">{t('comments.loginToLike')}</Link>
+    </p>}
     {loadError && items.length > 0 && <p className="detail-comment-notice" role="alert">{t('comments.loadError')}{' '}
       <button type="button" onClick={loadMore}>{t('auth.retry')}</button></p>}
     {hasMore && !loading && !loadError && <button className="detail-comment-more" type="button"

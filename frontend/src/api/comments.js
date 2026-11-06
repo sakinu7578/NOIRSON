@@ -57,3 +57,18 @@ export async function deleteComment(id) {
   if (response.status !== 204) throw new CommentsApiError(response.status);
   window.dispatchEvent(new Event('noirson:comments-changed'));
 }
+
+async function changeLike(id, method, signal) {
+  const response = await fetch(`/api/comments/${encodeURIComponent(id)}/like`, {
+    method, credentials: 'include', signal,
+  });
+  if (response.status !== 204) throw new CommentsApiError(response.status);
+}
+
+export function likeComment(id, signal) {
+  return changeLike(id, 'PUT', signal);
+}
+
+export function unlikeComment(id, signal) {
+  return changeLike(id, 'DELETE', signal);
+}

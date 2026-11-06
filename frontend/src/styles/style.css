@@ -2659,11 +2659,23 @@ html.home-scenes {
     font-size: 0.7rem;
 }
 .detail-comments-empty a, .detail-comments-empty button, .detail-comment-notice button { border: 0; padding: 0; background: transparent; color: var(--color-amber); font: inherit; cursor: pointer; }
-.detail-comment-item { padding: 0.65rem 0; border-bottom: 1px solid var(--color-line); min-width: 0; }
+.detail-comment-item { padding: 0.55rem 0; border-bottom: 1px solid var(--color-line); min-width: 0; }
 .detail-comment-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem 0.75rem; min-width: 0; }
 .detail-comment-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 1rem; color: var(--color-muted); font-size: 0.68rem; }
 .detail-comment-meta strong { color: var(--color-heading); font-weight: 500; }
-.detail-comment-item p { margin: 0.4rem 0 0; color: var(--color-cream); font-size: 0.78rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.detail-comment-body { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem; margin-top: 0.35rem; min-width: 0; }
+.detail-comment-content { flex: 1 1 auto; min-width: 0; }
+.detail-comment-item p { margin: 0; color: var(--color-cream); font-size: 0.78rem; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.detail-comment-likes { display: flex; flex: 0 0 auto; flex-direction: column; align-items: flex-end; gap: 0.2rem; color: var(--color-muted); font-size: 0.7rem; }
+.detail-comment-likes button, .detail-comment-likes-count { display: inline-flex; align-items: center; gap: 0.45rem; min-height: 38px; }
+.detail-comment-likes button, .detail-comment-likes-count { flex: 0 0 auto; white-space: nowrap; }
+.detail-comment-likes button { border: 0; padding: 0 0.45rem; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.detail-comment-likes button:hover, .detail-comment-likes button:focus-visible, .detail-comment-likes button[aria-pressed="true"] { color: var(--color-amber); }
+.detail-comment-likes button:focus-visible { outline: 1px solid var(--color-amber); outline-offset: 2px; }
+.detail-comment-likes button:disabled { opacity: 0.5; cursor: default; }
+.detail-comment-like-error { max-width: 9rem; color: var(--color-amber); text-align: right; overflow-wrap: anywhere; }
+.detail-comment-like-hint { margin: 0.65rem 0; color: var(--color-muted); font-size: 0.7rem; }
+.detail-comment-like-hint a { color: var(--color-amber); }
 .detail-comment-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 0.4rem; }
 .detail-comment-actions button, .detail-comment-more { border: 1px solid var(--color-line); padding: 0.5rem 0.7rem; background: transparent; color: var(--color-muted); font: inherit; font-size: 0.68rem; cursor: pointer; }
 .detail-comment-actions button { min-height: 40px; }

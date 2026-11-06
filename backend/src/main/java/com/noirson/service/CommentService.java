@@ -2,6 +2,10 @@ package com.noirson.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Pattern;
 
 import com.noirson.dto.CommentPageResponse;
@@ -10,6 +14,7 @@ import com.noirson.entity.Comment;
 import com.noirson.entity.Member;
 import com.noirson.entity.Mix;
 import com.noirson.repository.CommentRepository;
+import com.noirson.repository.CommentLikeRepository;
 import com.noirson.repository.MemberRepository;
 import com.noirson.repository.MixRepository;
 import jakarta.persistence.EntityManager;
@@ -28,13 +33,15 @@ public class CommentService {
     private static final Pattern HTML_TAG = Pattern.compile("<\\s*/?\\s*[A-Za-z][^>]*>");
 
     private final CommentRepository comments;
+    private final CommentLikeRepository likes;
     private final MemberRepository members;
     private final MixRepository mixes;
     private final EntityManager entityManager;
 
-    public CommentService(CommentRepository comments, MemberRepository members,
+    public CommentService(CommentRepository comments, CommentLikeRepository likes, MemberRepository members,
             MixRepository mixes, EntityManager entityManager) {
         this.comments = comments;
+        this.likes = likes;
         this.members = members;
         this.mixes = mixes;
         this.entityManager = entityManager;
@@ -50,14 +57,23 @@ public class CommentService {
         return cleaned;
     }
 
-    private static CommentResponse response(Comment comment) {
+    private static CommentResponse response(Comment comment, long likeCount, boolean likedByMe) {
         return new CommentResponse(comment.getId(), comment.getMix().getCode(),
                 comment.getMember().getId(), comment.getMember().getUsername(),
-                comment.getContent(), comment.getCreatedAt(), comment.getUpdatedAt());
+                comment.getContent(), comment.getCreatedAt(), comment.getUpdatedAt(), likeCount, likedByMe);
     }
 
-    private static CommentPageResponse page(List<Comment> found, long offset, long total) {
-        List<CommentResponse> items = found.stream().map(CommentService::response).toList();
+    private CommentPageResponse page(List<Comment> found, long offset, long total, Long memberId) {
+        if (found.isEmpty()) return new CommentPageResponse(List.of(), false);
+        List<Long> ids = found.stream().map(Comment::getId).toList();
+        Map<Long, Long> counts = new HashMap<>();
+        for (Object[] row : likes.countForComments(ids)) {
+            counts.put((Long) row[0], (Long) row[1]);
+        }
+        Set<Long> liked = memberId == null ? Set.of() : new HashSet<>(likes.likedCommentIds(ids, memberId));
+        List<CommentResponse> items = found.stream()
+                .map(comment -> response(comment, counts.getOrDefault(comment.getId(), 0L), liked.contains(comment.getId())))
+                .toList();
         return new CommentPageResponse(items, offset + found.size() < total);
     }
 
@@ -68,11 +84,12 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public CommentPageResponse listMix(String code, int page, int size) {
+    public CommentPageResponse listMix(String code, int page, int size, Long memberId) {
         PageRequest limit = pageRequest(page, size);
         Mix mix = mixes.findByCode(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        Long viewerId = memberId != null && members.existsById(memberId) ? memberId : null;
         return page(comments.findByMixLatest(mix.getId(), limit), limit.getOffset(),
-                comments.countByMix_Id(mix.getId()));
+                comments.countByMix_Id(mix.getId()), viewerId);
     }
 
     @Transactional(readOnly = true)
@@ -80,7 +97,7 @@ public class CommentService {
         if (!members.existsById(memberId)) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
         PageRequest limit = pageRequest(page, size);
         return page(comments.findByMemberLatest(memberId, limit), limit.getOffset(),
-                comments.countByMember_Id(memberId));
+                comments.countByMember_Id(memberId), memberId);
     }
 
     @Transactional
@@ -96,7 +113,7 @@ public class CommentService {
             throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "請在 30 秒後再發表評論");
         Comment saved = comments.saveAndFlush(new Comment(member, mix, checked));
         entityManager.refresh(saved); // 取得資料庫寫入的建立及更新時間。
-        return response(saved);
+        return response(saved, 0, false);
     }
 
     @Transactional
@@ -111,7 +128,9 @@ public class CommentService {
         comment.setContent(checked);
         comment.setUpdatedAt(comments.databaseNow());
         comments.flush();
-        return response(comment);
+        return response(comment, likes.countForComments(List.of(id)).stream()
+                .mapToLong(row -> (Long) row[1]).findFirst().orElse(0),
+                !likes.likedCommentIds(List.of(id), memberId).isEmpty());
     }
 
     @Transactional
@@ -123,5 +142,19 @@ public class CommentService {
         if (!comment.getMember().getId().equals(member.getId()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         comments.delete(comment);
+    }
+
+    @Transactional
+    public void like(Long memberId, Long id) {
+        if (!members.existsById(memberId)) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if (!comments.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        likes.add(memberId, id);
+    }
+
+    @Transactional
+    public void unlike(Long memberId, Long id) {
+        if (!members.existsById(memberId)) throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        if (!comments.existsById(id)) throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        likes.remove(memberId, id);
     }
 }
