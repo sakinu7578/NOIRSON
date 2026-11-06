@@ -30,3 +30,6 @@ application-local.properties
 
 # Local backend logs
 backend/*.log
+
+# Local architecture study notes
+/ARCHITECTURE.md

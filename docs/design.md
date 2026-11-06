@@ -1,55 +1,22 @@
-# NOIRSON 設計規範
+# NOIRSON 設計說明
 
-## Visual Direction
+## 視覺定位
 
-NOIRSON 的視覺方向為 **Cinematic Editorial Radio / Minimal Analog Hi-Fi**，以深色、低飽和、沉浸式的 Chill Radio 氛圍為核心。
+NOIRSON 以 **Cinematic Editorial Radio / Minimal Analog Hi-Fi** 為方向：深色、低飽和的沉浸式音樂探索介面。Neutral Black、Graphite、Warm Charcoal 與 Warm White / Cream 構成底色；Muted Amber、Olive 和柔和灰金標示選取、Hover、Focus 與播放器細節。Mix 封面及全版圖片提供主要色彩。介面文字以 Sans Serif 為主，大型標題與 Mix 標題使用 Editorial Serif；React 的色彩變數集中於 `frontend/src/styles/style.css`。
 
-- 主色使用 Neutral Black、Graphite、Warm Charcoal 與 Warm White / Cream。
-- Muted Amber、Olive 與柔和灰金用於 Active、Hover、Label 與播放器細節。
-- Mix 封面與全版背景是主要色彩來源；環境光暈保持低透明度，不搶內容焦點。
-- UI、Navigation 與 Metadata 使用 Sans Serif；大型標題與 Mix Title 使用 Editorial Serif。
-- 目前 React 介面的色彩變數集中於 `frontend/src/styles/style.css` 的 `:root`。
+## 頁面與共用介面
 
-## 共用介面
+- **Header／Footer**：Header 固定於畫面上方，提供導覽與中英文切換；Footer 在頁面布局中顯示社群連結與署名，不固定覆蓋內容。
+- **Home**：以全版背景、分階段場景、Mix 輪播與音訊頻譜營造聆聽氛圍。
+- **Explore**：依 8 首本地 Mix 的曲風分類篩選；卡片按視窗寬度分組並可切換。此頁沒有文字搜尋。
+- **Music Detail**：結合主視覺、可展開的影像縮圖、Mix 介紹、播放、收藏與評論。桌機採左側主視覺、右側資訊獨立捲動。
+- **About**：背景交錯淡入淡出，呈現品牌、人物內容與可前往詳細頁的 Mix 卡片列。
+- **Login／Register**：桌機採左圖右表單的分欄版型，窄螢幕改為上下排列。
+- **Member**：顯示會員資料、收藏、最近播放紀錄與我的評論，並提供暱稱及密碼修改。
+- **全站 Mini Player**：與詳細頁共用播放狀態；切頁仍能播放，提供進度、音量、循環、前後首、播放清單與自動下一首。
 
-### Header
+## RWD 與互動
 
-- 固定於 Viewport 上方，使用半透明深色背景。
-- Logo、主要導覽與語言切換在各頁維持一致。
-- Active、Hover 與 Focus 使用低調暖灰金色。
+桌機保留場景層次與較完整的資訊密度；平板調整卡片欄數、間距和播放器寬度；手機以可觸控、文字完整及自然垂直捲動為主。圖片維持比例，不讓固定或動畫圖層造成水平溢出。全站播放器在窄螢幕可收合或貼附側邊；適用的桌機指標可拖曳播放器。
 
-### Footer
-
-- 桌面版以單排呈現版權、社群連結與署名；Mobile 改為兩排。
-- YouTube、Spotify、Instagram 使用一致的單色 SVG 圖示。
-- Footer 保持在文件或場景布局中，不以固定定位覆蓋內容。
-
-### Player
-
-- 全站 Mini Player 與 Music Detail 共用播放狀態；切換路由時音訊持續播放。控制介面使用一致的 Play / Pause、Progress、Seek、Volume / Mute 與 Loop 互動語言。
-- 控制介面保持低對比、可操作與鍵盤可存取，不使用瀏覽器原生 Controls 外觀。
-- 全站 Mini Player 提供 Previous / Next、Playlist 與 Auto Next；Music Detail 的播放按鈕會操作同一個播放器。
-
-## 主要頁面
-
-- **Home**：固定全版背景與三階段沉浸場景。全站 Mini Player 持續可見；Stage 2 顯示 Explore Carousel；Stage 3 顯示 Listening Atmosphere、真實音訊頻譜與 Footer。
-- **Explore**：上方標題與 Genre 導覽保持穩定，下方 Mix 卡片依 Viewport 動態分組並循環切換。Ambient Glow 僅作為底層氣氛。
-- **Music Detail**：主視覺、Visual Gallery、Mix 資訊與 Player 組成主要內容；Gallery 保持水平捲動與選取狀態同步。
-- **About**：全版背景 Crossfade 搭配品牌內容、人物介紹與 Subscription UI。
-- **Login / Register**：Desktop 採 60 / 40 Split Layout，左側為圖片輪播，右側為表單；Mobile 改為上下排列。
-- **Member**：以編輯式分區呈現展示資料；桌機使用獨立內容捲動區，窄螢幕改為單欄。
-
-## Motion
-
-- 動畫以緩慢 Crossfade、輕微位移、背景呼吸與低調 Hover 為主。
-- Carousel、Stage 與 Gallery 動畫不得妨礙連結、表單或播放器操作。
-- 非必要動畫尊重 `prefers-reduced-motion`。
-
-## Responsive Principles
-
-- Desktop 保留沉浸式場景、完整資訊層級與三欄內容密度。
-- Tablet 調整欄數、間距與播放器寬度，避免標題和控制元件重疊。
-- Mobile 優先確保觸控操作、文字完整與無水平溢出；必要時允許自然垂直捲動。
-- 全站 Mini Player 在窄螢幕可收合或貼附側邊；桌機細指標可拖曳，位置需限制在可視範圍內。
-- 圖片維持既定比例，使用 `object-fit` 或背景裁切，避免拉伸變形。
-- Fixed、Absolute 與動畫圖層不得擴張文件捲動範圍。
+動畫使用緩慢 Crossfade、輕微位移、背景呼吸與低調 Hover，並尊重 `prefers-reduced-motion`。詳細頁縮圖展開後位於主視覺底部，閒置約 5 秒收合；滑鼠停留或鍵盤焦點在面板內時暫停收合。播放控制、表單、分類按鈕與評論操作保留鍵盤可操作的狀態提示。
