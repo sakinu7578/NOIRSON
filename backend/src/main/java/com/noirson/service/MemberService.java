@@ -53,6 +53,14 @@ public class MemberService {
 
     // 僅驗證帳密；不建立登入狀態，也不回傳密碼雜湊。
     public Optional<Member> login(String email, String password) {
+        String trimmedEmail = validateLoginInput(email, password);
+
+        return memberRepository.findByEmail(trimmedEmail)
+                .filter(member -> passwordEncoder.matches(password, member.getPasswordHash()));
+    }
+
+    // Controller 在預留限速額度前沿用同一組格式規則，維持原本的 400 語意。
+    public String validateLoginInput(String email, String password) {
         String trimmedEmail = email == null ? "" : email.trim();
         if (trimmedEmail.length() > 254 || !EMAIL_PATTERN.matcher(trimmedEmail).matches()) {
             throw new IllegalArgumentException("Email 格式不正確");
@@ -60,9 +68,7 @@ public class MemberService {
         if (password == null || password.isBlank()) {
             throw new IllegalArgumentException("密碼不可為空白");
         }
-
-        return memberRepository.findByEmail(trimmedEmail)
-                .filter(member -> passwordEncoder.matches(password, member.getPasswordHash()));
+        return trimmedEmail;
     }
 
     public Optional<Member> findById(Long id) {

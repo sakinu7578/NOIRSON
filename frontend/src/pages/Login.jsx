@@ -50,6 +50,8 @@ export default function Login() {
         setErrorKey('auth.loginInvalid');
       } else if (status === 400) {
         setErrorKey('auth.loginBadRequest');
+      } else if (status === 429) {
+        setErrorKey('auth.loginRateLimited');
       } else {
         setErrorKey('auth.serverError');
       }

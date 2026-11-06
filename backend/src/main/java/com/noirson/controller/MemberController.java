@@ -8,6 +8,7 @@ import com.noirson.dto.ChangePasswordRequest;
 import com.noirson.dto.UpdateUsernameRequest;
 import com.noirson.entity.Member;
 import com.noirson.service.MemberService;
+import com.noirson.service.LoginRateLimiter;
 import com.noirson.service.SessionMemberService;
 import com.noirson.service.MemberService.DuplicateEmailException;
 import com.noirson.service.MemberService.InvalidCurrentPasswordException;
@@ -25,10 +26,13 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
     private final MemberService memberService;
     private final SessionMemberService sessionMembers;
+    private final LoginRateLimiter loginRateLimiter;
 
-    public MemberController(MemberService memberService, SessionMemberService sessionMembers) {
+    public MemberController(MemberService memberService, SessionMemberService sessionMembers,
+            LoginRateLimiter loginRateLimiter) {
         this.memberService = memberService;
         this.sessionMembers = sessionMembers;
+        this.loginRateLimiter = loginRateLimiter;
     }
 
     @PostMapping("/register")
@@ -63,24 +67,40 @@ public class MemberController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+        LoginRateLimiter.Attempt attempt = null;
+        boolean authenticated = false;
+        boolean badCredentials = false;
         try {
-            return memberService.login(request.email(), request.password())
-                    .<ResponseEntity<?>>map(member -> {
-                        // 已有 Session 時輪替 ID，避免沿用登入前的 Session ID。
-                        HttpSession session = httpRequest.getSession(false);
-                        if (session == null) {
-                            session = httpRequest.getSession(true);
-                        } else {
-                            httpRequest.changeSessionId();
-                        }
-                        sessionMembers.startSession(session, member);
-                        return ResponseEntity.ok(
-                                new LoginResponse(member.getId(), member.getUsername(), member.getEmail(), member.getRole()));
-                    })
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                            .body("Email 或密碼錯誤"));
+            String email = memberService.validateLoginInput(request.email(), request.password());
+            attempt = loginRateLimiter.reserve(email, httpRequest.getRemoteAddr());
+            if (!attempt.allowed()) {
+                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                        .header("Retry-After", Long.toString(attempt.retryAfterSeconds()))
+                        .body("登入嘗試過於頻繁，請稍後再試");
+            }
+            var member = memberService.login(email, request.password());
+            if (member.isEmpty()) {
+                badCredentials = true;
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Email 或密碼錯誤");
+            }
+            // 已有 Session 時輪替 ID，避免沿用登入前的 Session ID。
+            HttpSession session = httpRequest.getSession(false);
+            if (session == null) {
+                session = httpRequest.getSession(true);
+            } else {
+                httpRequest.changeSessionId();
+            }
+            sessionMembers.startSession(session, member.get());
+            authenticated = true;
+            return ResponseEntity.ok(new LoginResponse(member.get().getId(), member.get().getUsername(),
+                    member.get().getEmail(), member.get().getRole()));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+        } finally {
+            if (attempt != null && attempt.allowed()) {
+                if (authenticated || badCredentials) loginRateLimiter.complete(attempt, authenticated);
+                else loginRateLimiter.cancel(attempt);
+            }
         }
     }
 

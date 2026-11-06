@@ -66,7 +66,7 @@ export function AuthProvider({ children }) {
       if (response.status === 200) {
         const user = await response.json();
         if (id === requestId.current) setCurrentUser(user);
-      } else if (response.status !== 400 && response.status !== 401) {
+      } else if (response.status !== 400 && response.status !== 401 && response.status !== 429) {
         needsRefresh = true;
       }
       return response.status;
