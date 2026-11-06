@@ -1,6 +1,7 @@
 package com.noirson.service;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.SQLException;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -8,6 +9,7 @@ import com.noirson.entity.Member;
 import com.noirson.repository.MemberRepository;
 import jakarta.persistence.EntityManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +49,15 @@ public class MemberService {
         // 3. 建立會員物件
         Member member = new Member(trimmedUsername, trimmedEmail, passwordHash);
 
-        // 4. 儲存到 MySQL
-        return memberRepository.save(member);
+        // 4. 立即寫入；並發請求可能都通過先前的 Email 檢查，最後由資料庫 UNIQUE 裁決。
+        try {
+            return memberRepository.saveAndFlush(member);
+        } catch (DataIntegrityViolationException exception) {
+            if (isDuplicateKey(exception) && memberRepository.existsByEmail(trimmedEmail)) {
+                throw new DuplicateEmailException();
+            }
+            throw exception;
+        }
     }
 
     // 僅驗證帳密；不建立登入狀態，也不回傳密碼雜湊。
@@ -122,6 +131,16 @@ public class MemberService {
             throw new IllegalArgumentException("使用者名稱須為 2～20 字元");
         }
         return trimmedUsername;
+    }
+
+    private boolean isDuplicateKey(DataIntegrityViolationException exception) {
+        for (Throwable cause = exception; cause != null; cause = cause.getCause()) {
+            if (cause instanceof SQLException sqlException && sqlException.getErrorCode() == 1062
+                    && "23000".equals(sqlException.getSQLState())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static class MemberNotFoundException extends RuntimeException {
