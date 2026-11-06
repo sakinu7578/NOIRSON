@@ -6,6 +6,7 @@ import java.util.regex.Pattern;
 
 import com.noirson.entity.Member;
 import com.noirson.repository.MemberRepository;
+import jakarta.persistence.EntityManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,12 +16,14 @@ public class MemberService {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
 
     private final MemberRepository memberRepository;
+    private final EntityManager entityManager;
     private final BCryptPasswordEncoder passwordEncoder =
             new BCryptPasswordEncoder();
 
     // 建構子注入 Repository
-    public MemberService(MemberRepository memberRepository) {
+    public MemberService(MemberRepository memberRepository, EntityManager entityManager) {
         this.memberRepository = memberRepository;
+        this.entityManager = entityManager;
     }
 
     // 會員註冊
@@ -69,7 +72,8 @@ public class MemberService {
     @Transactional
     public Member updateUsername(Long memberId, String username) {
         String trimmedUsername = validateUsername(username);
-        Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+        Member member = memberRepository.findByIdForMemberUpdate(memberId).orElseThrow(MemberNotFoundException::new);
+        entityManager.refresh(member);
         member.setUsername(trimmedUsername);
         return memberRepository.saveAndFlush(member);
     }
@@ -83,7 +87,10 @@ public class MemberService {
         if (newPassword == null || confirmPassword == null || !newPassword.equals(confirmPassword)) {
             throw new IllegalArgumentException("新密碼與確認密碼不一致");
         }
-        Member member = memberRepository.findById(memberId).orElseThrow(InvalidCurrentPasswordException::new);
+        Member member = memberRepository.findByIdForMemberUpdate(memberId)
+                .orElseThrow(InvalidCurrentPasswordException::new);
+        // Session 驗證可能已載入舊實體；取得列鎖後重新讀取已提交的密碼。
+        entityManager.refresh(member);
         if (!passwordEncoder.matches(currentPassword, member.getPasswordHash())) {
             throw new InvalidCurrentPasswordException();
         }

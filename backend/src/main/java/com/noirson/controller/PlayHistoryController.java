@@ -4,10 +4,9 @@ import java.util.List;
 import java.util.Optional;
 
 import com.noirson.entity.Member;
-import com.noirson.service.MemberService;
+import com.noirson.service.SessionMemberService;
 import com.noirson.service.PlayHistoryService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,19 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/play-history")
 public class PlayHistoryController {
     private final PlayHistoryService playHistoryService;
-    private final MemberService memberService;
+    private final SessionMemberService sessionMembers;
 
-    public PlayHistoryController(PlayHistoryService playHistoryService, MemberService memberService) {
+    public PlayHistoryController(PlayHistoryService playHistoryService, SessionMemberService sessionMembers) {
         this.playHistoryService = playHistoryService;
-        this.memberService = memberService;
+        this.sessionMembers = sessionMembers;
     }
 
-    // 與 Favorites 相同：不建立訪客 Session，並確認 Session 指向的會員仍存在。
+    // 與 Favorites 相同：不建立訪客 Session，並檢查密碼指紋。
     private Optional<Member> currentMember(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Object memberId = session == null ? null : session.getAttribute("memberId");
-        if (!(memberId instanceof Long id)) return Optional.empty();
-        return memberService.findById(id);
+        return sessionMembers.currentMember(request);
     }
 
     @GetMapping

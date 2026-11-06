@@ -8,6 +8,7 @@ import com.noirson.dto.ChangePasswordRequest;
 import com.noirson.dto.UpdateUsernameRequest;
 import com.noirson.entity.Member;
 import com.noirson.service.MemberService;
+import com.noirson.service.SessionMemberService;
 import com.noirson.service.MemberService.DuplicateEmailException;
 import com.noirson.service.MemberService.InvalidCurrentPasswordException;
 import com.noirson.service.MemberService.MemberNotFoundException;
@@ -22,12 +23,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 public class MemberController {
-    private static final String MEMBER_ID_SESSION_KEY = "memberId";
-
     private final MemberService memberService;
+    private final SessionMemberService sessionMembers;
 
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, SessionMemberService sessionMembers) {
         this.memberService = memberService;
+        this.sessionMembers = sessionMembers;
     }
 
     @PostMapping("/register")
@@ -72,7 +73,7 @@ public class MemberController {
                         } else {
                             httpRequest.changeSessionId();
                         }
-                        session.setAttribute(MEMBER_ID_SESSION_KEY, member.getId());
+                        sessionMembers.startSession(session, member);
                         return ResponseEntity.ok(
                                 new LoginResponse(member.getId(), member.getUsername(), member.getEmail(), member.getRole()));
                     })
@@ -85,13 +86,7 @@ public class MemberController {
 
     @GetMapping("/me")
     public ResponseEntity<?> me(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Object memberId = session == null ? null : session.getAttribute(MEMBER_ID_SESSION_KEY);
-        if (!(memberId instanceof Long id)) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-
-        return memberService.findById(id)
+        return sessionMembers.currentMember(request)
                 .<ResponseEntity<?>>map(member -> ResponseEntity.ok(
                         new LoginResponse(member.getId(), member.getUsername(), member.getEmail(), member.getRole())))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
@@ -108,14 +103,13 @@ public class MemberController {
 
     @PostMapping("/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        Object memberId = session == null ? null : session.getAttribute(MEMBER_ID_SESSION_KEY);
-        if (!(memberId instanceof Long id)) {
+        var member = sessionMembers.currentMember(httpRequest);
+        if (member.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         try {
-            memberService.changePassword(id, request.currentPassword(), request.newPassword(), request.confirmPassword());
-            session.invalidate();
+            memberService.changePassword(member.get().getId(), request.currentPassword(), request.newPassword(), request.confirmPassword());
+            httpRequest.getSession(false).invalidate();
             return ResponseEntity.noContent().build();
         } catch (InvalidCurrentPasswordException e) {
             return ResponseEntity.badRequest().body("目前密碼錯誤");
@@ -128,14 +122,13 @@ public class MemberController {
 
     @PatchMapping("/me")
     public ResponseEntity<?> updateUsername(@RequestBody UpdateUsernameRequest request, HttpServletRequest httpRequest) {
-        HttpSession session = httpRequest.getSession(false);
-        Object memberId = session == null ? null : session.getAttribute(MEMBER_ID_SESSION_KEY);
-        if (!(memberId instanceof Long id)) {
+        var member = sessionMembers.currentMember(httpRequest);
+        if (member.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
         try {
-            Member member = memberService.updateUsername(id, request.username());
-            return ResponseEntity.ok(new LoginResponse(member.getId(), member.getUsername(), member.getEmail(), member.getRole()));
+            Member updated = memberService.updateUsername(member.get().getId(), request.username());
+            return ResponseEntity.ok(new LoginResponse(updated.getId(), updated.getUsername(), updated.getEmail(), updated.getRole()));
         } catch (MemberNotFoundException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         } catch (IllegalArgumentException e) {

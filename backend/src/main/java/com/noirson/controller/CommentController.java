@@ -4,8 +4,8 @@ import com.noirson.dto.CommentPageResponse;
 import com.noirson.dto.CommentRequest;
 import com.noirson.dto.CommentResponse;
 import com.noirson.service.CommentService;
+import com.noirson.service.SessionMemberService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,20 +22,20 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 public class CommentController {
     private final CommentService comments;
+    private final SessionMemberService sessionMembers;
 
-    public CommentController(CommentService comments) { this.comments = comments; }
-
-    private static Long memberId(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Object id = session == null ? null : session.getAttribute("memberId");
-        if (id instanceof Long memberId) return memberId;
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+    public CommentController(CommentService comments, SessionMemberService sessionMembers) {
+        this.comments = comments;
+        this.sessionMembers = sessionMembers;
     }
 
-    private static Long optionalMemberId(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Object id = session == null ? null : session.getAttribute("memberId");
-        return id instanceof Long memberId ? memberId : null;
+    private Long memberId(HttpServletRequest request) {
+        return sessionMembers.currentMember(request).map(member -> member.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+    }
+
+    private Long optionalMemberId(HttpServletRequest request) {
+        return sessionMembers.currentMember(request).map(member -> member.getId()).orElse(null);
     }
 
     @GetMapping("/api/mixes/{code}/comments")

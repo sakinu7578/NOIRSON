@@ -5,9 +5,8 @@ import java.util.Optional;
 
 import com.noirson.entity.Member;
 import com.noirson.service.FavoriteService;
-import com.noirson.service.MemberService;
+import com.noirson.service.SessionMemberService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,19 +20,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/favorites")
 public class FavoriteController {
     private final FavoriteService favoriteService;
-    private final MemberService memberService;
+    private final SessionMemberService sessionMembers;
 
-    public FavoriteController(FavoriteService favoriteService, MemberService memberService) {
+    public FavoriteController(FavoriteService favoriteService, SessionMemberService sessionMembers) {
         this.favoriteService = favoriteService;
-        this.memberService = memberService;
+        this.sessionMembers = sessionMembers;
     }
 
-    // 沿用登入流程的 memberId；每次重新查會員，避免已刪會員沿用 Session。
+    // 共用驗證會檢查 Session 指紋及會員是否仍存在。
     private Optional<Member> currentMember(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        Object memberId = session == null ? null : session.getAttribute("memberId");
-        if (!(memberId instanceof Long id)) return Optional.empty();
-        return memberService.findById(id);
+        return sessionMembers.currentMember(request);
     }
 
     @GetMapping
