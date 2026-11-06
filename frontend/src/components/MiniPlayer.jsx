@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { useLocation } from 'react-router';
+import { Link, useLocation } from 'react-router';
 import useLanguage from '../hooks/useLanguage.js';
 import useMusicPlayer from '../hooks/useMusicPlayer.js';
 import { ensureAudioSpectrum } from '../pages/useAudioSpectrum.js';
@@ -35,7 +35,6 @@ export default function MiniPlayer() {
     setVolume, toggleMute, toggleLoop, toggleAutoNext, playMix } = useMusicPlayer();
   const [playlistOpen, setPlaylistOpen] = useState(false);
   const [mode, setMode] = useState(() => matchMedia(dockWidth).matches && (!matchMedia(phoneWidth).matches || !isHome) ? 'compact' : 'expanded');
-  const [isPhone, setIsPhone] = useState(() => matchMedia(phoneWidth).matches);
   const [canDock, setCanDock] = useState(() => matchMedia(dockWidth).matches);
   const [playlistLayout, setPlaylistLayout] = useState(null);
   const [position, setPosition] = useState(null);
@@ -44,24 +43,19 @@ export default function MiniPlayer() {
   const dragRef = useRef(null);
   const anchorRef = useRef(null);
   const previousPathRef = useRef(pathname);
+  const nonHomeStateRef = useRef(isHome ? null : { mode, position });
   const panelRef = useRef(null);
   const toggleRef = useRef(null);
   const currentMix = playlist.find(({ id }) => id === currentMixId);
+  const cover = currentMix && <img className="global-mini-cover" src={assetUrl(currentMix.cover)} alt="" draggable="false" />;
+  const coverLink = currentMix ? <Link className="global-mini-cover-link" to={`/music/${currentMix.id}`}
+    aria-label={english ? `View details for ${currentMix.title}` : `前往 ${currentMix.title} 詳細頁`}>{cover}</Link> : null;
   const collapsed = mode !== 'expanded';
   const docked = canDock && mode === 'docked';
 
   useEffect(() => {
     const query = matchMedia(desktopPointer);
     const update = () => setCanDrag(query.matches);
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, []);
-
-  useEffect(() => {
-    const query = matchMedia(phoneWidth);
-    const update = () => {
-      setIsPhone(query.matches);
-    };
     query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
   }, []);
@@ -76,14 +70,27 @@ export default function MiniPlayer() {
     return () => query.removeEventListener('change', update);
   }, []);
 
-  useEffect(() => {
+  // 路由切換需在繪製前同步還原播放器 UI，避免短暫顯示前一頁的位置。
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useLayoutEffect(() => {
     const previousPath = previousPathRef.current;
     previousPathRef.current = pathname;
-    if (isPhone && previousPath === '/' && pathname !== '/') {
-      setPlaylistOpen(false);
-      setMode('compact');
+    if ((previousPath === '/') === isHome) return;
+    setPlaylistOpen(false);
+    anchorRef.current = null;
+    if (isHome) {
+      // 離開非 HOME 時保留其最後的模式與拖曳位置；HOME 每次進入都回到預設。
+      nonHomeStateRef.current = { mode, position };
+      setMode('expanded');
+      setPosition(null);
+    } else {
+      const saved = nonHomeStateRef.current;
+      setMode(saved ? saved.mode === 'docked' && !matchMedia(dockWidth).matches ? 'compact' : saved.mode
+        : matchMedia(dockWidth).matches ? 'compact' : 'expanded');
+      setPosition(saved?.position ?? null);
     }
-  }, [pathname, isPhone]);
+  }, [pathname, isHome, mode, position]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // 拖曳或收合後將播放器限制在視窗內，避免擋住 Header 或移出畫面。
   useLayoutEffect(() => {
@@ -224,7 +231,7 @@ export default function MiniPlayer() {
         aria-expanded={!collapsed}>{collapsed ? '□' : '−'}</button>
     </div>
     {collapsed ? <div className="global-mini-collapsed-main">
-      <img className="global-mini-cover" src={assetUrl(currentMix.cover)} alt="" />
+      {coverLink}
       <button className={`signature-play global-mini-play ${isPlaying ? 'is-playing' : ''}`} type="button"
         aria-label={isPlaying ? (english ? 'Pause music' : '暫停音樂') : (english ? 'Play music' : '播放音樂')}
         aria-pressed={isPlaying} onClick={handlePlay}><span className="play-icon" aria-hidden="true" /></button>
@@ -233,10 +240,10 @@ export default function MiniPlayer() {
         title={english ? 'Dock player to side' : '貼附播放器至側邊'}>⇥</button>}
     </div> : <>
     <div className="global-mini-main">
-      <img className="global-mini-cover" src={assetUrl(currentMix.cover)} alt="" />
+      {coverLink}
       <div className="global-mini-copy">
         <span>{currentMixId} · NOIRSON MIX</span>
-        <strong>{currentMix.title}</strong>
+        <strong>{currentMix?.title}</strong>
       </div>
       <div className="global-mini-transport">
         <button className="global-mini-control" type="button" onClick={() => handleSkip(skipPrevious)}
