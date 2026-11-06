@@ -43,7 +43,7 @@ export default function Register() {
       setStatus({ type: 'error', key: 'auth.emailInvalid' });
       return;
     }
-    if (password.length < 8) {
+    if (password.length < 8 || password.length > 20) {
       setStatus({ type: 'error', key: 'auth.passwordLength' });
       return;
     }
@@ -115,12 +115,13 @@ export default function Register() {
           </div>
           <div className="auth-field">
             <label htmlFor="register-password">{t('auth.password')}</label>
-            <input id="register-password" name="password" type="password" autoComplete="new-password" required
+            <input id="register-password" name="password" type="password" autoComplete="new-password" maxLength="20" required
               value={form.password} onChange={updateField} />
+            <p>{t('auth.passwordHint')}</p>
           </div>
           <div className="auth-field">
             <label htmlFor="register-confirm-password">{t('auth.confirm')}</label>
-            <input id="register-confirm-password" name="confirmPassword" type="password" autoComplete="new-password" required
+            <input id="register-confirm-password" name="confirmPassword" type="password" autoComplete="new-password" maxLength="20" required
               value={form.confirmPassword} onChange={updateField} />
           </div>
           {status && <p role={status.type === 'error' ? 'alert' : 'status'}>{t(status.key)}</p>}

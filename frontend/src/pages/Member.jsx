@@ -43,10 +43,9 @@ export default function Member() {
 // 個人資訊、收藏、播放紀錄與留言來自後端。
 function MemberContent({ currentUser }) {
   const { t } = useLanguage();
-  const { logout, refreshCurrentUser } = useAuth();
+  const { logout, refreshCurrentUser, clearInvalidatedSession, updateCurrentUser } = useAuth();
   const { historyVersion } = useMusicPlayer();
   const navigate = useNavigate();
-  const [nickname, setNickname] = useState(currentUser.username);
   const [draft, setDraft] = useState(currentUser.username);
   const [favorites, setFavorites] = useState([]);
   const [favoritesLoading, setFavoritesLoading] = useState(true);
@@ -67,10 +66,14 @@ function MemberContent({ currentUser }) {
   const [removingId, setRemovingId] = useState(null);
   const removingRef = useRef(false);
   const [notice, setNotice] = useState('');
+  const [nicknameError, setNicknameError] = useState(null);
+  const [isSavingNickname, setIsSavingNickname] = useState(false);
   const [logoutError, setLogoutError] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [activeView, setActiveView] = useState('favorites');
   const [passwordDraft, setPasswordDraft] = useState({ old: '', next: '', confirm: '' });
+  const [passwordError, setPasswordError] = useState(null);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
   const background = useBackgroundSlideshow({ images: memberImages, interval: 6000 });
 
   useEffect(() => {
@@ -191,24 +194,90 @@ function MemberContent({ currentUser }) {
     }
   }
 
-  function saveNickname(event) {
+  async function saveNickname(event) {
     event.preventDefault();
+    if (isSavingNickname) return;
     const value = draft.trim();
-    if (!value) return;
-    setNickname(value);
-    setDraft(value);
-    setNotice(t('member.saved'));
+    if (value.length < 2 || value.length > 20) { setNicknameError('auth.usernameLength'); return; }
+    setIsSavingNickname(true);
+    setNicknameError(null);
+    setNotice('');
+    try {
+      const response = await fetch('/api/auth/me', {
+        method: 'PATCH', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: value }),
+      });
+      if (response.status === 200) {
+        const user = await response.json();
+        updateCurrentUser(user);
+        setDraft(user.username);
+        setNotice(t('member.saved'));
+      } else if (response.status === 401) {
+        await refreshCurrentUser();
+        navigate('/login', { replace: true });
+      } else {
+        setNicknameError(response.status === 400 ? 'auth.usernameLength' : 'auth.serverError');
+      }
+    } catch {
+      setNicknameError('auth.networkError');
+    } finally {
+      setIsSavingNickname(false);
+    }
+  }
+
+  async function handleChangePassword(event) {
+    event.preventDefault();
+    if (isChangingPassword) return;
+    const { old, next, confirm } = passwordDraft;
+    if (!old || !next || !confirm) { setPasswordError('auth.required'); return; }
+    if (next.length < 8 || next.length > 20) { setPasswordError('auth.passwordLength'); return; }
+    if (!next.trim()) { setPasswordError('auth.passwordBlank'); return; }
+    if (new TextEncoder().encode(next).length > 72) { setPasswordError('auth.passwordBytes'); return; }
+    if (next !== confirm) { setPasswordError('auth.passwordMismatch'); return; }
+
+    setIsChangingPassword(true);
+    setPasswordError(null);
+    try {
+      const response = await fetch('/api/auth/change-password', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ currentPassword: old, newPassword: next, confirmPassword: confirm }),
+      });
+      if (response.status === 204) {
+        setPasswordDraft({ old: '', next: '', confirm: '' });
+        clearInvalidatedSession();
+        navigate('/login', { replace: true, state: { passwordUpdated: true } });
+      } else if (response.status === 401) {
+        // 401 也可能表示 Session 過期，重新查詢後才決定是否導向登入。
+        const status = await refreshCurrentUser();
+        if (status === 401) navigate('/login', { replace: true });
+        else setPasswordError(status === 200 ? 'member.currentPasswordInvalid' : 'auth.checkFailed');
+      } else if (response.status === 400) {
+        const message = await response.text();
+        setPasswordError(message === '目前密碼錯誤' ? 'member.currentPasswordInvalid'
+          : message === '新密碼與舊密碼相同' ? 'member.samePassword' : 'member.passwordBadRequest');
+      } else {
+        setPasswordError('auth.serverError');
+      }
+    } catch {
+      setPasswordError('auth.networkError');
+    } finally {
+      setIsChangingPassword(false);
+    }
   }
 
   function changeView(view) {
     if (activeView === view) return;
     const hasUnsavedInput = activeView === 'edit' && (
-      draft !== nickname || Object.values(passwordDraft).some(Boolean)
+      draft !== currentUser.username || Object.values(passwordDraft).some(Boolean)
     );
     if (hasUnsavedInput && !window.confirm(t('member.unsavedConfirm'))) return;
     if (activeView === 'edit') {
-      setDraft(nickname);
+      setDraft(currentUser.username);
+      setNicknameError(null);
       setPasswordDraft({ old: '', next: '', confirm: '' });
+      setPasswordError(null);
       setNotice('');
     }
     if (view === 'comments') {
@@ -245,7 +314,7 @@ function MemberContent({ currentUser }) {
       <section className="member-section member-profile" aria-labelledby="member-profile-title">
         <div className="member-profile-content">
           <div className="member-avatar" role="img" aria-label={t('member.avatar')}><svg viewBox="0 0 64 64" fill="none" aria-hidden="true"><circle cx="32" cy="23" r="10" stroke="currentColor" strokeWidth="2"/><path d="M13 55c0-11 8-18 19-18s19 7 19 18" stroke="currentColor" strokeWidth="2"/></svg></div>
-          <div className="member-identity"><h1 id="member-profile-title">{nickname}</h1><span>{currentUser.email}</span><small>{t('member.demo')}</small></div>
+          <div className="member-identity"><h1 id="member-profile-title">{currentUser.username}</h1><span>{currentUser.email}</span></div>
         </div>
         <button className="member-edit-entry" type="button" onClick={() => setActiveView('edit')}>{t('member.editProfile')} <span aria-hidden="true">↗</span></button>
       </section>
@@ -263,20 +332,22 @@ function MemberContent({ currentUser }) {
           <div className="member-section-heading"><h2 id="member-edit-title">{t('member.edit')}</h2></div>
           <form className="member-form" onSubmit={saveNickname}>
             <label htmlFor="member-nickname">{t('member.nickname')}</label>
-            <input id="member-nickname" value={draft} maxLength="40" required onChange={(event) => setDraft(event.target.value)} />
-            <button type="submit">{t('member.save')}</button>
-            <p className="member-form-note" role="status">{notice || t('member.localOnly')}</p>
+            <input id="member-nickname" value={draft} maxLength="20" required onChange={(event) => { setDraft(event.target.value); setNicknameError(null); setNotice(''); }} />
+            <button type="submit" disabled={isSavingNickname}>{isSavingNickname ? t('member.saving') : t('member.save')}</button>
+            {nicknameError && <p className="member-form-note" role="alert">{t(nicknameError)}</p>}
+            {notice && <p className="member-form-note" role="status">{notice}</p>}
           </form>
         </section>
         <section className="member-section" aria-labelledby="member-password-title">
           <div className="member-section-heading"><h2 id="member-password-title">{t('member.password')}</h2></div>
-          <div className="member-form">
-            <label htmlFor="member-old-password">{t('member.oldPassword')}</label><input id="member-old-password" type="password" autoComplete="current-password" value={passwordDraft.old} onChange={(event) => setPasswordDraft((current) => ({ ...current, old: event.target.value }))} />
-            <label htmlFor="member-new-password">{t('member.newPassword')}</label><input id="member-new-password" type="password" autoComplete="new-password" value={passwordDraft.next} onChange={(event) => setPasswordDraft((current) => ({ ...current, next: event.target.value }))} />
-            <label htmlFor="member-confirm-password">{t('member.confirmPassword')}</label><input id="member-confirm-password" type="password" autoComplete="new-password" value={passwordDraft.confirm} onChange={(event) => setPasswordDraft((current) => ({ ...current, confirm: event.target.value }))} />
-            <button type="button" disabled>{t('member.changePassword')}</button>
-            <p className="member-form-note">{t('member.comingSoon')}</p>
-          </div>
+          <form className="member-form" onSubmit={handleChangePassword}>
+            <label htmlFor="member-old-password">{t('member.oldPassword')}</label><input id="member-old-password" type="password" autoComplete="current-password" value={passwordDraft.old} onChange={(event) => { setPasswordDraft((current) => ({ ...current, old: event.target.value })); setPasswordError(null); }} />
+            <label htmlFor="member-new-password">{t('member.newPassword')}</label><input id="member-new-password" type="password" autoComplete="new-password" maxLength="20" value={passwordDraft.next} onChange={(event) => { setPasswordDraft((current) => ({ ...current, next: event.target.value })); setPasswordError(null); }} />
+            <label htmlFor="member-confirm-password">{t('member.confirmPassword')}</label><input id="member-confirm-password" type="password" autoComplete="new-password" maxLength="20" value={passwordDraft.confirm} onChange={(event) => { setPasswordDraft((current) => ({ ...current, confirm: event.target.value })); setPasswordError(null); }} />
+            <p className="member-form-note">{t('auth.passwordHint')}</p>
+            <button type="submit" disabled={isChangingPassword}>{isChangingPassword ? t('member.changingPassword') : t('member.changePassword')}</button>
+            {passwordError && <p className="member-form-note" role="alert">{t(passwordError)}</p>}
+          </form>
         </section>
       </div>
           <div className="member-logout"><button type="button" onClick={handleLogout} disabled={isLoggingOut}>{t('member.logout')}</button>{logoutError && <p className="member-form-note" role="alert">{t('auth.logoutError')}</p>}</div>

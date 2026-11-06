@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import AuthVisual from '../components/AuthVisual.jsx';
 import useLanguage from '../hooks/useLanguage.js';
 import useAuth from '../hooks/useAuth.js';
@@ -8,6 +8,7 @@ export default function Login() {
   const { t } = useLanguage();
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({ email: '', password: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorKey, setErrorKey] = useState(null);
@@ -69,6 +70,7 @@ export default function Login() {
       <div className="auth-panel-inner">
         <p className="section-label">{t('auth.access')}</p>
         <h2 id="login-title">{t('auth.login')}</h2>
+        {location.state?.passwordUpdated && <p role="status">{t('member.passwordUpdated')}</p>}
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <div className="auth-field">
             <label htmlFor="login-email">{t('auth.email')}</label>

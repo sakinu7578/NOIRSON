@@ -4,9 +4,14 @@ import com.noirson.dto.RegisterRequest;
 import com.noirson.dto.RegisterResponse;
 import com.noirson.dto.LoginRequest;
 import com.noirson.dto.LoginResponse;
+import com.noirson.dto.ChangePasswordRequest;
+import com.noirson.dto.UpdateUsernameRequest;
 import com.noirson.entity.Member;
 import com.noirson.service.MemberService;
 import com.noirson.service.MemberService.DuplicateEmailException;
+import com.noirson.service.MemberService.InvalidCurrentPasswordException;
+import com.noirson.service.MemberService.MemberNotFoundException;
+import com.noirson.service.MemberService.SamePasswordException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
@@ -99,5 +104,42 @@ public class MemberController {
             session.invalidate();
         }
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request, HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
+        Object memberId = session == null ? null : session.getAttribute(MEMBER_ID_SESSION_KEY);
+        if (!(memberId instanceof Long id)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            memberService.changePassword(id, request.currentPassword(), request.newPassword(), request.confirmPassword());
+            session.invalidate();
+            return ResponseEntity.noContent().build();
+        } catch (InvalidCurrentPasswordException e) {
+            return ResponseEntity.badRequest().body("目前密碼錯誤");
+        } catch (SamePasswordException e) {
+            return ResponseEntity.badRequest().body("新密碼與舊密碼相同");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/me")
+    public ResponseEntity<?> updateUsername(@RequestBody UpdateUsernameRequest request, HttpServletRequest httpRequest) {
+        HttpSession session = httpRequest.getSession(false);
+        Object memberId = session == null ? null : session.getAttribute(MEMBER_ID_SESSION_KEY);
+        if (!(memberId instanceof Long id)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        try {
+            Member member = memberService.updateUsername(id, request.username());
+            return ResponseEntity.ok(new LoginResponse(member.getId(), member.getUsername(), member.getEmail(), member.getRole()));
+        } catch (MemberNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

@@ -2,7 +2,7 @@
 
 ## 定位與現況
 
-NOIRSON 是音樂內容探索平台。目前主要前端為 `frontend/` 的 React SPA；根目錄的原生 HTML、`css/`、`js/` 為舊版 Frontend V1，保留供視覺與功能對照。React 介面已可瀏覽、篩選及播放本地 Mix；會員註冊、登入、基本會員資料、收藏、最近播放紀錄與評論已串接後端。暱稱修改仍只在頁面暫存。
+NOIRSON 是音樂內容探索平台。目前主要前端為 `frontend/` 的 React SPA；根目錄的原生 HTML、`css/`、`js/` 為舊版 Frontend V1，保留供視覺與功能對照。React 介面已可瀏覽、篩選及播放本地 Mix；會員註冊、登入、基本會員資料、收藏、最近播放紀錄與評論已串接後端。暱稱修改已儲存至會員資料。
 
 ## 主要檔案與關係
 
@@ -24,6 +24,6 @@ NOIRSON 是音樂內容探索平台。目前主要前端為 `frontend/` 的 Reac
 
 Music Detail 桌機版左側主視覺保持固定、右側資訊獨立垂直捲動；窄於 901px 時恢復單欄頁面捲動。縮圖面板預設隱藏，展開後浮於主視覺底部，閒置 5 秒後收合；滑鼠停留或鍵盤焦點位於面板內時暫停收合，面板計時器與原有自動輪播分開。評論文字左側、愛心與讚數右側同列顯示；訪客只看讚數，會員在 API 回傳 204 後更新單則狀態。後端按讚主要 API 整合測試已於 `noirson_test` 驗證重複與並發 PUT／DELETE、權限、讚數及刪除評論的 CASCADE；前端按讚功能已完成瀏覽器驗收。多筆評論的實際 SQL 查詢次數尚未量測；最近的浮動面板亦尚未完成 1440×900、1024×768、820px、390px 的瀏覽器實測。
 
-後端 Mix 查詢：`GET /api/mixes` 回傳依 code 排序的清單；`GET /api/mixes/{code}` 以 code 查詢單筆 Mix。前端瀏覽清單仍使用 `mixData.js`。React 註冊、登入、HttpSession、`/me`、logout、Favorites、Play History、Comments CRUD、ADMIN 跨會員刪除與按讚已完成；寫入由 Origin 允許清單與 Fetch Metadata 檢查保護，Hibernate 以 `ddl-auto=validate` 驗證既有 schema。會員修改密碼仍待完成。部署前需處理登入請求頻率限制、HTTPS Cookie Secure，並將 CSRF 允許來源改成正式 HTTPS 網址。
+後端 Mix 查詢：`GET /api/mixes` 回傳依 code 排序的清單；`GET /api/mixes/{code}` 以 code 查詢單筆 Mix。前端瀏覽清單仍使用 `mixData.js`。React 註冊、登入、HttpSession、`/me`、logout、Favorites、Play History、Comments CRUD、ADMIN 跨會員刪除與按讚已完成；寫入由 Origin 允許清單與 Fetch Metadata 檢查保護，Hibernate 以 `ddl-auto=validate` 驗證既有 schema。會員可修改密碼；成功後當前 Session 失效，需重新登入。部署前需處理登入請求頻率限制、HTTPS Cookie Secure，並將 CSRF 允許來源改成正式 HTTPS 網址。
 
 開發優先順序：MVP → 核心功能 → 前後端串接 → 部署 → 額外功能。

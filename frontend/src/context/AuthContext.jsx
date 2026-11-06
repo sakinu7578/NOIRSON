@@ -111,7 +111,23 @@ export function AuthProvider({ children }) {
     }
   }, [verifyCurrentUser]);
 
-  const value = useMemo(() => ({ currentUser, isAuthLoading, authError, login, logout, refreshCurrentUser }),
-    [currentUser, isAuthLoading, authError, login, logout, refreshCurrentUser]);
+  // 後端已使 Session 失效時，只清除前端狀態並淘汰較早的 /me 回應。
+  const clearInvalidatedSession = useCallback(() => {
+    ++requestId.current;
+    setCurrentUser(null);
+    setAuthError(false);
+    setIsAuthLoading(false);
+  }, []);
+
+  // 更新會員資料後淘汰舊的 /me 回應，避免暱稱被較早的資料覆寫。
+  const updateCurrentUser = useCallback((user) => {
+    ++requestId.current;
+    setCurrentUser(user);
+    setAuthError(false);
+    setIsAuthLoading(false);
+  }, []);
+
+  const value = useMemo(() => ({ currentUser, isAuthLoading, authError, login, logout, refreshCurrentUser, clearInvalidatedSession, updateCurrentUser }),
+    [currentUser, isAuthLoading, authError, login, logout, refreshCurrentUser, clearInvalidatedSession, updateCurrentUser]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -8,6 +8,7 @@ import com.noirson.entity.Member;
 import com.noirson.repository.MemberRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
@@ -24,20 +25,13 @@ public class MemberService {
 
     // 會員註冊
     public Member register(String username, String email, String password) {
-        String trimmedUsername = username == null ? "" : username.trim();
+        String trimmedUsername = validateUsername(username);
         String trimmedEmail = email == null ? "" : email.trim();
 
-        if (trimmedUsername.length() < 2 || trimmedUsername.length() > 20) {
-            throw new IllegalArgumentException("使用者名稱須為 2～20 字元");
-        }
         if (trimmedEmail.length() > 254 || !EMAIL_PATTERN.matcher(trimmedEmail).matches()) {
             throw new IllegalArgumentException("Email 格式不正確或超過 254 字元");
         }
-        // BCrypt 最多處理 72 UTF-8 bytes；密碼保留原樣，不去除空白。
-        if (password == null || password.length() < 8 || password.isBlank()
-                || password.getBytes(StandardCharsets.UTF_8).length > 72) {
-            throw new IllegalArgumentException("密碼須至少 8 字元且不得超過 72 UTF-8 bytes");
-        }
+        validatePassword(password);
 
         // 1. 檢查 Email 是否已註冊
         if (memberRepository.existsByEmail(trimmedEmail)) {
@@ -70,6 +64,60 @@ public class MemberService {
 
     public Optional<Member> findById(Long id) {
         return memberRepository.findById(id);
+    }
+
+    @Transactional
+    public Member updateUsername(Long memberId, String username) {
+        String trimmedUsername = validateUsername(username);
+        Member member = memberRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
+        member.setUsername(trimmedUsername);
+        return memberRepository.saveAndFlush(member);
+    }
+
+    // 交易提交後 Controller 才會使 Session 失效。
+    @Transactional
+    public void changePassword(Long memberId, String currentPassword, String newPassword, String confirmPassword) {
+        if (currentPassword == null || currentPassword.isEmpty()) {
+            throw new IllegalArgumentException("請輸入目前密碼");
+        }
+        if (newPassword == null || confirmPassword == null || !newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("新密碼與確認密碼不一致");
+        }
+        Member member = memberRepository.findById(memberId).orElseThrow(InvalidCurrentPasswordException::new);
+        if (!passwordEncoder.matches(currentPassword, member.getPasswordHash())) {
+            throw new InvalidCurrentPasswordException();
+        }
+        validatePassword(newPassword);
+        if (passwordEncoder.matches(newPassword, member.getPasswordHash())) {
+            throw new SamePasswordException();
+        }
+        member.setPasswordHash(passwordEncoder.encode(newPassword));
+        memberRepository.saveAndFlush(member);
+    }
+
+    private void validatePassword(String password) {
+        // BCrypt 最多處理 72 UTF-8 bytes；密碼保留原樣，不去除空白。
+        if (password == null || password.length() < 8 || password.length() > 20 || password.isBlank()
+                || password.getBytes(StandardCharsets.UTF_8).length > 72) {
+            throw new IllegalArgumentException("密碼須為 8～20 字元且不得超過 72 UTF-8 bytes");
+        }
+    }
+
+    private String validateUsername(String username) {
+        String trimmedUsername = username == null ? "" : username.trim();
+        if (trimmedUsername.length() < 2 || trimmedUsername.length() > 20) {
+            throw new IllegalArgumentException("使用者名稱須為 2～20 字元");
+        }
+        return trimmedUsername;
+    }
+
+    public static class MemberNotFoundException extends RuntimeException {
+    }
+
+    public static class SamePasswordException extends RuntimeException {
+    }
+
+    public static class InvalidCurrentPasswordException extends RuntimeException {
     }
 
     public static class DuplicateEmailException extends RuntimeException {
