@@ -3,7 +3,7 @@ import mixes from '../data/mixData.js';
 import { assetUrl } from '../utils/assetUrl.js';
 import MusicPlayerContext from './musicPlayerContext.js';
 import { releaseAudioSpectrum } from '../pages/useAudioSpectrum.js';
-import { recordPlayHistory } from '../api/playHistory.js';
+import { PlayHistoryApiError, recordPlayHistory } from '../api/playHistory.js';
 import useAuth from '../hooks/useAuth.js';
 
 // 目前播放清單來自本地 Mix 資料，與後端 API 尚未串接。
@@ -11,7 +11,7 @@ const playlist = Object.entries(mixes).map(([id, mix]) => ({ id, ...mix }));
 const mixIds = playlist.map(({ id }) => id);
 
 export function MusicPlayerProvider({ children }) {
-  const { currentUser, isAuthLoading, authError } = useAuth();
+  const { currentUser, isAuthLoading, authError, captureAuthSession, clearInvalidatedSession } = useAuth();
   const audioRef = useRef(null);
   const listenersRef = useRef(null);
   const playMixRef = useRef(null);
@@ -91,12 +91,14 @@ export function MusicPlayerProvider({ children }) {
         // 同一播放區段先標記再排隊；待送事件若已換會員便丟棄。
         historyQueueRef.current = historyQueueRef.current.then(async () => {
           if (authRef.current.userId !== userId || authRef.current.generation !== generation) return;
+          const session = captureAuthSession();
           try {
             await recordPlayHistory(code);
             if (authRef.current.userId === userId && authRef.current.generation === generation) {
               setHistoryVersion((version) => version + 1);
             }
-          } catch {
+          } catch (error) {
+            if (error instanceof PlayHistoryApiError && error.status === 401) clearInvalidatedSession(session);
             // 紀錄失敗不重試，也不阻斷音樂或下一筆播放事件。
           }
         });
@@ -147,7 +149,7 @@ export function MusicPlayerProvider({ children }) {
     }
     setError(null);
     return playAudio(audio);
-  }, [playAudio]);
+  }, [playAudio, captureAuthSession, clearInvalidatedSession]);
 
   useEffect(() => { playMixRef.current = playMix; }, [playMix]);
 

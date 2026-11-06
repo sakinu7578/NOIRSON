@@ -12,7 +12,7 @@ const mixIds = Object.keys(mixes);
 
 function DetailPage({ pageMixId, mix }) {
   const { language, t } = useLanguage();
-  const { currentUser, isAuthLoading, refreshCurrentUser } = useAuth();
+  const { currentUser, isAuthLoading, captureAuthSession, clearInvalidatedSession } = useAuth();
   const memberId = currentUser?.id;
   const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(false);
@@ -36,6 +36,7 @@ function DetailPage({ pageMixId, mix }) {
   useEffect(() => {
     const controller = new AbortController();
     if (memberId == null) return () => controller.abort();
+    const session = captureAuthSession();
     // 每次進入不同 Mix 或切換會員，都以 API 清單重新判斷收藏狀態。
     getFavorites(controller.signal)
       .then((codes) => setIsFavorite(codes.includes(pageMixId)))
@@ -43,11 +44,11 @@ function DetailPage({ pageMixId, mix }) {
         if (controller.signal.aborted) return;
         setFavoriteError(error instanceof FavoritesApiError && error.status === 401
           ? 'favorites.sessionExpired' : 'favorites.loadError');
-        if (error instanceof FavoritesApiError && error.status === 401) refreshCurrentUser();
+        if (error instanceof FavoritesApiError && error.status === 401) clearInvalidatedSession(session);
       })
       .finally(() => { if (!controller.signal.aborted) setFavoriteLoading(false); });
     return () => controller.abort();
-  }, [memberId, pageMixId, refreshCurrentUser, favoriteReload]);
+  }, [memberId, pageMixId, captureAuthSession, clearInvalidatedSession, favoriteReload]);
 
   async function handleFavorite() {
     if (isAuthLoading) return;
@@ -55,6 +56,7 @@ function DetailPage({ pageMixId, mix }) {
     if (favoriteLoading || favoriteSaving || savingRef.current) return;
     if (favoriteError) return;
     savingRef.current = true;
+    const session = captureAuthSession();
     setFavoriteSaving(true);
     setFavoriteError(null);
     try {
@@ -63,8 +65,7 @@ function DetailPage({ pageMixId, mix }) {
       setIsFavorite(!isFavorite);
     } catch (error) {
       if (error instanceof FavoritesApiError && error.status === 401) {
-        await refreshCurrentUser();
-        navigate('/login');
+        if (clearInvalidatedSession(session)) navigate('/login');
       } else {
         setFavoriteError('favorites.saveError');
       }

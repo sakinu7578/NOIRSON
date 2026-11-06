@@ -18,7 +18,7 @@ function fitTextarea(element) {
 
 export default function CommentSection({ pageMixId }) {
   const { t } = useLanguage();
-  const { currentUser, isAuthLoading, refreshCurrentUser } = useAuth();
+  const { currentUser, isAuthLoading, captureAuthSession, clearInvalidatedSession } = useAuth();
   const [items, setItems] = useState([]);
   const [hasMore, setHasMore] = useState(false);
   const [nextPage, setNextPage] = useState(1);
@@ -93,10 +93,10 @@ export default function CommentSection({ pageMixId }) {
     }
   }
 
-  function errorKey(error) {
+  function errorKey(error, session) {
     if (!(error instanceof CommentsApiError)) return 'comments.saveError';
     if (error.status === 400) return 'comments.invalid';
-    if (error.status === 401) { refreshCurrentUser(); return 'comments.sessionExpired'; }
+    if (error.status === 401) { clearInvalidatedSession(session); return 'comments.sessionExpired'; }
     if (error.status === 403) return 'comments.forbidden';
     if (error.status === 404) return 'comments.notFound';
     if (error.status === 429) return 'comments.cooldown';
@@ -109,6 +109,7 @@ export default function CommentSection({ pageMixId }) {
     if (!content) { setActionError('comments.required'); return; }
     if ([...content].length > 500) { setActionError('comments.tooLong'); return; }
     savingRef.current = true;
+    const session = captureAuthSession();
     setSaving(true);
     setActionError('');
     try {
@@ -121,7 +122,8 @@ export default function CommentSection({ pageMixId }) {
       }
       if (mounted.current) loadFirst();
     } catch (error) {
-      if (mounted.current) setActionError(errorKey(error));
+      const key = errorKey(error, session);
+      if (mounted.current) setActionError(key);
     } finally {
       savingRef.current = false;
       if (mounted.current) setSaving(false);
@@ -131,13 +133,15 @@ export default function CommentSection({ pageMixId }) {
   async function remove(id) {
     if (savingRef.current || !currentUser || !window.confirm(t('comments.deleteConfirm'))) return;
     savingRef.current = true;
+    const session = captureAuthSession();
     setSaving(true);
     setActionError('');
     try {
       await deleteComment(id);
       if (mounted.current) { setEditingId(null); loadFirst(); }
     } catch (error) {
-      if (mounted.current) setActionError(errorKey(error));
+      const key = errorKey(error, session);
+      if (mounted.current) setActionError(key);
     } finally {
       savingRef.current = false;
       if (mounted.current) setSaving(false);
@@ -147,6 +151,7 @@ export default function CommentSection({ pageMixId }) {
   async function toggleLike(comment) {
     if (!currentUser || isAuthLoading || likeRequests.current.has(comment.id)) return;
     const controller = new AbortController();
+    const session = captureAuthSession();
     likeRequests.current.set(comment.id, controller);
     setLikingIds((current) => new Set(current).add(comment.id));
     setLikeErrors((current) => ({ ...current, [comment.id]: null }));
@@ -162,8 +167,10 @@ export default function CommentSection({ pageMixId }) {
           likeCount: Math.max(0, item.likeCount + (comment.likedByMe ? -1 : 1)) }
         : item));
     } catch (error) {
+      if (!controller.signal.aborted && error instanceof CommentsApiError && error.status === 401) {
+        clearInvalidatedSession(session);
+      }
       if (!mounted.current || controller.signal.aborted) return;
-      if (error instanceof CommentsApiError && error.status === 401) refreshCurrentUser();
       if (error instanceof CommentsApiError && error.status === 404) loadFirst();
       setLikeErrors((current) => ({ ...current, [comment.id]: error instanceof CommentsApiError && error.status === 401
         ? 'comments.sessionExpired' : error instanceof CommentsApiError && error.status === 404

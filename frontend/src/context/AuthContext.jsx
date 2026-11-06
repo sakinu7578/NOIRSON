@@ -14,6 +14,9 @@ export function AuthProvider({ children }) {
   const [authError, setAuthError] = useState(false);
   const requestId = useRef(0);
   const sessionOperation = useRef(false);
+  // 每次登入建立新識別；舊請求的 401 不可清除較新的登入狀態。
+  const authSession = useRef(null);
+  const captureAuthSession = useCallback(() => authSession.current, []);
 
   const verifyCurrentUser = useCallback(async () => {
     const id = ++requestId.current;
@@ -21,7 +24,10 @@ export function AuthProvider({ children }) {
     setAuthError(false);
     try {
       const result = await fetchCurrentUser();
-      if (id === requestId.current) setCurrentUser(result.status === 200 ? result.user : null);
+      if (id === requestId.current) {
+        authSession.current = result.status === 200 ? authSession.current ?? {} : null;
+        setCurrentUser(result.status === 200 ? result.user : null);
+      }
       return result.status;
     } catch {
       if (id === requestId.current) setAuthError(true);
@@ -42,6 +48,7 @@ export function AuthProvider({ children }) {
     fetchCurrentUser()
       .then((result) => {
         if (id !== requestId.current) return;
+        authSession.current = result.status === 200 ? authSession.current ?? {} : null;
         setCurrentUser(result.status === 200 ? result.user : null);
         setAuthError(false);
       })
@@ -65,7 +72,10 @@ export function AuthProvider({ children }) {
       });
       if (response.status === 200) {
         const user = await response.json();
-        if (id === requestId.current) setCurrentUser(user);
+        if (id === requestId.current) {
+          authSession.current = {};
+          setCurrentUser(user);
+        }
       } else if (response.status !== 400 && response.status !== 401 && response.status !== 429) {
         needsRefresh = true;
       }
@@ -96,6 +106,7 @@ export function AuthProvider({ children }) {
         needsRefresh = true;
         return false;
       }
+      authSession.current = null;
       setCurrentUser(null);
       return true;
     } catch {
@@ -112,11 +123,14 @@ export function AuthProvider({ children }) {
   }, [verifyCurrentUser]);
 
   // 後端已使 Session 失效時，只清除前端狀態並淘汰較早的 /me 回應。
-  const clearInvalidatedSession = useCallback(() => {
+  const clearInvalidatedSession = useCallback((expectedSession = authSession.current) => {
+    if (!expectedSession || expectedSession !== authSession.current) return false;
     ++requestId.current;
+    authSession.current = null;
     setCurrentUser(null);
     setAuthError(false);
     setIsAuthLoading(false);
+    return true;
   }, []);
 
   // 更新會員資料後淘汰舊的 /me 回應，避免暱稱被較早的資料覆寫。
@@ -127,7 +141,9 @@ export function AuthProvider({ children }) {
     setIsAuthLoading(false);
   }, []);
 
-  const value = useMemo(() => ({ currentUser, isAuthLoading, authError, login, logout, refreshCurrentUser, clearInvalidatedSession, updateCurrentUser }),
-    [currentUser, isAuthLoading, authError, login, logout, refreshCurrentUser, clearInvalidatedSession, updateCurrentUser]);
+  const value = useMemo(() => ({ currentUser, isAuthLoading, authError, login, logout, refreshCurrentUser,
+    captureAuthSession, clearInvalidatedSession, updateCurrentUser }),
+  [currentUser, isAuthLoading, authError, login, logout, refreshCurrentUser,
+    captureAuthSession, clearInvalidatedSession, updateCurrentUser]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -43,7 +43,7 @@ export default function Member() {
 // 個人資訊、收藏、播放紀錄與留言來自後端。
 function MemberContent({ currentUser }) {
   const { t } = useLanguage();
-  const { logout, refreshCurrentUser, clearInvalidatedSession, updateCurrentUser } = useAuth();
+  const { logout, captureAuthSession, clearInvalidatedSession, updateCurrentUser } = useAuth();
   const { historyVersion } = useMusicPlayer();
   const navigate = useNavigate();
   const [draft, setDraft] = useState(currentUser.username);
@@ -84,6 +84,7 @@ function MemberContent({ currentUser }) {
 
   useEffect(() => {
     const controller = new AbortController();
+    const session = captureAuthSession();
     // 登入會員改變或重新進入頁面時，重新取得後端排序的收藏清單。
     getFavorites(controller.signal)
       .then(setFavorites)
@@ -91,15 +92,16 @@ function MemberContent({ currentUser }) {
         if (controller.signal.aborted) return;
         setFavoritesError(error instanceof FavoritesApiError && error.status === 401
           ? 'favorites.sessionExpired' : 'favorites.loadError');
-        if (error instanceof FavoritesApiError && error.status === 401) refreshCurrentUser();
+        if (error instanceof FavoritesApiError && error.status === 401) clearInvalidatedSession(session);
       })
       .finally(() => { if (!controller.signal.aborted) setFavoritesLoading(false); });
     return () => controller.abort();
-  }, [currentUser.id, favoritesReload, refreshCurrentUser]);
+  }, [currentUser.id, favoritesReload, captureAuthSession, clearInvalidatedSession]);
 
   useEffect(() => {
     if (activeView !== 'recent') return;
     const controller = new AbortController();
+    const session = captureAuthSession();
     getPlayHistory(controller.signal)
       .then((codes) => {
         if (controller.signal.aborted) return;
@@ -110,15 +112,16 @@ function MemberContent({ currentUser }) {
         if (controller.signal.aborted) return;
         setRecentError(error instanceof PlayHistoryApiError && error.status === 401
           ? 'history.sessionExpired' : 'history.loadError');
-        if (error instanceof PlayHistoryApiError && error.status === 401) refreshCurrentUser();
+        if (error instanceof PlayHistoryApiError && error.status === 401) clearInvalidatedSession(session);
       })
       .finally(() => { if (!controller.signal.aborted) setRecentLoading(false); });
     return () => controller.abort();
-  }, [activeView, currentUser.id, historyVersion, recentReload, refreshCurrentUser]);
+  }, [activeView, currentUser.id, historyVersion, recentReload, captureAuthSession, clearInvalidatedSession]);
 
   useEffect(() => {
     if (activeView !== 'comments') return;
     const controller = new AbortController();
+    const session = captureAuthSession();
     // 頁籤重新開啟及同頁評論寫入時都重新讀第一頁。
     getMyComments(0, controller.signal)
       .then((result) => {
@@ -131,11 +134,11 @@ function MemberContent({ currentUser }) {
         if (controller.signal.aborted) return;
         setCommentsError(error instanceof CommentsApiError && error.status === 401
           ? 'comments.sessionExpired' : 'comments.loadError');
-        if (error instanceof CommentsApiError && error.status === 401) refreshCurrentUser();
+        if (error instanceof CommentsApiError && error.status === 401) clearInvalidatedSession(session);
       })
       .finally(() => { if (!controller.signal.aborted) setCommentsLoading(false); });
     return () => { controller.abort(); commentsMoreRequest.current?.abort(); };
-  }, [activeView, currentUser.id, commentsReload, refreshCurrentUser]);
+  }, [activeView, currentUser.id, commentsReload, captureAuthSession, clearInvalidatedSession]);
 
   useEffect(() => {
     if (activeView !== 'comments') return;
@@ -151,6 +154,7 @@ function MemberContent({ currentUser }) {
   async function loadMoreComments() {
     if (commentsLoading || commentsMoreLoading || !commentsHasMore) return;
     const controller = new AbortController();
+    const session = captureAuthSession();
     commentsMoreRequest.current = controller;
     setCommentsMoreLoading(true);
     setCommentsError(null);
@@ -167,7 +171,7 @@ function MemberContent({ currentUser }) {
       if (controller.signal.aborted) return;
       setCommentsError(error instanceof CommentsApiError && error.status === 401
         ? 'comments.sessionExpired' : 'comments.loadError');
-      if (error instanceof CommentsApiError && error.status === 401) refreshCurrentUser();
+      if (error instanceof CommentsApiError && error.status === 401) clearInvalidatedSession(session);
     } finally {
       if (!controller.signal.aborted) setCommentsMoreLoading(false);
     }
@@ -176,6 +180,7 @@ function MemberContent({ currentUser }) {
   async function handleRemove(id) {
     if (removingRef.current) return;
     removingRef.current = true;
+    const session = captureAuthSession();
     setRemovingId(id);
     setFavoritesError(null);
     try {
@@ -183,8 +188,7 @@ function MemberContent({ currentUser }) {
       setFavorites((current) => current.filter((item) => item !== id));
     } catch (error) {
       if (error instanceof FavoritesApiError && error.status === 401) {
-        await refreshCurrentUser();
-        navigate('/login');
+        if (clearInvalidatedSession(session)) navigate('/login');
       } else {
         setFavoritesError('favorites.saveError');
       }
@@ -200,6 +204,7 @@ function MemberContent({ currentUser }) {
     const value = draft.trim();
     if (value.length < 2 || value.length > 20) { setNicknameError('auth.usernameLength'); return; }
     setIsSavingNickname(true);
+    const session = captureAuthSession();
     setNicknameError(null);
     setNotice('');
     try {
@@ -214,8 +219,7 @@ function MemberContent({ currentUser }) {
         setDraft(user.username);
         setNotice(t('member.saved'));
       } else if (response.status === 401) {
-        await refreshCurrentUser();
-        navigate('/login', { replace: true });
+        if (clearInvalidatedSession(session)) navigate('/login', { replace: true });
       } else {
         setNicknameError(response.status === 400 ? 'auth.usernameLength' : 'auth.serverError');
       }
@@ -237,6 +241,7 @@ function MemberContent({ currentUser }) {
     if (next !== confirm) { setPasswordError('auth.passwordMismatch'); return; }
 
     setIsChangingPassword(true);
+    const session = captureAuthSession();
     setPasswordError(null);
     try {
       const response = await fetch('/api/auth/change-password', {
@@ -246,13 +251,9 @@ function MemberContent({ currentUser }) {
       });
       if (response.status === 204) {
         setPasswordDraft({ old: '', next: '', confirm: '' });
-        clearInvalidatedSession();
-        navigate('/login', { replace: true, state: { passwordUpdated: true } });
+        if (clearInvalidatedSession(session)) navigate('/login', { replace: true, state: { passwordUpdated: true } });
       } else if (response.status === 401) {
-        // 401 也可能表示 Session 過期，重新查詢後才決定是否導向登入。
-        const status = await refreshCurrentUser();
-        if (status === 401) navigate('/login', { replace: true });
-        else setPasswordError(status === 200 ? 'member.currentPasswordInvalid' : 'auth.checkFailed');
+        if (clearInvalidatedSession(session)) navigate('/login', { replace: true });
       } else if (response.status === 400) {
         const message = await response.text();
         setPasswordError(message === '目前密碼錯誤' ? 'member.currentPasswordInvalid'
