@@ -69,7 +69,7 @@ public class MemberController {
                         }
                         session.setAttribute(MEMBER_ID_SESSION_KEY, member.getId());
                         return ResponseEntity.ok(
-                                new LoginResponse(member.getId(), member.getUsername(), member.getEmail()));
+                                new LoginResponse(member.getId(), member.getUsername(), member.getEmail(), member.getRole()));
                     })
                     .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                             .body("Email 或密碼錯誤"));
@@ -88,7 +88,7 @@ public class MemberController {
 
         return memberService.findById(id)
                 .<ResponseEntity<?>>map(member -> ResponseEntity.ok(
-                        new LoginResponse(member.getId(), member.getUsername(), member.getEmail())))
+                        new LoginResponse(member.getId(), member.getUsername(), member.getEmail(), member.getRole())))
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
     }
 

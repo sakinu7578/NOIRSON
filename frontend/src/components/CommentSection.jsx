@@ -198,8 +198,8 @@ export default function CommentSection({ pageMixId }) {
               <div className="detail-comment-header">
                 <div className="detail-comment-meta"><strong>{comment.authorName}</strong>
                   <time dateTime={comment.createdAt}>{formatCommentDate(comment.createdAt)}</time></div>
-                {editingId !== comment.id && currentUser?.id === comment.authorId && <div className="detail-comment-actions">
-                  <button type="button" onClick={() => { setEditingId(comment.id); setEditDraft(comment.content); setActionError(''); }} disabled={saving}>{t('comments.edit')}</button>
+                {editingId !== comment.id && (currentUser?.id === comment.authorId || currentUser?.role === 'ADMIN') && <div className="detail-comment-actions">
+                  {currentUser?.id === comment.authorId && <button type="button" onClick={() => { setEditingId(comment.id); setEditDraft(comment.content); setActionError(''); }} disabled={saving}>{t('comments.edit')}</button>}
                   <button type="button" onClick={() => remove(comment.id)} disabled={saving}>{t('comments.delete')}</button>
                 </div>}
               </div>

@@ -83,4 +83,8 @@ public class Member {
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
+
+    public String getRole() {
+        return role;
+    }
 }

@@ -139,7 +139,8 @@ public class CommentService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
         Comment comment = comments.findDetailsById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!comment.getMember().getId().equals(member.getId()))
+        // 刪除權限以重新查詢的資料庫角色為準；未知角色不視為 ADMIN。
+        if (!comment.getMember().getId().equals(member.getId()) && !"ADMIN".equals(member.getRole()))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN);
         comments.delete(comment);
     }
