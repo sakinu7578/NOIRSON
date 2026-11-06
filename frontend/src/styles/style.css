@@ -2933,7 +2933,7 @@ html.home-scenes {
 
 .about-world,
 .about-sound,
-.about-subscribe {
+.about-mixes {
     /* z-index: 1 讓內容位於背景圖片與 Overlay 上方，維持文字可讀性。 */
     position: relative;
     z-index: 1;
@@ -3042,55 +3042,91 @@ html.home-scenes {
     letter-spacing: 0.08em;
 }
 
-.about-subscribe {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(320px, 0.8fr);
-    align-items: center;
-    gap: clamp(2rem, 5vw, 5rem);
+.about-mixes {
     border-top: 1px solid rgba(228, 224, 214, 0.16);
-    padding: clamp(1.25rem, 2.5vh, 2rem) 0 0;
+    padding: clamp(1.5rem, 3vh, 2.5rem) 0 0;
 }
 
-.about-subscribe h2 {
-    margin: 0;
+.about-mixes h2 {
+    margin: 0 0 1.25rem;
+}
+
+.about-mixes-viewport {
+    overflow: hidden;
+}
+
+.about-mixes-track {
+    display: flex;
+    width: max-content;
+    animation: about-mixes-scroll 100s linear infinite;
+}
+
+.about-mixes-viewport:hover .about-mixes-track,
+.about-mixes-viewport:focus-within .about-mixes-track {
+    animation-play-state: paused;
+}
+
+.about-mixes-group {
+    display: flex;
+    gap: clamp(1.1rem, 2vw, 2rem);
+    padding: 0.5rem clamp(1.1rem, 2vw, 2rem) 0.5rem 0;
+}
+
+.about-mix-card {
+    position: relative;
+    display: block;
+    flex: 0 0 clamp(210px, 22vw, 320px);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: #151612;
     color: var(--color-heading);
-    font-family: "Roboto Slab", serif;
-    font-size: clamp(2.25rem, 3vw, 4.25rem);
-    font-weight: 400;
-    line-height: 1.08;
-    letter-spacing: -0.03em;
 }
 
-.subscribe-form {
+.about-mix-card img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 320ms ease;
+}
+
+.about-mix-card:hover img {
+    transform: scale(1.025);
+}
+
+.about-mix-copy {
+    position: absolute;
+    inset: auto 0 0;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
-    border-bottom: 1px solid rgba(228, 224, 214, 0.42);
+    gap: 0.25rem;
+    padding: 2rem 1rem 1rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.78));
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 260ms ease, transform 260ms ease;
+    pointer-events: none;
 }
 
-.subscribe-form input,
-.subscribe-form button {
-    border: 0;
-    border-radius: 0;
-    padding: 1rem 0;
-    background: transparent;
-    color: var(--color-heading);
-    font: inherit;
-    font-size: 0.65rem;
-    letter-spacing: 0.12em;
+.about-mix-card:hover .about-mix-copy,
+.about-mix-card:focus-visible .about-mix-copy {
+    opacity: 1;
+    transform: translateY(0);
 }
 
-.subscribe-form input {
-    min-width: 0;
-    outline: 0;
+.about-mix-copy strong {
+    font-family: "Roboto Slab", serif;
+    font-size: 0.85rem;
+    font-weight: 400;
 }
 
-.subscribe-form input::placeholder {
-    color: rgba(170, 168, 160, 0.72);
+.about-mix-copy small {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.63rem;
 }
 
-.subscribe-form button {
-    color: var(--color-amber);
-    cursor: pointer;
+@keyframes about-mixes-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
 }
 
 /* ========================================
@@ -3669,7 +3705,7 @@ html.home-scenes {
 
     .about-world,
     .about-sound,
-    .about-subscribe {
+    .about-mixes {
         width: 90vw;
     }
 
@@ -3677,11 +3713,6 @@ html.home-scenes {
         grid-template-columns: minmax(0, 1fr);
         max-width: 650px;
         margin-left: 0;
-    }
-
-    .about-subscribe {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 1rem;
     }
 
     .auth-page {
@@ -3990,7 +4021,7 @@ html.home-scenes {
 
     .about-world,
     .about-sound,
-    .about-subscribe {
+    .about-mixes {
         width: 90vw;
     }
 
@@ -4007,7 +4038,7 @@ html.home-scenes {
     }
 
     .about-sound,
-    .about-subscribe {
+    .about-mixes {
         padding-block: 2rem;
     }
 
@@ -4019,8 +4050,8 @@ html.home-scenes {
         width: 100%;
     }
 
-    .subscribe-form {
-        grid-template-columns: minmax(0, 1fr);
+    .about-mix-card {
+        flex-basis: clamp(180px, 65vw, 260px);
     }
 
     .auth-v2 {
@@ -4207,6 +4238,12 @@ html.home-scenes {
 }
 
 @media (prefers-reduced-motion: reduce) {
+
+    .about-mixes-viewport { overflow-x: auto; }
+    .about-mixes-track { animation: none; }
+    .about-mixes-group[aria-hidden="true"] { display: none; }
+    .about-mix-card img { transition: none; }
+    .about-mix-copy { transition: none; }
 
     .explore-v2::before,
     .auth-panel::before {
