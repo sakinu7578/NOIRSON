@@ -178,9 +178,7 @@ export default function Explore() {
   }, [view, visibleEntries, clearTransitionTimers]);
 
   useEffect(() => {
-    const previousTitle = document.title;
-    document.title = 'Explore Music | NOIRSON';
-    return () => { document.title = previousTitle; clearTransitionTimers(); };
+    return () => clearTransitionTimers();
   }, [clearTransitionTimers]);
 
   const entering = phase === 'entering' || phase === 'visible';

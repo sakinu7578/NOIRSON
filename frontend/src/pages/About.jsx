@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Link } from 'react-router';
 import mixes from '../data/mixData.js';
 import useBackgroundSlideshow from '../hooks/useBackgroundSlideshow.js';
@@ -13,12 +12,6 @@ const mixEntries = Object.entries(mixes);
 export default function About() {
   const { t } = useLanguage();
   const background = useBackgroundSlideshow({ images: aboutImages, interval: 6000 });
-
-  useEffect(() => {
-    const previousTitle = document.title;
-    document.title = 'About | NOIRSON';
-    return () => { document.title = previousTitle; };
-  }, []);
 
   return <main className="about-page">
     <div className="about-background" aria-hidden="true">

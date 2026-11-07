@@ -77,12 +77,6 @@ function MemberContent({ currentUser }) {
   const background = useBackgroundSlideshow({ images: memberImages, interval: 6000 });
 
   useEffect(() => {
-    const previousTitle = document.title;
-    document.title = `${t('member.title')} | NOIRSON`;
-    return () => { document.title = previousTitle; };
-  }, [t]);
-
-  useEffect(() => {
     const controller = new AbortController();
     const session = captureAuthSession();
     // 登入會員改變或重新進入頁面時，重新取得後端排序的收藏清單。

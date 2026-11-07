@@ -1,6 +1,6 @@
 // 使用React Hooks管理表單、提交狀態及提示訊息
-// useState 管理狀態，useEffect 管理副作用
-import { useEffect, useState } from 'react';
+// useState 管理表單與提交狀態
+import { useState } from 'react';
 import { Link } from 'react-router';
 import AuthVisual from '../components/AuthVisual.jsx';
 import useLanguage from '../hooks/useLanguage.js';
@@ -10,12 +10,6 @@ export default function Register() {
   const [form, setForm] = useState({ username: '', email: '', password: '', confirmPassword: '' });
   const [status, setStatus] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    const previousTitle = document.title;
-    document.title = 'Register | NOIRSON';
-    return () => { document.title = previousTitle; };
-  }, []);
 
   function updateField(event) {
     const { name, value } = event.target;

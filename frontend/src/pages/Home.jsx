@@ -8,7 +8,7 @@ import { Link } from 'react-router';
 import useLanguage from '../hooks/useLanguage.js';
 
 function Home() {
-    const { t } = useLanguage();
+    const { language, t } = useLanguage();
     const visualizerRef = useRef(null);
     const { audioRef, isPlaying } = useMusicPlayer();
     useAudioSpectrum(audioRef, visualizerRef, isPlaying);
@@ -31,7 +31,7 @@ function Home() {
                         className={`signature-background ${active === 0 ? 'is-active' : ''}`}
                         src={layers[0]}
                         style={{ zIndex: active === 0 ? 1 : 0 }}
-                        alt="Somewhere far from everyone 音樂封面"
+                        alt={language === 'en' ? 'Somewhere far from everyone cover' : 'Somewhere far from everyone 音樂封面'}
                     />
 
                     <img

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import AuthVisual from '../components/AuthVisual.jsx';
 import useLanguage from '../hooks/useLanguage.js';
@@ -12,12 +12,6 @@ export default function Login() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorKey, setErrorKey] = useState(null);
-
-  useEffect(() => {
-    const previousTitle = document.title;
-    document.title = 'Login | NOIRSON';
-    return () => { document.title = previousTitle; };
-  }, []);
 
   function updateField(event) {
     const { name, value } = event.target;

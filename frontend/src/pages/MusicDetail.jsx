@@ -28,12 +28,6 @@ function DetailPage({ pageMixId, mix }) {
   const previousId = mixIds[(currentIndex - 1 + mixIds.length) % mixIds.length];
   const nextId = mixIds[(currentIndex + 1) % mixIds.length];
   useEffect(() => {
-    const previousTitle = document.title;
-    document.title = `${mix.title} | NOIRSON`;
-    return () => { document.title = previousTitle; };
-  }, [mix.title]);
-
-  useEffect(() => {
     const controller = new AbortController();
     if (memberId == null) return () => controller.abort();
     const session = captureAuthSession();
