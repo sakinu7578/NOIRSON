@@ -12,9 +12,10 @@ export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [authError, setAuthError] = useState(false);
+  // 淘汰較早的 /api/auth/me 回應，避免覆蓋較新的登入狀態。
   const requestId = useRef(0);
   const sessionOperation = useRef(false);
-  // 每次登入建立新識別；舊請求的 401 不可清除較新的登入狀態。
+  // 識別目前這次登入；舊請求延遲回傳的 401 不可清除新登入狀態。
   const authSession = useRef(null);
   const captureAuthSession = useCallback(() => authSession.current, []);
 

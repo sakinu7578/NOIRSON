@@ -27,6 +27,7 @@ public class SessionMemberService {
         session.setAttribute(PASSWORD_FINGERPRINT, fingerprint(member.getPasswordHash()));
     }
 
+    // 密碼變更會更新雜湊；其他瀏覽器的舊 Session 指紋不符，於下次受保護請求時失效。
     // 每次使用會員身分都比對資料庫；舊版 Session 缺少指紋時也必須重新登入。
     public Optional<Member> currentMember(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
