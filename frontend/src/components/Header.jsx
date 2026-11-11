@@ -6,7 +6,7 @@ import useAuth from '../hooks/useAuth.js';
 
 function Header() {
     const { language, setLanguage, t } = useLanguage();
-    const { currentUser, isAuthLoading, authError, logout } = useAuth();
+    const { currentUser, logout } = useAuth();
     const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -62,7 +62,7 @@ function Header() {
                 <NavLink to="/" end onClick={closeMenu}>{t('nav.home')}</NavLink>
                 <NavLink to="/music" onClick={closeMenu}>{t('nav.explore')}</NavLink>
                 <NavLink to="/about" onClick={closeMenu}>{t('nav.about')}</NavLink>
-                {isAuthLoading ? null : currentUser && !authError ? <>
+                {currentUser ? <>
                     <NavLink to="/member" onClick={closeMenu}>{t('nav.member')}</NavLink>
                     <button className="nav-action" type="button" onClick={handleLogout} disabled={isLoggingOut}>{t('member.logout')}</button>
                 </> : <NavLink to="/login" onClick={closeMenu}>{t('nav.login')}</NavLink>}
