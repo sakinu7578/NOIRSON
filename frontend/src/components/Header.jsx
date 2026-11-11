@@ -62,7 +62,7 @@ function Header() {
                 <NavLink to="/" end onClick={closeMenu}>{t('nav.home')}</NavLink>
                 <NavLink to="/music" onClick={closeMenu}>{t('nav.explore')}</NavLink>
                 <NavLink to="/about" onClick={closeMenu}>{t('nav.about')}</NavLink>
-                {currentUser && !isAuthLoading && !authError ? <>
+                {isAuthLoading ? null : currentUser && !authError ? <>
                     <NavLink to="/member" onClick={closeMenu}>{t('nav.member')}</NavLink>
                     <button className="nav-action" type="button" onClick={handleLogout} disabled={isLoggingOut}>{t('member.logout')}</button>
                 </> : <NavLink to="/login" onClick={closeMenu}>{t('nav.login')}</NavLink>}

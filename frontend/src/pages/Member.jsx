@@ -32,7 +32,9 @@ function MixRow({ id, action }) {
 export default function Member() {
   const { currentUser, isAuthLoading, authError, refreshCurrentUser } = useAuth();
   const { t } = useLanguage();
-  if (isAuthLoading) return <main className="member-page" aria-busy="true" />;
+  if (isAuthLoading) return <main className="member-page" aria-busy="true"><div className="member-shell">
+    <p className="member-empty" role="status">{t('auth.loading')}</p>
+  </div></main>;
   if (authError) return <main className="member-page"><div className="member-shell">
     <p role="alert">{t('auth.checkFailed')} <button type="button" onClick={refreshCurrentUser}>{t('auth.retry')}</button></p>
   </div></main>;
