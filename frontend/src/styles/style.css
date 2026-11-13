@@ -4076,6 +4076,8 @@ html.home-scenes {
 
     .about-mix-card {
         flex-basis: clamp(180px, 65vw, 260px);
+        min-width: 0;
+        max-width: clamp(180px, 65vw, 260px);
     }
 
     .auth-v2 {
