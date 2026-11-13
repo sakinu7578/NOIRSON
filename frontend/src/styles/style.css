@@ -4050,6 +4050,10 @@ html.home-scenes {
         width: 100%;
     }
 
+    .about-mixes-group {
+        flex: 0 0 auto;
+    }
+
     .about-mix-card {
         flex-basis: clamp(180px, 65vw, 260px);
     }
