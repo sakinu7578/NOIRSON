@@ -12,6 +12,7 @@ export default function useHomeStage() {
     let animating = false;
     let wrapping = false;
     let touchAnimating = false;
+    let touchTarget = null;
     let cooldown = false;
     let cooldownDirection = 0;
     let cooldownTimer;
@@ -27,7 +28,17 @@ export default function useHomeStage() {
     };
     const onScroll = () => {
       if (wrapping || touchAnimating || frame) return;
-      frame = requestAnimationFrame(() => { frame = 0; if (!wrapping && !touchAnimating) update(); });
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (wrapping || touchAnimating) return;
+        // 觸控目標已決定時，殘留的 Safari 慣性捲動只能回到該標記，不能再推進 Stage。
+        if (touchTarget !== null) {
+          const target = markersRef.current.children[touchTarget - 1].offsetTop;
+          if (Math.abs(scrollY - target) > 1) scrollTo(0, target);
+          return;
+        }
+        update();
+      });
     };
     const beginCooldown = (direction) => {
       clearTimeout(cooldownTimer);
@@ -43,7 +54,7 @@ export default function useHomeStage() {
       animating = true;
       touchAnimating = fromTouch;
       wrapping = Math.abs(next - stageRef.current) > 1;
-      if (wrapping) set(next);
+      if (fromTouch || wrapping) set(next);
       const tick = (time) => {
         const progress = duration ? Math.min(1, (time - startTime) / duration) : 1;
         scrollTo(0, start + (target - start) * (1 - (1 - progress) ** 3));
@@ -55,7 +66,7 @@ export default function useHomeStage() {
           animating = false;
           wrapping = false;
           touchAnimating = false;
-          document.documentElement.classList.remove('home-touch-scrolling');
+          if (!touchStart?.vertical) document.documentElement.classList.remove('home-touch-scrolling');
           beginCooldown(direction);
         }
       };
@@ -79,13 +90,19 @@ export default function useHomeStage() {
     const onTouchStart = (event) => {
       touchStart = null;
       if (finePointer.matches || event.touches.length !== 1 || !(event.target instanceof Element)) return;
-      if (event.target.closest('a, button, input, textarea, select, [data-home-playlist-scroll], .global-mini-player, .explore-viewport')) return;
+      if (event.target.closest('a, button, input, textarea, select, [data-home-playlist-scroll], .global-mini-player, .explore-viewport')) {
+        if (!animating) touchTarget = null;
+        return;
+      }
       touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY, vertical: false, horizontal: false, blocked: animating };
     };
     const onTouchMove = (event) => {
       if (!touchStart || event.touches.length !== 1) {
         touchStart = null;
-        if (!animating) document.documentElement.classList.remove('home-touch-scrolling');
+        if (!animating) {
+          touchTarget = null;
+          document.documentElement.classList.remove('home-touch-scrolling');
+        }
         return;
       }
       const dx = event.touches[0].clientX - touchStart.x;
@@ -93,7 +110,11 @@ export default function useHomeStage() {
       if (!touchStart.vertical && !touchStart.horizontal && Math.max(Math.abs(dx), Math.abs(dy)) > 8) {
         touchStart.vertical = Math.abs(dy) > Math.abs(dx);
         touchStart.horizontal = !touchStart.vertical;
-        if (touchStart.vertical) document.documentElement.classList.add('home-touch-scrolling');
+        if (touchStart.vertical) {
+          if (!animating) touchTarget = stageRef.current;
+          document.documentElement.classList.add('home-touch-scrolling');
+        }
+        else if (!animating) touchTarget = null;
       }
       // 只接管非互動區的垂直手勢；動畫中的新手勢也不能啟動原生捲動。
       if (touchStart.vertical && event.cancelable) event.preventDefault();
@@ -104,15 +125,23 @@ export default function useHomeStage() {
       const { vertical, blocked } = touchStart;
       touchStart = null;
       if (!vertical || blocked || animating || Math.abs(dy) < 60) {
-        if (!animating) document.documentElement.classList.remove('home-touch-scrolling');
+        if (!animating) {
+          if (vertical) scrollTo(0, markersRef.current.children[stageRef.current - 1].offsetTop);
+          else touchTarget = null;
+          document.documentElement.classList.remove('home-touch-scrolling');
+        }
         return;
       }
       const direction = dy < 0 ? 1 : -1;
-      goTo((stageRef.current - 1 + direction + 3) % 3 + 1, direction, true);
+      touchTarget = (stageRef.current - 1 + direction + 3) % 3 + 1;
+      goTo(touchTarget, direction, true);
     };
     const onTouchCancel = () => {
       touchStart = null;
-      if (!animating) document.documentElement.classList.remove('home-touch-scrolling');
+      if (!animating) {
+        touchTarget = null;
+        document.documentElement.classList.remove('home-touch-scrolling');
+      }
     };
     update();
     addEventListener('scroll', onScroll, { passive: true });
