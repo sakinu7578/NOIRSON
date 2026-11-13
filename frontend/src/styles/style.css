@@ -461,6 +461,10 @@ html.home-scenes {
     scroll-snap-type: y proximity;
 }
 
+html.home-scenes.home-touch-scrolling {
+    scroll-snap-type: none;
+}
+
 @media (min-width: 901px) and (hover: hover) and (pointer: fine) {
     html.home-scenes {
         scroll-snap-type: none;
@@ -1338,6 +1342,11 @@ html.home-scenes {
     height: 100svh;
     scroll-snap-align: start;
     scroll-snap-stop: normal;
+}
+
+/* 網址列收合後視窗可能高於 100svh；保留足夠尾端距離讓 Stage 3 對齊。 */
+.home-scroll-stage:last-child {
+    min-height: 100dvh;
 }
 
 .site-footer--v2 .social-links {
