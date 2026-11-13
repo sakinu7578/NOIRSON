@@ -1,4 +1,5 @@
-import { Link } from 'react-router';
+import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from 'react-router';
 import mixes from '../data/mixData.js';
 import useBackgroundSlideshow from '../hooks/useBackgroundSlideshow.js';
 import { assetUrl } from '../utils/assetUrl.js';
@@ -9,9 +10,54 @@ const aboutImages = Array.from({ length: 17 }, (_, index) => index)
   .map((index) => `images/${String(index).padStart(2, '0')}.webp`);
 const mixEntries = Object.entries(mixes);
 
+function MixDiagnostics({ trackRef, viewportRef }) {
+  const [metrics, setMetrics] = useState(null);
+
+  useEffect(() => {
+    function measure() {
+      const track = trackRef.current;
+      const viewport = viewportRef.current;
+      const [first, second] = track?.children ?? [];
+      if (!track || !viewport || !first || !second) return;
+
+      const style = getComputedStyle(track);
+      const animation = track.getAnimations().find((item) => item.animationName === 'about-mixes-scroll');
+      const transformX = style.transform === 'none' ? 0 : new DOMMatrixReadOnly(style.transform).m41;
+      setMetrics({
+        'track 寬度': `${track.getBoundingClientRect().width.toFixed(2)} px`,
+        '第一組寬度': `${first.getBoundingClientRect().width.toFixed(2)} px`,
+        '第二組寬度': `${second.getBoundingClientRect().width.toFixed(2)} px`,
+        '第二組起點（相對 track）': `${(second.getBoundingClientRect().left - track.getBoundingClientRect().left).toFixed(2)} px`,
+        'track scrollWidth': `${track.scrollWidth} px`,
+        'track clientWidth': `${track.clientWidth} px`,
+        animationDuration: style.animationDuration,
+        animationPlayState: style.animationPlayState,
+        animationIterationCount: style.animationIterationCount,
+        'currentTime': animation?.currentTime == null ? '無動畫' : `${animation.currentTime.toFixed(0)} ms`,
+        'transform X': `${transformX.toFixed(2)} px`,
+        'viewport 寬度': `${viewport.getBoundingClientRect().width.toFixed(2)} px`,
+      });
+    }
+
+    measure();
+    const timer = window.setInterval(measure, 1000);
+    return () => window.clearInterval(timer);
+  }, [trackRef, viewportRef]);
+
+  return <aside className="about-mix-diagnostics" aria-label="Mix 輪播診斷">
+    <strong>Mix 輪播診斷（每秒更新）</strong>
+    {metrics && <dl>{Object.entries(metrics).map(([label, value]) =>
+      <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
+  </aside>;
+}
+
 export default function About() {
+  const { search } = useLocation();
   const { t } = useLanguage();
   const background = useBackgroundSlideshow({ images: aboutImages, interval: 6000 });
+  const debugMix = new URLSearchParams(search).get('debugMix') === '1';
+  const trackRef = useRef(null);
+  const viewportRef = useRef(null);
 
   return <main className="about-page">
     <div className="about-background" aria-hidden="true">
@@ -49,8 +95,8 @@ export default function About() {
 
     <section className="about-mixes" aria-labelledby="about-mixes-title">
       <h2 className="section-label" id="about-mixes-title">EXPLORE THE SOUND</h2>
-      <div className="about-mixes-viewport">
-        <div className="about-mixes-track">
+      <div className="about-mixes-viewport" ref={viewportRef}>
+        <div className="about-mixes-track" ref={trackRef}>
           {/* 複製組只從鍵盤與輔助科技導覽隱藏，仍可用滑鼠點擊。 */}
           {[false, true].map((duplicate) =>
             <div className="about-mixes-group" key={String(duplicate)} aria-hidden={duplicate}>
@@ -63,5 +109,6 @@ export default function About() {
         </div>
       </div>
     </section>
+    {debugMix && <MixDiagnostics trackRef={trackRef} viewportRef={viewportRef} />}
   </main>;
 }
