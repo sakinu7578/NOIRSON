@@ -3129,26 +3129,6 @@ html.home-scenes {
     to { transform: translateX(-50%); }
 }
 
-.about-mix-diagnostics {
-    position: fixed;
-    z-index: 1000;
-    right: 0.5rem;
-    bottom: 0.5rem;
-    width: min(360px, calc(100vw - 1rem));
-    max-height: 55vh;
-    overflow-y: auto;
-    padding: 0.75rem;
-    background: rgba(0, 0, 0, 0.9);
-    color: #fff;
-    font: 12px/1.4 monospace;
-    pointer-events: auto;
-}
-
-.about-mix-diagnostics dl { margin: 0.5rem 0 0; }
-.about-mix-diagnostics dl > div { display: flex; justify-content: space-between; gap: 0.5rem; }
-.about-mix-diagnostics dt { color: #bbb; }
-.about-mix-diagnostics dd { margin: 0; text-align: right; }
-
 /* ========================================
    LOGIN / REGISTER：共用會員表單版型
    Desktop 使用 60 / 40 雙欄，Mobile 改為上下排列
