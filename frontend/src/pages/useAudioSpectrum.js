@@ -7,8 +7,15 @@ export function releaseAudioSpectrum(audio) {
   if (!graph) return;
   graph.source.disconnect();
   graph.analyser.disconnect();
+  graph.gain.disconnect();
   graph.context.close().catch(() => {});
   graphs.delete(audio);
+}
+
+export function syncAudioSpectrumMute(audio) {
+  const graph = graphs.get(audio);
+  // 元素接入 Web Audio 後，輸出端也須套用靜音，避免 Safari 仍播放此路徑。
+  if (graph) graph.gain.gain.value = audio.muted || audio.volume === 0 ? 0 : 1;
 }
 
 export function ensureAudioSpectrum(audio) {
@@ -19,12 +26,15 @@ export function ensureAudioSpectrum(audio) {
       const context = new AudioContextClass();
       try {
         const analyser = context.createAnalyser();
+        const gain = context.createGain();
         analyser.fftSize = 1024;
         analyser.smoothingTimeConstant = 0.88;
         const source = context.createMediaElementSource(audio);
         source.connect(analyser);
-        analyser.connect(context.destination);
-        graphs.set(audio, { context, source, analyser, frequency: new Uint8Array(analyser.frequencyBinCount) });
+        analyser.connect(gain);
+        gain.connect(context.destination);
+        graphs.set(audio, { context, source, analyser, gain, frequency: new Uint8Array(analyser.frequencyBinCount) });
+        syncAudioSpectrumMute(audio);
       } catch {
         context.close().catch(() => {});
         return;

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import mixes from '../data/mixData.js';
 import { assetUrl } from '../utils/assetUrl.js';
 import MusicPlayerContext from './musicPlayerContext.js';
-import { releaseAudioSpectrum } from '../pages/useAudioSpectrum.js';
+import { releaseAudioSpectrum, syncAudioSpectrumMute } from '../pages/useAudioSpectrum.js';
 import { PlayHistoryApiError, recordPlayHistory } from '../api/playHistory.js';
 import useAuth from '../hooks/useAuth.js';
 
@@ -112,6 +112,7 @@ export function MusicPlayerProvider({ children }) {
         mutedRef.current = audio.muted;
         setVolumeState(audio.volume);
         setIsMuted(audio.muted);
+        syncAudioSpectrumMute(audio);
       };
       const onError = () => {
         ++playRequestRef.current;
@@ -188,6 +189,7 @@ export function MusicPlayerProvider({ children }) {
     if (audioRef.current) {
       audioRef.current.volume = next;
       audioRef.current.muted = next === 0;
+      syncAudioSpectrumMute(audioRef.current);
     }
     setVolumeState(next);
     setIsMuted(next === 0);
@@ -200,7 +202,10 @@ export function MusicPlayerProvider({ children }) {
       setVolume(lastAudibleRef.current);
     } else {
       mutedRef.current = !muted;
-      if (audio) audio.muted = !muted;
+      if (audio) {
+        audio.muted = !muted;
+        syncAudioSpectrumMute(audio);
+      }
       setIsMuted(!muted);
     }
   }, [isMuted, volume, setVolume]);
